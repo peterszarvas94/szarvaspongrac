@@ -2,28 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://szarvaspongrac.hu/akvarell/</loc>
+    <loc>http://localhost:1313/akvarell/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/eletrajz/</loc>
+    <loc>http://localhost:1313/eletrajz/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/grafika/</loc>
+    <loc>http://localhost:1313/grafika/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/ismeretterjesztes/</loc>
+    <loc>http://localhost:1313/ismeretterjesztes/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/kepzomuveszet/</loc>
+    <loc>http://localhost:1313/kepzomuveszet/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/olaj/</loc>
+    <loc>http://localhost:1313/olaj/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/pasztell/</loc>
+    <loc>http://localhost:1313/pasztell/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/fotok/</loc>
+    <loc>http://localhost:1313/fotok/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/csalad/</loc>
+    <loc>http://localhost:1313/csalad/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/categories/</loc>
+    <loc>http://localhost:1313/categories/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/</loc>
+    <loc>http://localhost:1313/</loc>
   </url><url>
-    <loc>https://szarvaspongrac.hu/tags/</loc>
+    <loc>http://localhost:1313/tags/</loc>
   </url>
 </urlset>

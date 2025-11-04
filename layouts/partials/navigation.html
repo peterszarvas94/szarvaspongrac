@@ -23,11 +23,11 @@
     <summary>Menü</summary>
 
     <ul>
-      {{ range .Site.Menus.main }}
+      {{ range .Site.Menus.main }} {{ if not .Params.Hidden }}
       <li>
         <a href="{{ .URL }}"> {{ .Name }} </a>
       </li>
-      {{ end }}
+      {{ end }} {{ end }}
       <li>
         <a href="http://www.forestpress.hu/hu/index.php" target="_blank">
           Forestpress
