@@ -1,0 +1,49 @@
+---
+import V2Layout from "../../layouts/V2Layout.astro";
+import ArtCard from "../../components/ArtCard.astro";
+---
+
+<V2Layout
+  title="Képzőművészet - Szarvas Pongrác"
+  description="Szarvas Pongrác képzőművészeti alkotásai"
+>
+  <section class="py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          Képzőművészet
+        </h1>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <ArtCard
+          href="/v2/olaj"
+          imageSrc="/images/a.jpg"
+          imageAlt="Olajfestmények"
+          title="Olajfestmények"
+        />
+
+        <ArtCard
+          href="/v2/akvarell"
+          imageSrc="/images/b.jpg"
+          imageAlt="Akvarellek"
+          title="Akvarellek"
+        />
+
+        <ArtCard
+          href="/v2/pasztell"
+          imageSrc="/images/c.jpg"
+          imageAlt="Pasztellek"
+          title="Pasztellek"
+        />
+
+        <ArtCard
+          href="/v2/grafika"
+          imageSrc="/images/d.jpg"
+          imageAlt="Grafikák"
+          title="Grafikák"
+        />
+      </div>
+    </div>
+  </section>
+</V2Layout>
