@@ -2,7 +2,7 @@
 const menuItems = [
   { name: "Nyitólap", url: "/", hidden: true },
   { name: "Életrajz", url: "/eletrajz/", weight: 2 },
-  { name: "Képzőművészet", url: "/kepzomuveszet/", weight: 3 },
+  { name: "Képzőművészet", url: "/kepzomuveszet/", weight: 3, last: true },
   { name: "Fotók", url: "/fotok/", weight: 4, hidden: true },
   {
     name: "Ismeretterjesztés",
@@ -11,7 +11,7 @@ const menuItems = [
     hidden: true,
   },
   { name: "Család", url: "/csalad/", weight: 6, hidden: true },
-  { name: "V2", url: "/v2", weight: 7, last: true },
+  // { name: "V2", url: "/v2", weight: 7, last: true },
 ];
 
 const visibleItems = menuItems.filter((item) => !item.hidden);
