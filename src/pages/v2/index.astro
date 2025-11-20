@@ -1,7 +1,7 @@
 ---
 import V2Layout from "../../layouts/V2Layout.astro";
 import NavigationCard from "../../components/NavigationCard.astro";
-import { BookUser, Palette, Camera, BookOpenText } from "@lucide/astro";
+import { BookUser, Palette, Mail } from "@lucide/astro";
 ---
 
 <V2Layout
@@ -9,43 +9,33 @@ import { BookUser, Palette, Camera, BookOpenText } from "@lucide/astro";
   description="Szarvas Pongrác grafikus, festő, illusztrátor honlapja - Modern verzió"
 >
   <!-- Hero Section -->
-  <section class="bg-linear-to-br from-gray-50 to-gray-100 py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center">
-        <h1 class="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-          Szarvas Pongrác
-        </h1>
-        <p class="text-xl md:text-2xl text-gray-600 mb-8 max-w-3xl mx-auto">
-          Grafikus • Festő • Illusztrátor
-        </p>
-        <p class="text-lg text-gray-500 max-w-2xl mx-auto">
-          Természet és vadászat témájú alkotások
-        </p>
-      </div>
-    </div>
-  </section>
+  <section
+    class="relative min-h-[70vh] bg-cover bg-center bg-no-repeat flex items-center justify-center"
+    style="background-image: url('/images/szarvasok.jpg');"
+  >
+    <!-- Dark overlay for text readability -->
+    <div class="absolute inset-0 bg-black/40"></div>
 
-  <!-- Featured Image -->
-  <section class="py-8">
-    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-        <img
-          src="/images/szarvasok.jpg"
-          alt="Szarvasok - Szarvas Pongrác műve"
-          class="w-full h-auto object-cover"
-        />
-        <div class="p-6">
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">Szarvasok</h3>
-          <p class="text-gray-600">Olajfestmény</p>
-        </div>
-      </div>
+    <!-- Hero Content -->
+    <div
+      class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto"
+    >
+      <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+        Szarvas Pongrác
+      </h1>
+      <p class="text-xl md:text-2xl text-white/90 mb-8">
+        Grafikus • Festő • Illusztrátor
+      </p>
+      <p class="text-lg text-white/80 max-w-2xl mx-auto">
+        Természet és vadászat témájú alkotások
+      </p>
     </div>
   </section>
 
   <!-- Navigation Cards -->
   <section class="py-8 bg-gray-50">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="grid mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="flex flex-col items-center sm:flex-row justify-center gap-4">
         <NavigationCard
           href="/v2/eletrajz"
           title="Életrajz"
@@ -61,16 +51,9 @@ import { BookUser, Palette, Camera, BookOpenText } from "@lucide/astro";
         />
 
         <NavigationCard
-          href="/v2/fotok"
-          title="Fotók"
-          icon={Camera}
-          hoverColor="purple"
-        />
-
-        <NavigationCard
-          href="/v2/ismeretterjesztes"
-          title="Ismeretterjesztés"
-          icon={BookOpenText}
+          href="/v2/kapcsolat"
+          title="Kapcsolat"
+          icon={Mail}
           hoverColor="orange"
         />
       </div>
