@@ -1,6 +1,6 @@
 ---
+import ImageGallery from "../../../components/v2/ImageGallery.astro";
 import V2Layout from "../../../layouts/V2Layout.astro";
-import ImageGalleryV2 from "../../../components/ImageGalleryV2.astro";
 
 const graphics = [
   "/images/kepek/grafika03.jpg",
@@ -34,7 +34,7 @@ const graphics = [
       </div>
 
       <!-- Image Gallery -->
-      <ImageGalleryV2
+      <ImageGallery
         images={graphics}
         title="Grafika"
       />

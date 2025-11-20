@@ -1,6 +1,7 @@
 ---
+import Header from "../components/v2/Header.astro";
+import Footer from "../components/v2/Footer.astro";
 import "../styles/global.css";
-import { Menu, Mail, Phone, Copyright } from "@lucide/astro";
 
 export interface Props {
   title?: string;
@@ -17,6 +18,7 @@ const {
 <html
   lang="hu"
   data-theme="light"
+  class="bg-base-200"
 >
   <head>
     <meta charset="UTF-8" />
@@ -43,117 +45,13 @@ const {
     />
     <title>{title}</title>
   </head>
-  <body class="bg-gray-50 min-h-screen">
-    <!-- Header -->
-    <header class="bg-white shadow-sm border-b border-gray-200 h-16">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
-        <div class="flex justify-between items-center h-16">
-          <!-- Logo -->
-          <div class="flex items-center">
-            <a
-              href="/v2/"
-              class="text-2xl font-bold text-gray-900 hover:text-gray-700 transition-colors"
-            >
-              Szarvas Pongrác
-            </a>
-          </div>
-
-          <!-- Desktop Navigation -->
-          <nav class="hidden md:flex space-x-8">
-            <a
-              href="/v2/eletrajz"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Életrajz
-            </a>
-            <a
-              href="/v2/kepzomuveszet"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Képzőművészet
-            </a>
-            <a
-              href="/v2/kapcsolat"
-              class="text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors"
-            >
-              Kapcsolat
-            </a>
-          </nav>
-
-          <!-- Mobile menu button -->
-          <div class="md:hidden">
-            <div class="dropdown dropdown-end">
-              <div
-                tabindex="0"
-                role="button"
-                class="btn btn-ghost btn-circle"
-              >
-                <Menu class="w-6 h-6" />
-              </div>
-              <ul
-                tabindex="0"
-                class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52"
-              >
-                <li><a href="/v2/eletrajz">Életrajz</a></li>
-                <li><a href="/v2/kepzomuveszet">Képzőművészet</a></li>
-                <li><a href="/v2/kapcsolat">Kapcsolat</a></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </header>
-
-    <!-- Main Content -->
-    <main
-      class="flex-1 min-h-[calc(100vh-12rem)] sm:min-h-[calc(100vh-10rem)] md:min-h-[calc(100vh-8rem)]"
-    >
-      <slot />
-    </main>
-
-    <!-- Footer -->
-    <footer
-      class="bg-white border-t border-gray-200 h-32 sm:h-24 md:h-16 text-gray-600 text-sm"
-    >
-      <div
-        class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center justify-center md:flex-row md:justify-between gap-1 h-full"
-      >
-        <div class="flex items-center justify-center gap-1 flex-wrap">
-          <Copyright class="w-4 h-4" />
-          <span data-copyright-year>2025</span>
-          <span>Szarvas Pongrác - Minden jog fenntartva.</span>
-        </div>
-        <div class="flex flex-col items-center gap-1 sm:gap-4 sm:flex-row">
-          <a
-            href="mailto:szarvas.pongrac@gmail.com"
-            class="flex items-center hover:text-gray-900 hover:link text-sm transition-colors gap-1"
-          >
-            <Mail class="w-4 h-4" />
-            szarvas.pongrac@gmail.com
-          </a>
-          <a
-            href="tel:+36204976222"
-            class="flex items-center hover:text-gray-900 hover:link text-sm transition-colors gap-1"
-          >
-            <Phone class="w-4 h-4" />
-            +36204976222
-          </a>
-        </div>
-      </div>
-    </footer>
+  <body class="bg-base-200 min-h-screen relative">
+    <Header />
+    <div class="flex flex-col min-h-[calc(100vh-4rem)] justify-between">
+      <main class="flex-1">
+        <slot />
+      </main>
+      <Footer />
+    </div>
   </body>
 </html>
-
-<script>
-  // Dynamic copyright year
-  const currentYear = new Date().getFullYear();
-  const yearElement = document.querySelector("[data-copyright-year]");
-
-  if (yearElement) {
-    if (currentYear === 2025) {
-      yearElement.textContent = "2025";
-    } else {
-      yearElement.textContent = `2025-${currentYear}`;
-    }
-  }
-</script>

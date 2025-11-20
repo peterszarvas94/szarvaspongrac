@@ -1,6 +1,6 @@
 ---
 import V2Layout from "../../layouts/V2Layout.astro";
-import NavigationCard from "../../components/NavigationCard.astro";
+import NavigationCard from "../../components/v2/NavigationCard.astro";
 import { BookUser, Palette, Mail } from "@lucide/astro";
 ---
 
@@ -14,47 +14,47 @@ import { BookUser, Palette, Mail } from "@lucide/astro";
     style="background-image: url('/images/szarvasok.jpg');"
   >
     <!-- Dark overlay for text readability -->
-    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="absolute inset-0 bg-neutral/40"></div>
 
     <!-- Hero Content -->
     <div
       class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto"
     >
-      <h1 class="text-4xl md:text-6xl font-bold text-white mb-6">
+      <h1 class="text-4xl md:text-6xl font-bold text-base-100 mb-6">
         Szarvas Pongrác
       </h1>
-      <p class="text-xl md:text-2xl text-white/90 mb-8">
+      <p class="text-xl md:text-2xl text-base-100/90 mb-8">
         Grafikus • Festő • Illusztrátor
       </p>
-      <p class="text-lg text-white/80 max-w-2xl mx-auto">
+      <p class="text-lg text-base-100/80 max-w-2xl mx-auto">
         Természet és vadászat témájú alkotások
       </p>
     </div>
   </section>
 
   <!-- Navigation Cards -->
-  <section class="py-8 bg-gray-50">
+  <section class="py-8 bg-base-200">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col items-center sm:flex-row justify-center gap-4">
+      <div class="grid mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
         <NavigationCard
           href="/v2/eletrajz"
           title="Életrajz"
           icon={BookUser}
-          hoverColor="blue"
+          hoverColor="primary"
         />
 
         <NavigationCard
           href="/v2/kepzomuveszet"
           title="Képzőművészet"
           icon={Palette}
-          hoverColor="green"
+          hoverColor="secondary"
         />
 
         <NavigationCard
           href="/v2/kapcsolat"
           title="Kapcsolat"
           icon={Mail}
-          hoverColor="orange"
+          hoverColor="accent"
         />
       </div>
     </div>

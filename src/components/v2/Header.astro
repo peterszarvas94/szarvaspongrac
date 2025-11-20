@@ -1,0 +1,71 @@
+---
+import { Menu } from "@lucide/astro";
+
+interface MenuItem {
+  href: string;
+  label: string;
+}
+
+const menuItems: MenuItem[] = [
+  { href: "/v2/eletrajz", label: "Életrajz" },
+  { href: "/v2/kepzomuveszet", label: "Képzőművészet" },
+  { href: "/v2/kapcsolat", label: "Kapcsolat" },
+];
+---
+
+<header
+  class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16"
+>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a
+          href="/v2/"
+          class="text-2xl font-bold text-base-content hover:text-primary transition-colors"
+        >
+          Szarvas Pongrác
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-8">
+        {
+          menuItems.map((item) => (
+            <a
+              href={item.href}
+              class="text-base-content/70 hover:text-primary px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              {item.label}
+            </a>
+          ))
+        }
+      </nav>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <div class="dropdown dropdown-end">
+          <div
+            tabindex="0"
+            role="button"
+            class="btn btn-ghost btn-circle"
+          >
+            <Menu class="size-6" />
+          </div>
+          <ul
+            tabindex="0"
+            class="menu menu-sm dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
+          >
+            {
+              menuItems.map((item) => (
+                <li>
+                  <a href={item.href}>{item.label}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
