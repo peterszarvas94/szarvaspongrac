@@ -10,6 +10,17 @@ export default defineConfig({
   build: {
     assets: "assets",
   },
+  image: {
+    // Enable image optimization and caching
+    service: {
+      entrypoint: "astro/assets/services/sharp",
+      config: {
+        // Enable efficient image formats
+        formats: ["webp", "avif"],
+        quality: 85,
+      },
+    },
+  },
   compressHTML: false,
   vite: {
     build: {

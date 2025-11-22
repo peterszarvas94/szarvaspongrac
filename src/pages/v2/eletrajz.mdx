@@ -5,15 +5,19 @@ description: "Szarvas Pongrác életrajza és művészeti pályafutása"
 ---
 
 import PageTitle from "../../components/v2/PageTitle.astro";
+import { Image } from "astro:assets";
+import profilImage from "../../assets/profil.jpg";
 
 <PageTitle title="Életrajz" />
 
 <figure>
-  <img
-    src="/images/profil.jpg"
+  <Image
+    src={profilImage}
     alt="Szarvas Pongrác portréja"
+    width={150}
+    height={200}
   />
-  <figcaption>Szarvas Pongrác</figcaption>
+  <figcaption>Szarvas Pongrác grafikus, illusztrátor, festő</figcaption>
 </figure>
 
 ## Grafikus, illusztrátor, festő
