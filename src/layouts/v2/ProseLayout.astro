@@ -13,6 +13,7 @@ const { title, description } = Astro.props;
 <BaseLayout
   title={title}
   description={description}
+  mainClass="py-4"
 >
   <!-- Prose Content -->
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -51,6 +52,7 @@ const { title, description } = Astro.props;
     font-size: 1.125rem;
     line-height: 1.75;
     margin-bottom: 1.5rem;
+    text-align: justify;
   }
 
   .prose .no-margin p {
@@ -64,6 +66,22 @@ const { title, description } = Astro.props;
     border-radius: 0.5rem;
     margin: 0 auto;
     display: block;
+  }
+
+  .prose figure {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .prose figure img {
+    margin-bottom: 0.75rem;
+  }
+
+  .prose figcaption {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 0.5rem;
   }
 
   .prose ul {

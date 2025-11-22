@@ -19,7 +19,10 @@ const {
 } = Astro.props;
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout
+  title={title}
+  description={description}
+>
   <!-- Hero Section -->
   <section
     class="relative min-h-[70vh] bg-cover bg-center bg-no-repeat flex items-center justify-center before:absolute before:inset-0 before:bg-black/40 before:pointer-events-none"
@@ -45,3 +48,4 @@ const {
 
   <Footer slot="footer" />
 </BaseLayout>
+
