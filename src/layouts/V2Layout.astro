@@ -1,5 +1,4 @@
 ---
-import { ViewTransitions } from "astro:transitions";
 import Header from "../components/v2/Header.astro";
 import Footer from "../components/v2/Footer.astro";
 import "../styles/global.css";
@@ -45,10 +44,9 @@ const {
       href="/favicon.ico"
     />
     <title>{title}</title>
-    <ViewTransitions />
-    
+
     <!-- Speculation Rules for improved performance -->
-    <script type="speculationrules">
+    <script type="speculationrules" is:raw is:inline>
       {
         "prerender": [
           {
@@ -65,7 +63,7 @@ const {
       }
     </script>
   </head>
-  <body class="bg-base-200 min-h-screen relative">
+  <body class="bg-base-200 min-h-screen relative font-inter">
     <Header />
     <div class="flex flex-col min-h-[calc(100vh-4rem)] justify-between">
       <main class="flex-1">

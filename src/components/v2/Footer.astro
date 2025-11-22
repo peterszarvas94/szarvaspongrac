@@ -1,5 +1,6 @@
 ---
 import { Copyright, Mail, Phone } from "@lucide/astro";
+import FooterLink from "./FooterLink.astro";
 ---
 
 <footer
@@ -14,20 +15,16 @@ import { Copyright, Mail, Phone } from "@lucide/astro";
       <span>Szarvas Pongrác</span>
     </div>
     <div class="flex flex-col items-center gap-1 sm:gap-4 sm:flex-row">
-      <a
-        href="mailto:szarvas.pongrac@gmail.com"
-        class="flex items-center hover:link hover:text-base-content text-sm transition-colors gap-1"
-      >
-        <Mail class="size-4" />
-        szarvas.pongrac@gmail.com
-      </a>
-      <a
-        href="tel:+36204976222"
-        class="flex items-center hover:link hover:text-base-content text-sm transition-colors gap-1"
-      >
-        <Phone class="size-4" />
-        +36204976222
-      </a>
+      <FooterLink
+        href="mailto:sz.pongrac@gmail.com"
+        icon={Mail}
+        text="sz.pongrac@gmail.com"
+      />
+      <FooterLink
+        href="tel:+36308192282"
+        icon={Phone}
+        text="+36 30 819 2282"
+      />
     </div>
   </div>
 </footer>
