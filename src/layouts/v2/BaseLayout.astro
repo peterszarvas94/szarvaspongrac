@@ -1,7 +1,6 @@
 ---
-import Header from "../components/v2/Header.astro";
-import Footer from "../components/v2/Footer.astro";
-import "../styles/global.css";
+import Header from "../../components/v2/Header.astro";
+import "../../styles/global.css";
 
 export interface Props {
   title?: string;
@@ -66,10 +65,11 @@ const {
   <body class="bg-base-200 min-h-screen relative font-inter">
     <Header />
     <div class="flex flex-col min-h-[calc(100vh-4rem)] justify-between">
-      <main class="flex-1">
+      <main class="flex-1 py-4">
         <slot />
       </main>
       <slot name="footer" />
     </div>
   </body>
 </html>
+

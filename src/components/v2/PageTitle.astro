@@ -1,0 +1,13 @@
+---
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!-- Page Title Section -->
+<h1 class="text-center text-4xl md:text-5xl font-bold pt-4 pb-10">
+  {title}
+</h1>
+

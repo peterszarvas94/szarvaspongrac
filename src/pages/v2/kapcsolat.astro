@@ -1,23 +1,16 @@
 ---
 import ContactFooter from "../../components/v2/ContactFooter.astro";
 import ContactLink from "../../components/v2/ContactLink.astro";
-import V2Layout from "../../layouts/V2Layout.astro";
-import { Mail, Phone, Code } from "@lucide/astro";
+import PageLayout from "../../layouts/v2/PageLayout.astro";
+import { Mail, Phone } from "@lucide/astro";
 ---
 
-<V2Layout
+<PageLayout
   title="Kapcsolat - Szarvas Pongrác"
   description="Vegye fel a kapcsolatot Szarvas Pongrác grafikus, festő, illusztrátor művésszel"
+  pageTitle="Kapcsolat"
 >
-  <section class="py-8 bg-base-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12 font-sa">
-        <h1 class="text-4xl md:text-5xl font-bold text-base-content mb-4">
-          Kapcsolat
-        </h1>
-      </div>
-
-      <div class="card mx-auto w-96 bg-base-100 shadow-xl">
+    <div class="card mx-auto w-96 bg-base-100 shadow-xl">
         <div class="card-body flex flex-col gap-6">
           <ContactLink
             href="mailto:sz.pongrac@gmail.com"
@@ -33,8 +26,7 @@ import { Mail, Phone, Code } from "@lucide/astro";
           />
         </div>
       </div>
-    </div>
-  </section>
+  </div>
 
   <ContactFooter slot="footer" />
-</V2Layout>
+</PageLayout>

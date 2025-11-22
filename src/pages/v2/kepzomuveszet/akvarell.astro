@@ -1,7 +1,5 @@
 ---
-import V2Layout from "../../../layouts/V2Layout.astro";
-import ImageGallery from "../../../components/v2/ImageGallery.astro";
-import Footer from "../../../components/v2/Footer.astro";
+import GalleryLayout from "../../../layouts/v2/GalleryLayout.astro";
 
 const watercolors = [
   "/images/kepek/akva01.jpg",
@@ -18,48 +16,10 @@ const watercolors = [
 ];
 ---
 
-<V2Layout
+<GalleryLayout
   title="Akvarellek - Szarvas Pongrác"
   description="Szarvas Pongrác akvarelljeinek gyűjteménye"
->
-  <section class="py-8">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="text-center mb-12">
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-          Akvarellek
-        </h1>
-      </div>
-
-      <!-- Image Gallery -->
-      <ImageGallery
-        images={watercolors}
-        title="Akvarell"
-      />
-
-      <!-- Back Navigation -->
-      <div class="mt-12 text-center">
-        <a
-          href="/v2/kepzomuveszet"
-          class="inline-flex items-center px-6 py-3 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200"
-        >
-          <svg
-            class="w-5 h-5 mr-2"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M10 19l-7-7m0 0l7-7m-7 7h18"
-            ></path>
-          </svg>
-          Vissza a Képzőművészethez
-        </a>
-      </div>
-    </div>
-  </section>
-
-  <Footer slot="footer" />
-</V2Layout>
+  pageTitle="Akvarellek"
+  images={watercolors}
+  galleryTitle="Akvarell"
+/>
