@@ -2,6 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import Header from "../../components/v2/Header.astro";
 import "../../styles/global.css";
+import importmap from "../../../public/importmap.json";
 
 export interface Props {
   title?: string;
@@ -46,6 +47,17 @@ const {
       href="/favicon.ico"
     />
     <title>{title}</title>
+
+    <script
+      is:inline
+      type="importmap"
+      set:html={JSON.stringify(importmap, null, 2)}
+    />
+    <script
+      is:inline
+      type="module"
+      src="/js/main.js"
+    ></script>
 
     <!-- view transitions -->
     <ClientRouter />

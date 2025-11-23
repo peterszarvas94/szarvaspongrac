@@ -1,5 +1,22 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
   "extends": "astro/tsconfigs/strict",
-  "include": [".astro/types.d.ts", "**/*"],
-  "exclude": ["dist"]
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "pocketbase": [
+        "./public/js/pkg/pocketbase@0.26.3.js"
+      ],
+      "pb-utils": [
+        "./public/js/pocketbase-utils.js"
+      ]
+    }
+  },
+  "include": [
+    ".astro/types.d.ts",
+    "**/*"
+  ],
+  "exclude": [
+    "dist"
+  ]
 }
