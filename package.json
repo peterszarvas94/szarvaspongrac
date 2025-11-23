@@ -8,7 +8,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "pocketbase:dev": "./bin/pocketbase_mac_arm64 serve --dev --dir=./pb_data_dev",
+    "pocketbase:prod": "./bin/pocketbase_linux_amd64 serve"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
