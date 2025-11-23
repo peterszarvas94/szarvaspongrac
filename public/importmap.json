@@ -1,6 +1,6 @@
 {
   "imports": {
     "pocketbase": "/js/pkg/pocketbase@0.26.3.js",
-    "pb-utils": "/js/pocketbase-utils.js"
+    "content-manager": "/js/content-manager.js"
   }
 }

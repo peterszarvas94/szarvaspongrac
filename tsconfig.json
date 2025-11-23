@@ -7,8 +7,8 @@
       "pocketbase": [
         "./public/js/pkg/pocketbase@0.26.3.js"
       ],
-      "pb-utils": [
-        "./public/js/pocketbase-utils.js"
+      "content-manager": [
+        "./public/js/content-manager.js"
       ]
     }
   },

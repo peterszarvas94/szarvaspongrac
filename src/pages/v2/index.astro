@@ -8,26 +8,32 @@ import { BookUser, Palette, Mail } from "@lucide/astro";
   title="Szarvas Pongrác - Grafikus, Festő, Illusztrátor"
   description="Szarvas Pongrác grafikus, festő, illusztrátor honlapja - Modern verzió"
 >
+  <h1
+    data-content="home.title"
+    class="text-4xl font-bold text-center mb-4"
+  >
+    Szarvas Pongrác - Grafikus, Festő, Illusztrátor
+  </h1>
   <div class="flex gap-4 flex-col sm:flex-row items-center justify-center">
-        <NavigationCard
-          href="/v2/eletrajz"
-          title="Életrajz"
-          icon={BookUser}
-          hoverColor="primary"
-        />
+    <NavigationCard
+      href="/v2/eletrajz"
+      title="Életrajz"
+      icon={BookUser}
+      hoverColor="primary"
+    />
 
-        <NavigationCard
-          href="/v2/kepzomuveszet"
-          title="Képzőművészet"
-          icon={Palette}
-          hoverColor="secondary"
-        />
+    <NavigationCard
+      href="/v2/kepzomuveszet"
+      title="Képzőművészet"
+      icon={Palette}
+      hoverColor="secondary"
+    />
 
-        <NavigationCard
-          href="/v2/kapcsolat"
-          title="Kapcsolat"
-          icon={Mail}
-          hoverColor="accent"
-        />
+    <NavigationCard
+      href="/v2/kapcsolat"
+      title="Kapcsolat"
+      icon={Mail}
+      hoverColor="accent"
+    />
   </div>
 </HomeLayout>

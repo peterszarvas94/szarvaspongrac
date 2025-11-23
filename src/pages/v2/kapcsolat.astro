@@ -10,23 +10,22 @@ import { Mail, Phone } from "@lucide/astro";
   description="Vegye fel a kapcsolatot Szarvas Pongrác grafikus, festő, illusztrátor művésszel"
   pageTitle="Kapcsolat"
 >
-    <div class="card mx-auto w-96 bg-base-100 shadow-xl">
-        <div class="card-body flex flex-col gap-6">
-          <ContactLink
-            href="mailto:sz.pongrac@gmail.com"
-            title="Email"
-            text="sz.pongrac@gmail.com"
-            icon={Mail}
-          />
-          <ContactLink
-            href="tel:+36301234567"
-            title="Telefon"
-            text="+36 30 819 2282"
-            icon={Phone}
-          />
-        </div>
-      </div>
+  <div class="card mx-auto w-96 bg-base-100 shadow-xl">
+    <div class="card-body flex flex-col gap-6">
+      <ContactLink
+        href="mailto:sz.pongrac@gmail.com"
+        title="Email"
+        text="sz.pongrac@gmail.com"
+        icon={Mail}
+      />
+      <ContactLink
+        href="tel:+36301234567"
+        title="Telefon"
+        text="+36 30 819 2282"
+        icon={Phone}
+      />
+    </div>
   </div>
-
-  <ContactFooter slot="footer" />
 </PageLayout>
+
+<ContactFooter slot="footer" />

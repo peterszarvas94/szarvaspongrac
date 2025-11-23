@@ -1,6 +1,18 @@
-import PocketBase from "pocketbase";
+import { updateElement } from "content-manager";
 
-const pb = new PocketBase("http://127.0.0.1:8090");
+async function main() {
+  const elements = document.querySelectorAll("[data-content]");
 
-console.log("PocketBase POC ready!");
-console.log(pb.authStore.isValid);
+  for (const element of elements) {
+    const key = element.getAttribute("data-content");
+    if (key) {
+      await updateElement(`[data-content="${key}"]`, key);
+    }
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", main);
+} else {
+  main();
+}
