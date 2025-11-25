@@ -20,4 +20,4 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-pb_data/
+pb_data_prod/

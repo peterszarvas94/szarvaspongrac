@@ -1,17 +1,18 @@
 ---
 export interface Props {
-  href: string;
-  text: string;
+  dataLink?: string;
   icon: any;
+  href?: string;
 }
 
-const { href, text, icon: Icon } = Astro.props;
+const { dataLink, icon: Icon, href } = Astro.props;
 ---
 
 <a
-  href={href}
+  href={href ?? ""}
   class="flex items-center hover:link hover:text-base-content text-sm transition-colors gap-1"
+  data-link={dataLink}
 >
   <Icon class="size-4" />
-  {text}
+  <span></span>
 </a>

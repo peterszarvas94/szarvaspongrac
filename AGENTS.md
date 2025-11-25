@@ -45,5 +45,6 @@
 - ALWAYS plan tasks first using TodoWrite
 - ALWAYS build for static files (`npm run build`)
 - Problem solving order: 1. HTML 2. CSS (TailwindCSS + DaisyUI) 3. TypeScript
+- only do what the user asked, no more, no less
 
 No test framework configured - this is a portfolio/gallery site.
