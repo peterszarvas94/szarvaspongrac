@@ -46,45 +46,25 @@ const menuItems: MenuItem[] = [
 
       <!-- Mobile menu button -->
       <div class="md:hidden">
-        <div class="dropdown dropdown-end">
-          <div
-            tabindex="0"
-            role="button"
-            class="btn btn-ghost btn-circle"
-          >
-            <Menu class="size-6" />
-          </div>
-          <ul
-            tabindex="0"
-            class="menu menu-lg dropdown-content mt-3 z-1 p-2 shadow bg-base-100 rounded-box w-52"
-          >
-            {
-              menuItems.map((item) => (
-                <li>
-                  <a href={item.href}>{item.label}</a>
-                </li>
-              ))
-            }
-          </ul>
-        </div>
+        <input type="checkbox" id="mobile-menu-toggle" class="hidden peer" />
+        <label
+          for="mobile-menu-toggle"
+          class="btn btn-ghost btn-circle peer-checked:btn-active"
+        >
+          <Menu class="size-6" />
+        </label>
+        <ul
+          class="absolute top-16 right-4 menu menu-lg bg-base-100 rounded-box shadow-lg p-2 w-52 hidden peer-checked:block z-10"
+        >
+          {
+            menuItems.map((item) => (
+              <li>
+                <a href={item.href} class="block px-4 py-2 hover:bg-base-200 rounded">{item.label}</a>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </div>
 </header>
-
-<!-- Auth Status -->
-<div
-  id="auth-status"
-  class="bg-base-100 shadow-sm border-b border-base-300 h-16"
->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
-    <div class="flex justify-center gap-4 items-center h-16">
-      <span class="text-sm"></span>
-      <button
-        id="logout-btn"
-        class="btn btn-sm btn-outline"
-        >Kijelentkezés</button
-      >
-    </div>
-  </div>
-</div>

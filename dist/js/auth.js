@@ -72,59 +72,32 @@ export { login, logout, isAuthenticated, getCurrentUser };
  * Initializes the auth UI for the login form
  */
 export function initAuthUI() {
-  console.log("initAuthUI called");
+  /** @type {HTMLFormElement} */
+  const form = document.getElementById("login-form");
+  if (!form) return;
 
-  const form = /** @type {HTMLFormElement} */ (
-    document.getElementById("login-form")
-  );
-  const emailInput = /** @type {HTMLInputElement} */ (
-    document.getElementById("email")
-  );
-  const passwordInput = /** @type {HTMLInputElement} */ (
-    document.getElementById("password")
-  );
-  const messageDiv = /** @type {HTMLElement} */ (
-    document.getElementById("message")
-  );
+  /** @type {HTMLFormElement} */
+  const emailInput = form.querySelector("#email");
 
-  console.log(
-    "form:",
-    form,
-    "emailInput:",
-    emailInput,
-    "passwordInput:",
-    passwordInput,
-    "messageDiv:",
-    messageDiv,
-  );
+  /** @type {HTMLInputElement} */
+  const passwordInput = form.querySelector("#password");
 
-  // Check if already logged in
-  console.log("isAuthenticated:", isAuthenticated());
-  if (isAuthenticated()) {
-    const user = getCurrentUser();
-    console.log("already logged in, user:", user);
-    messageDiv.textContent = `Üdvözöljük, ${user?.email}!`;
-    messageDiv.className = "mt-4 text-center text-success";
-    form.style.display = "none";
+  /** @type {HTMLElement} */
+  const messageDiv = form.querySelector("#message");
+
+  if (document.getElementById("login-section")) {
+    updateAdminUI();
   }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = emailInput.value;
     const password = passwordInput.value;
-    console.log("login attempt:", email);
 
     try {
-      const authData = await login(email, password);
-      console.log("Login successful:", authData);
-      messageDiv.textContent = "Sikeres bejelentkezés!";
-      messageDiv.className = "mt-4 text-center text-success";
-      // Redirect to home
-      setTimeout(() => {
-        window.location.href = "/v2";
-      }, 1000);
+      await login(email, password);
+      setTimeout(() => updateAdminUI(), 100);
     } catch (error) {
-      console.log("login error:", error);
       messageDiv.textContent = "Hibás email vagy jelszó.";
       messageDiv.className = "mt-4 text-center text-error";
     }
@@ -132,57 +105,44 @@ export function initAuthUI() {
 }
 
 /**
- * Initializes the header auth status
+ * Updates the admin page UI based on authentication status
  */
-export function initHeaderAuth() {
-  console.log("initHeaderAuth called");
+function updateAdminUI() {
+  const loginSection = document.getElementById("login-section");
+  const userSection = document.getElementById("user-section");
+  const userEmail = document.getElementById("user-email");
+  const logoutBtn = document.getElementById("logout-btn");
 
-  function updateAuthStatus() {
-    console.log("updateAuthStatus called, isAuthenticated:", isAuthenticated());
-    const authStatusDiv = document.getElementById("auth-status");
-    console.log("authStatusDiv:", authStatusDiv);
-    if (!authStatusDiv) return;
+  if (!loginSection || !userSection) return;
 
-    const textSpan = authStatusDiv.querySelector("span");
-    const btn = authStatusDiv.querySelector("button");
-    console.log("textSpan:", textSpan, "btn:", btn);
+  if (isAuthenticated()) {
+    const user = getCurrentUser();
 
-    if (isAuthenticated()) {
-      const user = getCurrentUser();
-      console.log("user:", user);
-      authStatusDiv.classList.remove("hidden");
-      textSpan.innerText = `Üdv, ${user?.email || "Felhasználó"}`;
+    loginSection.classList.add("hidden");
+    userSection.classList.remove("hidden");
 
-      btn.addEventListener("click", async () => {
-        await logout();
-        updateAuthStatus();
-        window.location.reload();
-      });
-    } else {
-      authStatusDiv.classList.add("hidden");
+    if (userEmail) userEmail.textContent = user.email;
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener(
+        "click",
+        async () => {
+          await logout();
+
+          setTimeout(() => updateAdminUI(), 100);
+        },
+        { once: true },
+      );
     }
-  }
-
-  // Update on load
-  updateAuthStatus();
-}
-
-function initAuth() {
-  // Init header auth if div exists
-  const authStatusDiv = document.getElementById("auth-status");
-  if (authStatusDiv) {
-    initHeaderAuth();
-  }
-
-  // Init auth UI if form exists
-  const form = document.getElementById("login-form");
-  if (form) {
-    initAuthUI();
+  } else {
+    loginSection.classList.remove("hidden");
+    userSection.classList.add("hidden");
   }
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", initAuth);
-} else {
-  initAuth();
+export async function init() {
+  document.addEventListener("astro:page-load", updateAdminUI);
+
+  initAuthUI();
+  updateAdminUI();
 }

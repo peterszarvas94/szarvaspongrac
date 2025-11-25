@@ -51,11 +51,7 @@ async function updateElement(element, key) {
   }
 }
 
-/**
- * Initializes the content manager by finding and updating all elements with data-content attributes
- * @returns {Promise<void>}
- */
-async function init() {
+async function initContentManager() {
   /** @type {NodeListOf<HTMLElement>} */
   const elements = document.querySelectorAll("[data-content]");
 
@@ -67,8 +63,7 @@ async function init() {
   }
 }
 
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
+export async function init() {
+  document.addEventListener("astro:page-load", initContentManager);
+  await initContentManager();
 }

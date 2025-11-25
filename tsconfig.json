@@ -10,8 +10,11 @@
       "content-manager": [
         "./public/js/content-manager.js"
       ],
-      "header-auth": [
-        "./public/js/header-auth.js"
+      "auth": [
+        "./public/js/auth.js"
+      ],
+      "env": [
+        "./public/js/env.js"
       ]
     }
   },

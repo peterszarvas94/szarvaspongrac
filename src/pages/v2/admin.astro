@@ -1,0 +1,81 @@
+---
+import { Mail, Lock, User, LogOut } from "lucide-astro";
+import PageLayout from "../../layouts/v2/PageLayout.astro";
+---
+
+<PageLayout
+  title="Admin - Szarvas Pongrác"
+  description="Adminisztrációs terület"
+  pageTitle="Admin"
+>
+  <div class="max-w-md mx-auto">
+    <div class="card bg-base-100 shadow-xl">
+      <div class="card-body">
+        <!-- Login Form - Hidden when logged in -->
+        <div id="login-section">
+          <h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
+          <form id="login-form">
+            <div>
+              <div class="flex items-center gap-2 mb-2">
+                <Mail class="w-4 h-4 text-primary" />
+                <label class="label-text font-medium">Email</label>
+              </div>
+              <input
+                type="email"
+                id="email"
+                class="input input-bordered input-primary w-full"
+                placeholder="email@example.com"
+                autocomplete="email"
+                required
+              />
+            </div>
+            <div class="form-control mt-4">
+              <div class="flex items-center gap-2 mb-2">
+                <Lock class="w-4 h-4 text-primary" />
+                <label class="label-text font-medium">Jelszó</label>
+              </div>
+              <input
+                type="password"
+                id="password"
+                class="input input-bordered input-primary w-full"
+                placeholder="••••••••"
+                autocomplete="current-password"
+                required
+              />
+            </div>
+            <div class="form-control mt-8">
+              <button
+                type="submit"
+                class="btn btn-primary btn-block"
+              >
+                Bejelentkezés
+              </button>
+            </div>
+            <div
+              id="message"
+              class="mt-4 text-center"
+            >
+            </div>
+          </form>
+        </div>
+
+        <!-- User Info - Hidden when not logged in -->
+        <div id="user-section" class="hidden">
+          <div class="text-center">
+            <User class="w-16 h-16 mx-auto text-primary mb-4" />
+            <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
+            <p id="user-email" class="text-lg mb-6"></p>
+            <button
+              id="logout-btn"
+              class="btn btn-outline btn-error btn-block"
+            >
+              <LogOut class="w-4 h-4 mr-2" />
+              Kijelentkezés
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</PageLayout>
+

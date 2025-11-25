@@ -1,6 +1,7 @@
 ---
 import { Copyright, Mail, Phone } from "@lucide/astro";
 import FooterLink from "./FooterLink.astro";
+import { Settings } from "lucide-astro";
 ---
 
 <footer
@@ -24,6 +25,11 @@ import FooterLink from "./FooterLink.astro";
         href="tel:+36308192282"
         icon={Phone}
         text="+36 30 819 2282"
+      />
+      <FooterLink
+        href="/v2/admin"
+        icon={Settings}
+        text=""
       />
     </div>
   </div>
