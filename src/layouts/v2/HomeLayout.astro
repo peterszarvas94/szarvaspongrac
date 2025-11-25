@@ -5,18 +5,9 @@ import Footer from "../../components/v2/Footer.astro";
 export interface Props {
   title?: string;
   description?: string;
-  heroImage?: string;
-  heroTitle?: string;
-  heroSubtitle?: string;
 }
 
-const {
-  title,
-  description,
-  heroImage = "/images/szarvasok.jpg",
-  heroTitle = "Szarvas Pongrác",
-  heroSubtitle = "Grafikus • Illusztrátor • Festő",
-} = Astro.props;
+const { title, description } = Astro.props;
 ---
 
 <BaseLayout
@@ -26,15 +17,15 @@ const {
   <!-- Hero Section -->
   <section
     class="relative min-h-[70vh] bg-cover bg-center bg-no-repeat flex items-center justify-center before:absolute before:inset-0 before:bg-black/40 before:pointer-events-none"
-    style={`background-image: url('${heroImage}')`}
+    style={`background-image: url("/images/szarvasok.jpg")`}
   >
     <!-- Hero Content -->
     <div
       class="relative z-10 text-center px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto"
     >
-      <h1 class="text-6xl md:text-7xl text-base-100 mb-6">{heroTitle}</h1>
+      <h1 class="text-7xl text-base-100 mb-6">Szarvas Pongrác</h1>
       <p class="text-lg text-base-100/80 max-w-2xl mx-auto">
-        {heroSubtitle}
+        Grafikus • Illusztrátor • Festő
       </p>
     </div>
   </section>
@@ -48,4 +39,3 @@ const {
 
   <Footer slot="footer" />
 </BaseLayout>
-

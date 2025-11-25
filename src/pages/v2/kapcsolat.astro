@@ -1,11 +1,10 @@
 ---
-import ContactFooter from "../../components/v2/ContactFooter.astro";
 import ContactLink from "../../components/v2/ContactLink.astro";
-import PageLayout from "../../layouts/v2/PageLayout.astro";
+import ContactLayout from "../../layouts/v2/ContactLayout.astro";
 import { Mail, Phone } from "@lucide/astro";
 ---
 
-<PageLayout
+<ContactLayout
   title="Kapcsolat - Szarvas Pongrác"
   description="Vegye fel a kapcsolatot Szarvas Pongrác grafikus, festő, illusztrátor művésszel"
   pageTitle="Kapcsolat"
@@ -26,6 +25,4 @@ import { Mail, Phone } from "@lucide/astro";
       />
     </div>
   </div>
-</PageLayout>
-
-<ContactFooter slot="footer" />
+</ContactLayout>

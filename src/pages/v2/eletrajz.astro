@@ -1,0 +1,18 @@
+---
+import ProseLayout from "../../layouts/v2/ProseLayout.astro";
+import profilImage from "../../assets/profil.jpg";
+---
+
+<ProseLayout
+  title="Életrajz - Szarvas Pongrác"
+  description="Szarvas Pongrác életrajza és művészeti pályafutása"
+  pageTitle="Életrajz"
+  image={{
+    src: profilImage,
+    alt: "Szarvas Pongrác portréja",
+    caption: "Szarvas Pongrác grafikus, illusztrátor, festő",
+  }}
+>
+  <!-- Dynamic content from database -->
+  <div data-content="cv.content">&nbsp;</div>
+</ProseLayout>

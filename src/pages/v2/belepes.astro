@@ -1,0 +1,40 @@
+---
+import PageLayout from "../../layouts/v2/PageLayout.astro";
+---
+
+<PageLayout
+  title="Bejelentkezés - Szarvas Pongrác"
+  description="Bejelentkezés az adminisztrációs területre"
+  pageTitle="Bejelentkezés"
+>
+  <div class="max-w-md mx-auto">
+    <form id="login-form" class="card bg-base-100 shadow-xl p-6">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Email</span>
+        </label>
+        <input
+          type="email"
+          id="email"
+          class="input input-bordered"
+          required
+        />
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Jelszó</span>
+        </label>
+        <input
+          type="password"
+          id="password"
+          class="input input-bordered"
+          required
+        />
+      </div>
+      <div class="form-control mt-6">
+        <button type="submit" class="btn btn-primary">Bejelentkezés</button>
+      </div>
+      <div id="message" class="mt-4 text-center"></div>
+    </form>
+  </div>
+</PageLayout>

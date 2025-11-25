@@ -9,6 +9,9 @@
       ],
       "content-manager": [
         "./public/js/content-manager.js"
+      ],
+      "header-auth": [
+        "./public/js/header-auth.js"
       ]
     }
   },

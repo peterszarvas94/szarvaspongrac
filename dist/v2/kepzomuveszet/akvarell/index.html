@@ -7,7 +7,22 @@
     <meta name="author" content="Szarvas Pongrác">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="pb-url" content="http://127.0.0.1:8090">
     <title>Akvarellek - Szarvas Pongrác</title>
+
+    <!-- Font Preloading -->
+    <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/fonts/Inter-Italic-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin>
+
+    <script type="importmap">{
+  "imports": {
+    "pocketbase": "/js/pkg/pocketbase@0.26.3.js",
+    "content-manager": "/js/content-manager.js",
+    "env": "/js/env.js",
+    "auth": "/js/auth.js"
+  }
+}</script>
+    <script type="module" src="/js/main.js"></script>
 
     <!-- view transitions -->
     
@@ -26,7 +41,7 @@
 		width: 1px;
 		height: 1px;
 	}</style>
-<link rel="stylesheet" href="/assets/akvarell.CmpAeSKK.css"><script type="module" src="/assets/page.CKOtIC0H.js"></script></head>
+<link rel="stylesheet" href="/assets/akvarell.C-eZtBtl.css"><script type="module" src="/assets/page.CKOtIC0H.js"></script></head>
   <body class="bg-base-200 min-h-screen relative font-inter">
     <header class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
@@ -72,6 +87,16 @@
     </div>
   </div>
 </header>
+
+<!-- Auth Status -->
+<div id="auth-status" class="bg-base-100 shadow-sm border-b border-base-300 h-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
+    <div class="flex justify-center gap-4 items-center h-16">
+      <span class="text-sm"></span>
+      <button id="logout-btn" class="btn btn-sm btn-outline">Kijelentkezés</button>
+    </div>
+  </div>
+</div>
     <div class="flex flex-col min-h-[calc(100vh-4rem)] justify-between">
       <main class="flex-1 py-4">
         

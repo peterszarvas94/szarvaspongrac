@@ -2,13 +2,13 @@
 <html lang="hu" data-theme="light" class="bg-base-200">
   <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Szarvas Pongrác életrajza és művészeti pályafutása">
+    <meta name="description" content="Bejelentkezés az adminisztrációs területre">
     <meta name="keywords" content="Szarvas Pongrác, grafikus, festő, illusztrátor, vadászat, természet, Baja">
     <meta name="author" content="Szarvas Pongrác">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta name="pb-url" content="http://127.0.0.1:8090">
-    <title>Életrajz - Szarvas Pongrác</title>
+    <title>Bejelentkezés - Szarvas Pongrác</title>
 
     <!-- Font Preloading -->
     <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin>
@@ -41,74 +41,7 @@
 		width: 1px;
 		height: 1px;
 	}</style>
-<link rel="stylesheet" href="/assets/akvarell.C-eZtBtl.css">
-<style>/* Simple prose styling for clean content */
-  .prose h1 {
-    margin: 0 auto;
-    padding: 1rem 0 2.5rem 0;
-  }
-
-  .prose h2 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 1rem;
-    margin-top: 2rem;
-  }
-
-  .prose h3 {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: #111827;
-    margin-bottom: 0.75rem;
-    margin-top: 1.5rem;
-  }
-
-  .prose p {
-    font-size: 1.125rem;
-    line-height: 1.75;
-    margin-bottom: 1.5rem;
-    text-align: justify;
-  }
-
-  .prose .no-margin p {
-    margin: 0 auto;
-  }
-
-  .prose img {
-    width: 100%;
-    max-width: 16rem;
-    height: auto;
-    border-radius: 0.5rem;
-    margin: 0 auto;
-    display: block;
-  }
-
-  .prose figure {
-    text-align: center;
-    margin: 0 auto;
-  }
-
-  .prose figure img {
-    margin-bottom: 0.75rem;
-  }
-
-  .prose figcaption {
-    font-size: 0.875rem;
-    color: #6b7280;
-    font-style: italic;
-    margin-top: 0.5rem;
-  }
-
-  .prose ul {
-    margin-bottom: 1.5rem;
-    padding-left: 1.5rem;
-  }
-
-  .prose li {
-    margin-bottom: 0.25rem;
-    line-height: 1.6;
-  }</style><script type="module" src="/assets/page.CKOtIC0H.js"></script></head>
+<link rel="stylesheet" href="/assets/akvarell.C-eZtBtl.css"><script type="module" src="/assets/page.CKOtIC0H.js"></script></head>
   <body class="bg-base-200 min-h-screen relative font-inter">
     <header class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
@@ -166,24 +99,35 @@
 </div>
     <div class="flex flex-col min-h-[calc(100vh-4rem)] justify-between">
       <main class="flex-1 py-4">
-        <!-- Page Title Section --><h1 class="text-center text-4xl md:text-5xl font-bold pt-4 pb-10">
-  Életrajz
-</h1><div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <figure class="flex flex-col items-center mb-8">
-          
-<img src="/assets/profil.w7Yc4MSy_Z1fKLTe.webp" alt="Szarvas Pongrác portréja" loading="lazy" decoding="async" fetchpriority="auto" width="528" height="831" class="rounded-md w-full max-w-64 h-auto">
-          <figcaption class="text-base-content/70 italic mt-2">
-            Szarvas Pongrác grafikus, illusztrátor, festő
-          </figcaption>
-        </figure>
+        
+  <!-- Page Title Section --><h1 class="text-center text-4xl md:text-5xl font-bold pt-4 pb-10">
+  Bejelentkezés
+</h1>
 
-    <!-- Prose Content -->
-    <article class="prose prose-lg max-w-none">
-      
   
-  <div data-content="cv.content">&nbsp;</div>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    
+  <div class="max-w-md mx-auto">
+    <form id="login-form" class="card bg-base-100 shadow-xl p-6">
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Email</span>
+        </label>
+        <input type="email" id="email" class="input input-bordered" required>
+      </div>
+      <div class="form-control">
+        <label class="label">
+          <span class="label-text">Jelszó</span>
+        </label>
+        <input type="password" id="password" class="input input-bordered" required>
+      </div>
+      <div class="form-control mt-6">
+        <button type="submit" class="btn btn-primary">Bejelentkezés</button>
+      </div>
+      <div id="message" class="mt-4 text-center"></div>
+    </form>
+  </div>
 
-    </article>
   </div>
 
   

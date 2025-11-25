@@ -1,24 +1,13 @@
----
-layout: "../../layouts/v2/ProseLayout.astro"
-title: "Életrajz - Szarvas Pongrác"
-description: "Szarvas Pongrác életrajza és művészeti pályafutása"
----
+// Script to populate PocketBase with initial content
+import PocketBase from "pocketbase/cjs";
 
-import PageTitle from "../../components/v2/PageTitle.astro";
-import { Image } from "astro:assets";
-import profilImage from "../../assets/profil.jpg";
+const pb = new PocketBase("http://127.0.0.1:8090");
 
-<PageTitle title="Életrajz" />
-
-<figure>
-  <Image
-    src={profilImage}
-    alt="Szarvas Pongrác portréja"
-  />
-  <figcaption>Szarvas Pongrác grafikus, illusztrátor, festő</figcaption>
-</figure>
-
-## Grafikus, illusztrátor, festő
+// Content to add
+const contentData = [
+  {
+    key: "cv.text",
+    value: `## Grafikus, illusztrátor, festő
 
 1961-ben született Baján. A helyi vízügyi szakközépiskola elvégzése után, 1981-84 között a budapesti dekoratőrképző iskolában folytatott tanulmányokat. Képzőművész tanárai Károlyi Ernő, Károlyi Zsigmond, Mester András és Tolvaly Ernő voltak. 1988-ban természetvédelmi őr lett, előbb a Gemenci Állami Erdő- és Vadgazdaság, majd 1991-2006 között a Duna-Dráva Nemzeti Park Igazgatóság alkalmazásában. 2007-től a Gemenc Zrt. ökoturisztikai szakreferense.
 
@@ -36,7 +25,7 @@ Alapítója a Gemenc Zrt. által szervezett képzőművészeti alkotó táborokn
 
 2008-ban Baja Város Önkormányzata idegenforgalmi és természetvédelmi tevékenységéért "Baja Város Fejlesztéséért" kitüntető díjban részesítette.
 
-2016-ben neki ítélte a Vadászati Kulturális Egyesület „Arany Ecset Toll” művészeti nagydíját.
+2016-ban neki ítélte a Vadászati Kulturális Egyesület „Arany Ecset Toll" művészeti nagydíját.
 
 ## Könyvillusztrációk és egyéb kiadványok
 
@@ -73,4 +62,60 @@ Alapítója a Gemenc Zrt. által szervezett képzőművészeti alkotó táborokn
 31. Békés Sándor: Gyolcsfehér nyírfák között (Kódex Kiadó 2016)
 32. Szarvas Pongrác: Gemenc – Ártéri erdő a sárközi Duna-völgyben (Gemenc Zrt. 2022)
 
-valamint a NIMRÓD Vadászújság, Magyar Vadászlap, Természet BÚVÁR -c. lap egyes számai.
+valamint a NIMRÓD Vadászújság, Magyar Vadászlap, Természet BÚVÁR -c. lap egyes számai.`,
+  },
+  {
+    key: "contact.email",
+    value: "sz.pongrac@gmail.com",
+  },
+  {
+    key: "contact.phone",
+    value: "+36 30 819 2282",
+  },
+  {
+    key: "nav.home",
+    value: "Főoldal",
+  },
+  {
+    key: "nav.biography",
+    value: "Életrajz",
+  },
+  {
+    key: "nav.art",
+    value: "Képzőművészet",
+  },
+  {
+    key: "nav.contact",
+    value: "Kapcsolat",
+  },
+  {
+    key: "art.oil",
+    value: "Olajfestmények",
+  },
+  {
+    key: "art.watercolor",
+    value: "Akvarellek",
+  },
+  {
+    key: "art.pastel",
+    value: "Pasztellek",
+  },
+  {
+    key: "art.graphics",
+    value: "Grafikák",
+  },
+];
+
+async function populateContent() {
+  try {
+    for (const item of contentData) {
+      console.log(`Creating content: ${item.key}`);
+      await pb.collection("content").create(item);
+    }
+    console.log("✅ All content populated successfully!");
+  } catch (error) {
+    console.error("❌ Error populating content:", error);
+  }
+}
+
+populateContent();

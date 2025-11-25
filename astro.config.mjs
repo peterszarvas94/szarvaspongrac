@@ -33,5 +33,10 @@ export default defineConfig({
       minify: false,
     },
     plugins: [tailwindcss()],
+    server: {
+      watch: {
+        ignored: ["**/pb_data_dev/**", "**/pb_data/**"],
+      },
+    },
   },
 });

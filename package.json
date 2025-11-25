@@ -9,17 +9,18 @@
     "astro": "astro",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "pocketbase:dev": "./bin/pocketbase_mac_arm64 serve --dev --dir=./pb_data_dev",
-    "pocketbase:prod": "./bin/pocketbase_linux_amd64 serve"
+    "pb:dev:mac": "./bin/pocketbase_mac_arm64 serve --dev --dir=./pb_data_dev",
+    "pb:dev:linux": "./bin/pocketbase_linux_amd64 serve --dev --dir=./pb_data_dev",
+    "pb:prod": "./bin/pocketbase_linux_amd64 serve"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",
     "@lucide/astro": "^0.554.0",
     "@tailwindcss/vite": "^4.1.17",
-    "astro": "^5.15.9",
+    "astro": "^5.16.0",
     "lucide": "^0.554.0",
     "lucide-astro": "^0.554.0",
-    "opencode-ai": "^1.0.80",
+    "opencode-ai": "^1.0.110",
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "^0.14.1",
     "tailwindcss": "^4.1.17"
