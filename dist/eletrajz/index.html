@@ -1,236 +1,210 @@
 <!DOCTYPE html>
-<html lang="hu">
+<html lang="hu" data-theme="light" class="bg-base-200">
   <head>
     <meta charset="UTF-8">
-    <meta name="description" content="Szarvas Pongrác életrajza - grafikus, festő, illusztrátor">
+    <meta name="description" content="Szarvas Pongrác életrajza és művészeti pályafutása">
     <meta name="keywords" content="Szarvas Pongrác, grafikus, festő, illusztrátor, vadászat, természet, Baja">
     <meta name="author" content="Szarvas Pongrác">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="/css/styles.css">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="pb-url" content="http://127.0.0.1:8090">
     <title>Életrajz - Szarvas Pongrác</title>
 
-    <!-- Font Preloading -->
-    <link rel="preload" href="/fonts/Inter-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin>
-    <link rel="preload" href="/fonts/Inter-Italic-VariableFont_opsz,wght.ttf" as="font" type="font/ttf" crossorigin>
-  <style>article[data-astro-cid-kxugomu3].eletrajz{p {text-indent: 0;} ul {list-style: square;} .middle {display: flex; flex-direction: column; align-items: center;}}</style>
-<link rel="stylesheet" href="/assets/akvarell.6SEV4YRD.css">
-<style>header[data-astro-cid-3ef6ksr2]{display:flex;align-items:center;justify-content:space-between;height:6rem;padding:0 1rem 0 1rem;background-image:url(/images/lececske.jpg);@media only screen and (max-width: 450px){flex-direction:column;height:8rem;padding:1rem 1rem;a[href="/"] {align-self: flex-start;}}}.contacts[data-astro-cid-3ef6ksr2]{display:flex;flex-direction:column;align-items:end;@media only screen and (max-width: 450px){align-self:flex-end}}.contact[data-astro-cid-3ef6ksr2]{display:flex;gap:0.3rem}nav[data-astro-cid-pux6a34n]{font-family:Times New Roman,verdana;font-size:1.05rem;color:white;background-color:black;ul {margin: 0; padding: 0; list-style: none;}}nav[data-astro-cid-pux6a34n].desktop{display:flex;@media only screen and (max-width: 450px){display:none}justify-content:space-between;padding:0rem 1rem;height:2rem;img {height: 1.5rem; padding-bottom: 0.3rem;} ul {display: flex; align-items: center; gap: 0.5rem;}}nav[data-astro-cid-pux6a34n].mobile{display:none;@media only screen and (max-width: 450px){display:block}flex-direction:column;padding:0.5rem 0;details {color: #b7b459; summary::-webkit-details-marker {display: none;} summary {cursor: pointer; text-align: center; list-style: none;} &[open] {summary {text-decoration: underline dotted white; text-decoration-thickness: 0.2rem;}}} ul {display: flex; flex-direction: column; align-items: center; gap: 0.3rem; padding-top: 0.5rem;}}footer[data-astro-cid-sz7xmlte]{background-image:url(/images/alja.jpg);font-family:Times New Roman,verdana;font-size:1rem;color:#3b4838;height:3rem;display:flex;justify-content:center;align-items:center}</style><script type="module" src="/assets/page.CKOtIC0H.js"></script></head>
-  <body>
-    <div class="container">
-      
-  <header data-astro-cid-3ef6ksr2>
-  <a href="/" data-astro-cid-3ef6ksr2>
-    <div class="cim" data-astro-cid-3ef6ksr2>Szarvas Pongrác</div>
-    <div class="halovany" data-astro-cid-3ef6ksr2>grafikus, festő, illusztrátor</div>
-  </a>
-  <div class="contacts" data-astro-cid-3ef6ksr2>
-    <div class="contact" data-astro-cid-3ef6ksr2>
-      <span class="megn" data-astro-cid-3ef6ksr2>Cím:</span>
-      <span class="sarok" data-astro-cid-3ef6ksr2> H-6500 Baja, Szüretetlő u. 1.</span>
-    </div>
-    <div class="contact" data-astro-cid-3ef6ksr2>
-      <span class="megn" data-astro-cid-3ef6ksr2>Mobil:</span>
-      <span class="sarok" data-astro-cid-3ef6ksr2> 30-819-2282</span>
-    </div>
-    <div class="contact" data-astro-cid-3ef6ksr2>
-      <span class="megn" data-astro-cid-3ef6ksr2>E-mail:</span>
-      <span class="sarok" data-astro-cid-3ef6ksr2>
-        <a href="mailto:szpongrac@gmail.com" data-astro-cid-3ef6ksr2> szpongrac@gmail.com </a>
-      </span>
+    <script type="importmap">{
+  "imports": {
+    "pocketbase": "/js/pocketbase/pocketbase@0.26.3.es.js",
+    "content-manager": "/js/content-manager.js",
+    "env": "/js/env.js",
+    "auth": "/js/auth.js"
+  }
+}</script>
+    <script type="module" src="/js/main.js"></script>
+
+    <!-- view transitions -->
+    
+<meta name="astro-view-transitions-enabled" content="true">
+<meta name="astro-view-transitions-fallback" content="animate">
+<script type="module" src="/assets/ClientRouter.astro_astro_type_script_index_0_lang.GWhojSCv.js"></script>
+  <link rel="stylesheet" href="/assets/kapcsolat.CRqp62f0.css">
+<style>/* Simple prose styling for clean content */
+  .prose h1 {
+    margin: 0 auto;
+    padding: 1rem 0 2.5rem 0;
+  }
+
+  .prose h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  .prose h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.75rem;
+    margin-top: 1.5rem;
+  }
+
+  .prose p {
+    font-size: 1.125rem;
+    line-height: 1.75;
+    margin-bottom: 1.5rem;
+    text-align: justify;
+  }
+
+  .prose .no-margin p {
+    margin: 0 auto;
+  }
+
+  .prose img {
+    width: 100%;
+    max-width: 16rem;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .prose figure {
+    text-align: center;
+    margin: 0 auto;
+  }
+
+  .prose figure img {
+    margin-bottom: 0.75rem;
+  }
+
+  .prose figcaption {
+    font-size: 0.875rem;
+    color: #6b7280;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .prose ul {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .prose li {
+    margin-bottom: 0.25rem;
+    line-height: 1.6;
+  }</style><script type="module" src="/assets/page.CKOtIC0H.js"></script></head>
+  <body class="bg-base-200 min-h-screen relative font-inter">
+    <header class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex items-center">
+        <a href="/" class="text-2xl font-bold hover:link" title="Kezdőlap" aria-label="Kezdőlap">
+          Szarvas Pongrác
+        </a>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex space-x-8">
+        <a href="/eletrajz" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+              Életrajz
+            </a><a href="/kepzomuveszet" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+              Képzőművészet
+            </a><a href="/kapcsolat" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+              Kapcsolat
+            </a>
+      </nav>
+
+      <!-- Mobile menu button -->
+      <div class="md:hidden">
+        <input type="checkbox" id="mobile-menu-toggle" class="hidden peer">
+        <label for="mobile-menu-toggle" class="btn btn-ghost btn-circle peer-checked:btn-active">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu size-6">
+  <path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path>
+  
+</svg>
+        </label>
+        <ul class="absolute top-16 right-4 menu menu-lg bg-base-100 rounded-box shadow-lg p-2 w-52 hidden peer-checked:block z-10">
+          <li>
+                <a href="/eletrajz" class="block px-4 py-2 hover:bg-base-200 rounded">Életrajz</a>
+              </li><li>
+                <a href="/kepzomuveszet" class="block px-4 py-2 hover:bg-base-200 rounded">Képzőművészet</a>
+              </li><li>
+                <a href="/kapcsolat" class="block px-4 py-2 hover:bg-base-200 rounded">Kapcsolat</a>
+              </li>
+        </ul>
+      </div>
     </div>
   </div>
 </header>
-  <nav class="desktop" data-astro-cid-pux6a34n>
-  <ul data-astro-cid-pux6a34n>
-    
-          <li data-astro-cid-pux6a34n>
-            <a href="/eletrajz/" data-astro-cid-pux6a34n>Életrajz</a>
-          </li>
-          <li data-astro-cid-pux6a34n>
-              <img src="/images/separ.jpg" alt="separator" data-astro-cid-pux6a34n>
-            </li>
-          <li data-astro-cid-pux6a34n>
-            <a href="/kepzomuveszet/" data-astro-cid-pux6a34n>Képzőművészet</a>
-          </li>
-          
-  </ul>
+    <div class="flex flex-col min-h-[calc(100vh-4rem)] justify-between">
+      <main class="flex-1 py-4">
+        <!-- Page Title Section --><h1 class="text-center text-4xl md:text-5xl font-bold pt-4 pb-10">
+  Életrajz
+</h1><div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <figure class="flex flex-col items-center mb-8">
+          <img src="/images/profil.jpg" alt="Szarvas Pongrác portréja" class="rounded-md w-full max-w-64 h-auto">
+          <figcaption class="text-base-content/70 italic mt-2">
+            Szarvas Pongrác grafikus, illusztrátor, festő
+          </figcaption>
+        </figure>
 
-  <ul data-astro-cid-pux6a34n>
-    <li data-astro-cid-pux6a34n>
-      <a href="http://www.forestpress.hu/hu/index.php" target="_blank" data-astro-cid-pux6a34n>
-        Forestpress
-      </a>
-    </li>
-    <li data-astro-cid-pux6a34n>
-      <img src="/images/separ.jpg" alt="separator" data-astro-cid-pux6a34n>
-    </li>
-    <li data-astro-cid-pux6a34n>
-      <a href="http://www.vadaszat.net" target="_blank" data-astro-cid-pux6a34n>Nimród</a>
-    </li>
-  </ul>
-</nav>
+    <!-- Prose Content -->
+    <article class="prose prose-lg max-w-none">
+      
+  
+  <div data-content="cv.cv">&nbsp;</div>
 
-<nav class="mobile" data-astro-cid-pux6a34n>
-  <details data-astro-cid-pux6a34n>
-    <summary data-astro-cid-pux6a34n>Menü</summary>
-    <ul data-astro-cid-pux6a34n>
-      <li data-astro-cid-pux6a34n>
-            <a href="/eletrajz/" data-astro-cid-pux6a34n>Életrajz</a>
-          </li><li data-astro-cid-pux6a34n>
-            <a href="/kepzomuveszet/" data-astro-cid-pux6a34n>Képzőművészet</a>
-          </li>
-      <li data-astro-cid-pux6a34n>
-        <a href="http://www.forestpress.hu/hu/index.php" target="_blank" data-astro-cid-pux6a34n>
-          Forestpress
-        </a>
-      </li>
-      <li data-astro-cid-pux6a34n>
-        <a href="http://www.vadaszat.net" target="_blank" data-astro-cid-pux6a34n>Nimród</a>
-      </li>
-    </ul>
-  </details>
-</nav>
-  <main>
-    
-  <h1 class="lapcim" data-astro-cid-kxugomu3>Életrajz</h1>
+    </article>
+  </div>
 
-  <article class="eletrajz" data-astro-cid-kxugomu3>
-    <div data-astro-cid-kxugomu3>
-      <img src="/images/szarvasp.jpg" style="width: 200px; margin: 0; float: left" alt="Szarvas Pongrác portréja" data-astro-cid-kxugomu3>
+  
 
-      <p class="szoveg" data-astro-cid-kxugomu3>
-        1961-ben született Baján, ma is ott él. Felesége Vancsura Margit, akivel
-        hat gyereket nevelnek. A Gemenci Erdő- és Vadgazdaságnál dolgozik, ahol
-        főként idegenforgalommal foglalkozik, de sok éven át volt
-        természetvédelmi őr is. Szabadidejében alkot, egyaránt érdekli a
-        környező erdők, vizek és a messzi tájak élővilága.
-      </p>
-
-      <h2 class="lapcim" data-astro-cid-kxugomu3>Tanulmányok</h2>
-
-      <p class="szoveg" data-astro-cid-kxugomu3>
-        1981-84 között a budapesti dekoratőrképző iskolában tanult – képzőművész
-        tanárai Károlyi Ernő, Károlyi Zsigmond, Mester András és Tolvaly Ernő
-        voltak. Ekkor ismerkedett meg a vadász körökben ismert Csergezán Pál és
-        Muray Róbert festőművészekkel, Csekő Sándorral, Dr. Zoltán Attilával (a
-        Nimród főszerkesztőivel) és Bányai József muzeológussal, akik
-        biztatására kezdett el állatábrázolással foglalkozni. Első sikereit
-        rajzaival, illusztrációival ekkor könyvelhette el.
-      </p>
-
-      <h2 class="lapcim" data-astro-cid-kxugomu3>Publikációk</h2>
-
-      <p class="szoveg" data-astro-cid-kxugomu3>
-        A Nimród, a Dénes Natúr Műhely és más kiadók felkérésére több mint húsz,
-        jellemzően vadászati szép- és szakirodalmi művet illusztrált. Rendszeres
-        résztvevője, alapítója a Gemenc Zrt. által szervezett alkotó táboroknak.
-        Több csoportos és egyéni kiállításon vett részt, alkotásai főként a
-        természetbarátok, vadászok otthonában lelhetők fel, a közgyűjtemények
-        közül a Magyar Mezőgazdasági Múzeum és a Szilvásvádi Erdészeti Múzeum is
-        őrzi egy-egy képét. Néhány munkája Ausztriába, Belgiumba, Német-,
-        Olasz-, Orosz-, Svéd- és Spanyolországba került.
-      </p>
-
-      <h2 class="lapcim" data-astro-cid-kxugomu3>Elismerések</h2>
-
-      <p class="szoveg" data-astro-cid-kxugomu3>
-        1997-ben az V. Országos Vadászati- Halászati és Természetvédelmi
-        Kiállításon egy képe különdíjat nyert. 2005-ben az I. Országos
-        Vadászfestészeti Pályázat és Kiállításra küldött alkotását oklevéllel
-        jutalmazták. 2008-ban Baja Város önkormányzata idegenforgalmi és
-        természetvédelmi tevékenységéért "Baja Város Fejlesztéséért" kitüntető
-        díjban részesítette.
-      </p>
+      </main>
+      <footer class="bg-base-300 border-t border-base-300 text-base-content/70 text-sm h-24 sm:h-20 md:h-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 md:px-8 flex flex-col items-center justify-center md:flex-row md:justify-between gap-1 h-full">
+    <div class="flex items-center justify-center gap-1 flex-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-copyright size-4">
+  <circle cx="12" cy="12" r="10"></circle><path d="M14.83 14.83a4 4 0 1 1 0-5.66"></path>
+  
+</svg>
+      <span data-copyright-year>2025</span>
+      <span>Szarvas Pongrác</span>
     </div>
-
-    <div class="middle" data-astro-cid-kxugomu3>
-      <h1 class="lapcim" data-astro-cid-kxugomu3>Könyvillusztrációk és egyéb kiadványok</h1>
-
-      <ul class="szoveg" data-astro-cid-kxugomu3>
-        <li data-astro-cid-kxugomu3>
-          Sterbetz István: Házason vadászható madaraink (Nimród Vadászakadémia
-          9.- 2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>Páll Endre: A vaddisznó (Nimród Vadászakadémia 8.- 2001.)</li>
-        <li data-astro-cid-kxugomu3>
-          Dr. Elán Károly: Elsősegély a természetben (Nimród Vadászakadémia 7.-
-          2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Fatalin Gyula: A magyar gímszarvas (Nimród Vadászakadémia 5.- 2000.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Plavecz János: A vadászat gyakorlata (Nimród Vadászakadémia 3.- 2000.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Dr. Kóhalmy Tamás: Korbecslés szarvastól a siketfajdig (Nimród
-          Vadászakadémia 2.- 1999.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Sipos György: Trófeák előkészítése preparáláshoz (Nimród
-          Vadászakadémia 1.-1998.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Földi László: Az orgonák völgyében (Móricz Zs. Színház, Nyíregyháza
-          -1990.)
-        </li>
-        <li data-astro-cid-kxugomu3>Földi László: Vadregény (Dénes Natúr Műhely Kiadó -1997.)</li>
-        <li data-astro-cid-kxugomu3>Fáczányi Ádám: Vadászmagatartás (Nimród Kiadó -1999, 2002.)</li>
-        <li data-astro-cid-kxugomu3>Videcz Ferenc: Holtomiglan (Dénes Natúr Műhely Kiadó -1997.)</li>
-        <li data-astro-cid-kxugomu3>Videcz Ferenc: Verőfény és alkonyat (D.N.M. Kiadó -1998.)</li>
-        <li data-astro-cid-kxugomu3>Videcz Ferenc: Vadász voltam egykoron (D.N.M. Kiadó -1999.)</li>
-        <li data-astro-cid-kxugomu3>Videcz Ferenc: Tanútvények (D.N.M. Kiadó -2001.)</li>
-        <li data-astro-cid-kxugomu3>Videcz Ferenc: Vendégkönyv (D.N.M. Kiadó -2004.)</li>
-        <li data-astro-cid-kxugomu3>Videcz Ferenc: Zsugorított görbetükör (Terraprint Kiadó -2004.)</li>
-        <li data-astro-cid-kxugomu3>Bárórczky Kornél: Gemenctől Gemencig (D.N.M. Kiadó -1999.)</li>
-        <li data-astro-cid-kxugomu3>
-          Vendégváró útikézikönyvek: Látnivalók Magyarországon (Well-Press Kiadó
-          -2000.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Millenniumi Vadászati Almanach: Tolna megye (OMVK Tolna m. szervezete
-          -2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Millenniumi Vadászati Almanach: Komárom - Esztergom megye (D.N.M.
-          Kiadó -2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Millenniumi Vadászati Almanach: Bács-Kiskun megye (Bács - Kk. m.
-          Vadászszövetség -2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Millenniumi Vadászati Almanach: Pest megye (D.N.M. Kiadó -2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Millenniumi Vadászati Almanach: Magyarország (D.N.M. Kiadó -2001.)
-        </li>
-        <li data-astro-cid-kxugomu3>Anti István: A dámszarvas (Nimród Vadászakadémia 10.-2002.)</li>
-        <li data-astro-cid-kxugomu3>Dr. Zoltán János: A vadászat napszámosai (D.N.M. Kiadó -2001.)</li>
-        <li data-astro-cid-kxugomu3>DDNP. Gemenci turista térkép (DDNP. Ig -2001.)</li>
-        <li data-astro-cid-kxugomu3>DDNP. Béda-Karapancsai turista térkép (DDNP. Ig -2001.)</li>
-        <li data-astro-cid-kxugomu3>Duna- Dráva Nemzeti Park turista térkép (Paulus -2002.)</li>
-        <li data-astro-cid-kxugomu3>
-          DDNP. Béda-Karapancsai tájegység és a Kopácsi-rét turistatérképe
-          (Paulus -2004, 2008.)
-        </li>
-        <li data-astro-cid-kxugomu3>
-          NIMRÓD Vadászújság, Magyar Vadászlap, Természet BÚVÁR- c. lap egyes
-          számai
-        </li>
-        <li data-astro-cid-kxugomu3>
-          Fáczányi Ádám, Nimród Vadászújság: Fejet hajtunk (Országos Magyar
-          Vadászkamara 2008.)
-        </li>
-      </ul>
+    <div class="flex flex-col items-center gap-1 sm:gap-4 sm:flex-row">
+      <a href class="flex items-center hover:link hover:text-base-content text-sm transition-colors gap-1" data-link="contact.email">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-mail size-4">
+  <path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect>
+  
+</svg>
+  <span></span>
+</a>
+      <a href class="flex items-center hover:link hover:text-base-content text-sm transition-colors gap-1" data-link="contact.phone">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-phone size-4">
+  <path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path>
+  
+</svg>
+  <span></span>
+</a>
+      <a href="/admin" class="flex items-center hover:link hover:text-base-content text-sm transition-colors gap-1">
+  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-settings size-4">
+  <path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle>
+  
+</svg>
+  <span></span>
+</a>
     </div>
-  </article>
-
-  </main>
-  <footer data-astro-cid-sz7xmlte>
-  <span data-astro-cid-sz7xmlte>© 2024 Szarvas Pongrác. Minden jog fenntartva.</span>
+  </div>
 </footer>
 
+<script type="module">const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
+const yearElement = document.querySelector("[data-copyright-year]");
+if (yearElement) {
+  if (currentYear === 2025) {
+    yearElement.textContent = "2025";
+  } else {
+    yearElement.textContent = `2025-${currentYear}`;
+  }
+}</script>
     </div>
   </body></html>

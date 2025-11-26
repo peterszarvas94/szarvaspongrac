@@ -1,0 +1,33 @@
+---
+import HomeLayout from "../layouts/HomeLayout.astro";
+import NavigationCard from "../components/NavigationCard.astro";
+import { BookUser, Palette, Mail } from "@lucide/astro";
+---
+
+<HomeLayout
+  title="Szarvas Pongrác - Grafikus, Illusztrátor, Festő"
+  description="Szarvas Pongrác grafikus, festő, illusztrátor honlapja"
+>
+  <div class="flex gap-4 flex-col sm:flex-row items-center justify-center">
+    <NavigationCard
+      href="/eletrajz"
+      title="Életrajz"
+      icon={BookUser}
+      hoverColor="primary"
+    />
+
+    <NavigationCard
+      href="/kepzomuveszet"
+      title="Képzőművészet"
+      icon={Palette}
+      hoverColor="secondary"
+    />
+
+    <NavigationCard
+      href="/kapcsolat"
+      title="Kapcsolat"
+      icon={Mail}
+      hoverColor="accent"
+    />
+  </div>
+</HomeLayout>

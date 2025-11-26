@@ -21,7 +21,6 @@
 - Prefer single attribute per line in Astro components
 - CSS: Use nested selectors and CSS-in-JS in `<style>` blocks
 - Images go in `/public/images/` directory
-- NEVER work on v1 pages - only work on `/src/pages/v2/` directory
 - Use TailwindCSS + DaisyUI classes, no custom Hungarian CSS classes
 
 ## Icons

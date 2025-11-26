@@ -63,7 +63,7 @@ export async function updateLinkElementsOnPage() {
     const item = contentsFromDb.find(
       (item) => item.key === element.dataset.link,
     );
-    element.innerHTML = item.text;
+    element.querySelector("span").innerText = item.text;
     element.setAttribute("href", item.url);
   });
 
