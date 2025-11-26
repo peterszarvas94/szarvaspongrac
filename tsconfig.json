@@ -5,7 +5,7 @@
     "baseUrl": ".",
     "paths": {
       "pocketbase": [
-        "public/js/pocketbase/pocketbase@0.26.3.es.d.ts"
+        "./public/js/pocketbase/pocketbase@0.26.3.es.d.ts"
       ],
       "content-manager": [
         "./public/js/content-manager.js"

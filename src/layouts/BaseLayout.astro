@@ -2,7 +2,7 @@
 import { ClientRouter } from "astro:transitions";
 import Header from "../components/Header.astro";
 import "../styles/global.css";
-import importmap from "../../public/importmap.json";
+import importmap from "../../importmap.json";
 
 export interface Props {
   title?: string;
@@ -46,7 +46,10 @@ const {
       type="image/x-icon"
       href="/favicon.ico"
     />
-    <meta name="pb-url" content={import.meta.env.PUBLIC_PB_URL || 'http://127.0.0.1:8090'} />
+    <meta
+      name="pb-url"
+      content={import.meta.env.PUBLIC_PB_URL || "http://127.0.0.1:8090"}
+    />
     <title>{title}</title>
 
     <script
