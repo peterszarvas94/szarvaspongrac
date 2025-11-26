@@ -1,84 +1,78 @@
 import PocketBase from "pocketbase";
 import { PB_URL } from "env";
 
-/** @type {PocketBase | null} */
-let pbInstance = null;
-
-/**
- * Gets or creates a PocketBase instance
- * @returns {PocketBase} The PocketBase instance
- */
-function getPocketBase() {
-  if (!pbInstance) {
-    pbInstance = new PocketBase(PB_URL);
-  }
-  return pbInstance;
+/** @param {string} key */
+function createFilter(key) {
+  return `key="${key}"`;
 }
 
-/**
- * @param {string} collection
- * @param {string} key
- * @returns {any}
- */
-async function getItem(collection, key) {
-  try {
-    const pb = getPocketBase();
-    const item = await pb
-      .collection(collection)
-      .getFirstListItem(`key="${key}"`);
-    return item;
-  } catch (error) {
-    console.warn(`Failed to fetch ${key}:`, error);
-    return null;
-  }
+/** @param {string[]} filters */
+function combineFilters(filters) {
+  return `(${filters.join(")||(")})`;
 }
 
-/**
- * @param {HTMLElement} element
- * @param {string} key
- * @returns
- */
-async function updateContentElement(element, key) {
-  const item = await getItem("content", key);
-  if (item) {
-    element.innerHTML = item.value;
-  } else {
-    // Display the key if no content found, so we know what's missing
-    element.innerHTML = `[${key}]`;
-  }
+export async function updateContentElementsOnPage() {
+  /** @type {NodeListOf<HTMLElement>} */
+  const contentElementsOnPage = document.querySelectorAll(`[data-content]`);
+  const elements = Array.from(contentElementsOnPage);
+  if (!elements.length) return;
+
+  const filters = elements
+    .map((element) => element.dataset.content)
+    .map((key) => createFilter(key));
+
+  const combined = combineFilters(filters);
+
+  const pb = new PocketBase(PB_URL);
+
+  /** @type {{key: string, value: string}[]} */
+  const contentsFromDb = await pb
+    .collection("content")
+    .getFullList({ filter: combined });
+
+  elements.forEach((element) => {
+    const content = contentsFromDb.find(
+      (item) => item.key === element.dataset.content,
+    ).value;
+    element.innerHTML = content;
+  });
+
+  return contentsFromDb;
 }
 
-/**
- * @param {HTMLElement} element
- * @param {string} key
- * @returns
- */
-async function updateLinkElement(element, key) {
-  const item = await getItem("link", key);
-  if (item) {
+export async function updateLinkElementsOnPage() {
+  /** @type {NodeListOf<HTMLElement>} */
+  const contentElementsOnPage = document.querySelectorAll(`[data-link]`);
+  const elements = Array.from(contentElementsOnPage);
+  if (!elements.length) return;
+
+  const filters = elements
+    .map((element) => element.dataset.link)
+    .map((key) => createFilter(key));
+
+  const combined = combineFilters(filters);
+
+  const pb = new PocketBase(PB_URL);
+
+  /** @type {{key: string, text: string, url: string}[]} */
+  const contentsFromDb = await pb
+    .collection("link")
+    .getFullList({ filter: combined });
+
+  elements.forEach((element) => {
+    const item = contentsFromDb.find(
+      (item) => item.key === element.dataset.link,
+    );
+    element.innerHTML = item.text;
     element.setAttribute("href", item.url);
-    const textElement = element.querySelector("span");
-    textElement.innerText = item.text;
-  } else {
-    // Display the key if no content found, so we know what's missing
-    element.innerHTML = `[${key}]`;
-  }
+  });
+
+  return contentsFromDb;
 }
+
 async function initContentManager() {
-  const contentElements = document.querySelectorAll(`[data-content]`);
-  for (const element of contentElements) {
-    await updateContentElement(element, element.dataset.content);
-  }
-
-  const linkElements = document.querySelectorAll(`[data-link]`);
-  for (const element of linkElements) {
-    await updateLinkElement(element, element.dataset.link);
-  }
-
-  // const imageElements = document.querySelectorAll(`[data-image]`);
-  // for (const element of contentElements) {
-  //   await updateImageElement(element, element.dataset.image);
-  // }
+  await updateContentElementsOnPage();
+  await updateLinkElementsOnPage();
 }
 
 export async function init() {

@@ -8,4 +8,10 @@ I want every page to fetch only the data needed
 - kontakt page fetches email and phone as well, so maybe this can be solved together
 - api should be the same
 - each page should include an astro script tag which does this fetching + invoking the replace
-  - figure out a clean way to fo it
+  - figure out a clean way to do it
+
+## DB
+
+- content -> category, name, value (rich text)
+- image -> category, name, file
+- link -> category, name, text, url
