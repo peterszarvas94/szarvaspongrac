@@ -45,7 +45,6 @@ async function updateElementsOnPage(collection, transformer) {
 }
 
 async function updateAll() {
-  console.log("update");
   await updateElementsOnPage("content", (element, item) => {
     element.innerHTML = item.value;
   });
@@ -60,10 +59,7 @@ export async function init() {
   await updateAll();
 
   // dev server page nav
-  document.addEventListener("astro:page-load", () => {
-    console.log("pageload");
-    updateAll();
-  });
+  document.addEventListener("astro:page-load", updateAll);
 }
 
 init();

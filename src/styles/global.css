@@ -4,6 +4,10 @@
   exclude: properties;
 }
 
+@view-transition {
+  navigation: auto;
+}
+
 /* Font Face Declarations */
 @font-face {
   font-family: "Inter";
@@ -32,23 +36,4 @@
 /* Disable body scroll when popover is open */
 body:has([popover]:popover-open) {
   overflow: hidden;
-}
-
-/* Animation keyframes for smooth transitions */
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }

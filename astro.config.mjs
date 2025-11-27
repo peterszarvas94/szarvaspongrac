@@ -19,14 +19,6 @@ export default defineConfig({
       },
     },
   },
-  // speculation rules
-  prefetch: {
-    prefetchAll: true,
-    defaultStrategy: "hover",
-  },
-  experimental: {
-    clientPrerender: true,
-  },
   compressHTML: false,
   vite: {
     build: {
