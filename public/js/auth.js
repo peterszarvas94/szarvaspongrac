@@ -1,47 +1,27 @@
 import PocketBase from "pocketbase";
 import { PB_URL } from "env";
 
-/** @type {PocketBase | null} */
-let pbInstance = null;
-
-/**
- * Gets or creates a PocketBase instance
- * @returns {PocketBase} The PocketBase instance
- */
-function getPocketBase() {
-  if (!pbInstance) {
-    pbInstance = new PocketBase(PB_URL);
-  }
-  return pbInstance;
-}
+const pb = new PocketBase(PB_URL);
 
 /**
  * Logs in a user with email and password
  * @param {string} email - User's email
  * @param {string} password - User's password
  * @returns {Promise<Object>} Auth data including user info
+ * TODO: replace this with normal REST
  */
 async function login(email, password) {
-  const pb = getPocketBase();
   try {
-    const authData = await pb
-      .collection("users")
-      .authWithPassword(email, password);
-    return authData;
+    await pb.collection("users").authWithPassword(email, password);
   } catch (error) {
     console.error("Login failed:", error);
     throw error;
   }
 }
 
-/**
- * Logs out the current user
- * @returns {Promise<void>}
- */
 async function logout() {
-  const pb = getPocketBase();
   try {
-    await pb.authStore.clear();
+    pb.authStore.clear();
   } catch (error) {
     console.error("Logout failed:", error);
     throw error;
@@ -49,29 +29,20 @@ async function logout() {
 }
 
 /**
- * Checks if a user is authenticated
  * @returns {boolean} True if authenticated
  */
 function isAuthenticated() {
-  const pb = getPocketBase();
   return pb.authStore.isValid;
 }
 
 /**
- * Gets the current authenticated user
  * @returns {Object | null} User data or null
  */
 function getCurrentUser() {
-  const pb = getPocketBase();
-  return pb.authStore.model;
+  return pb.authStore.record;
 }
 
-export { login, logout, isAuthenticated, getCurrentUser };
-
-/**
- * Initializes the auth UI for the login form
- */
-export function initAuthUI() {
+export function updateAuthUI() {
   /** @type {HTMLFormElement} */
   const form = document.getElementById("login-form");
   if (!form) return;
@@ -140,9 +111,17 @@ function updateAdminUI() {
   }
 }
 
-export async function init() {
-  document.addEventListener("astro:page-load", updateAdminUI);
-
-  initAuthUI();
+async function updateAll() {
+  updateAuthUI();
   updateAdminUI();
 }
+
+export async function init() {
+  // first update on load
+  updateAll();
+
+  // dev server page nav
+  document.addEventListener("astro:page-load", updateAll);
+}
+
+init();
