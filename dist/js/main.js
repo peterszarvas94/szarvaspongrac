@@ -1,9 +1,5 @@
-import { init as initContentManager } from "content-manager";
-import { init as initAuth } from "auth";
+// main entry for app
+// initializes other modules
 
-function initAll() {
-  initContentManager();
-  initAuth();
-}
-
-document.addEventListener("DOMContentLoaded", initAll);
+import "auth";
+import "content-manager";

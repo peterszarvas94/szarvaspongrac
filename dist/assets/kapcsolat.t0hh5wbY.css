@@ -1,15 +1,4 @@
-/* Route announcer */
-	.astro-route-announcer {
-		position: absolute;
-		left: 0;
-		top: 0;
-		clip: rect(0 0 0 0);
-		clip-path: inset(50%);
-		overflow: hidden;
-		white-space: nowrap;
-		width: 1px;
-		height: 1px;
-	}/*! tailwindcss v4.1.17 | MIT License | https://tailwindcss.com */
+/*! tailwindcss v4.1.17 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {
@@ -6691,6 +6680,10 @@
   }
 }
 
+@view-transition {
+  navigation: auto;
+}
+
 @font-face {
   font-family: Inter;
   src: url("/fonts/Inter-VariableFont_opsz,wght.ttf") format("truetype");
@@ -6709,26 +6702,6 @@
 
 body:has([popover]:popover-open) {
   overflow: hidden;
-}
-
-@keyframes fade-out {
-  from {
-    opacity: 1;
-  }
-
-  to {
-    opacity: 0;
-  }
-}
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
 }
 
 @keyframes rating {
