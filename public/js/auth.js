@@ -79,35 +79,34 @@ export function updateAuthUI() {
  * Updates the admin page UI based on authentication status
  */
 function updateAdminUI() {
-  const loginSection = document.getElementById("login-section");
-  const userSection = document.getElementById("user-section");
-  const userEmail = document.getElementById("user-email");
-  const logoutBtn = document.getElementById("logout-btn");
+  const logoutButtons = document.querySelectorAll("[data-logout]");
+  logoutButtons.forEach((button) =>
+    button.addEventListener(
+      "click",
+      async () => {
+        await logout();
 
-  if (!loginSection || !userSection) return;
+        setTimeout(() => updateAdminUI(), 100);
+      },
+      { once: true },
+    ),
+  );
+
+  const controlledElements = document.querySelectorAll("[data-auth]");
+  controlledElements.forEach((element) => {
+    if ((element.dataset.auth === "true") === isAuthenticated()) {
+      element.classList.remove("hidden");
+    } else {
+      element.classList.add("hidden");
+    }
+  });
 
   if (isAuthenticated()) {
     const user = getCurrentUser();
-
-    loginSection.classList.add("hidden");
-    userSection.classList.remove("hidden");
-
-    if (userEmail) userEmail.textContent = user.email;
-
-    if (logoutBtn) {
-      logoutBtn.addEventListener(
-        "click",
-        async () => {
-          await logout();
-
-          setTimeout(() => updateAdminUI(), 100);
-        },
-        { once: true },
-      );
-    }
-  } else {
-    loginSection.classList.remove("hidden");
-    userSection.classList.add("hidden");
+    const emailFields = document.querySelectorAll("[data-email]");
+    emailFields.forEach((field) => {
+      field.textContent = user.email;
+    });
   }
 }
 

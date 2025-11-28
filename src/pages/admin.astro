@@ -11,8 +11,10 @@ import PageLayout from "../layouts/PageLayout.astro";
   <div class="max-w-md mx-auto">
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <!-- Login Form - Hidden when logged in -->
-        <div id="login-section">
+        <div
+          data-auth="false"
+          class="hidden"
+        >
           <h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
           <form id="login-form">
             <div>
@@ -59,23 +61,26 @@ import PageLayout from "../layouts/PageLayout.astro";
           </form>
         </div>
 
-        <!-- User Info - Hidden when not logged in -->
-        <div id="user-section" class="hidden">
-          <div class="text-center">
-            <User class="w-16 h-16 mx-auto text-primary mb-4" />
-            <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
-            <p id="user-email" class="text-lg mb-6"></p>
-            <button
-              id="logout-btn"
-              class="btn btn-outline btn-error btn-block"
-            >
-              <LogOut class="w-4 h-4 mr-2" />
-              Kijelentkezés
-            </button>
-          </div>
+        <div
+          data-auth="true"
+          class="hidden text-center"
+        >
+          <User class="w-16 h-16 mx-auto text-primary mb-4" />
+          <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
+          <p
+            data-email
+            class="text-lg mb-6"
+          >
+          </p>
+          <button
+            data-logout
+            class="btn btn-outline btn-error btn-block"
+          >
+            <LogOut class="w-4 h-4 mr-2" />
+            Kijelentkezés
+          </button>
         </div>
       </div>
     </div>
   </div>
 </PageLayout>
-

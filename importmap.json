@@ -3,6 +3,7 @@
     "pocketbase": "/js/pocketbase/pocketbase@0.26.3.es.js",
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
-    "auth": "/js/auth.js"
+    "auth": "/js/auth.js",
+    "images": "/js/images.js"
   }
 }

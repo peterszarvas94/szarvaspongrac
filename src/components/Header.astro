@@ -31,12 +31,14 @@ const menuItems: MenuItem[] = [
       </div>
 
       <!-- Desktop Navigation -->
-      <nav class="hidden md:flex space-x-8">
+      <nav
+        class="hidden md:flex gap-8 py-2 text-sm font-medium text-base-content/70"
+      >
         {
           menuItems.map((item) => (
             <a
               href={item.href}
-              class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium"
+              class="hover:link hover:text-base-content"
             >
               {item.label}
             </a>
@@ -46,7 +48,11 @@ const menuItems: MenuItem[] = [
 
       <!-- Mobile menu button -->
       <div class="md:hidden">
-        <input type="checkbox" id="mobile-menu-toggle" class="hidden peer" />
+        <input
+          type="checkbox"
+          id="mobile-menu-toggle"
+          class="hidden peer"
+        />
         <label
           for="mobile-menu-toggle"
           class="btn btn-ghost btn-circle peer-checked:btn-active"
@@ -59,7 +65,12 @@ const menuItems: MenuItem[] = [
           {
             menuItems.map((item) => (
               <li>
-                <a href={item.href} class="block px-4 py-2 hover:bg-base-200 rounded">{item.label}</a>
+                <a
+                  href={item.href}
+                  class="px-4 py-2 hover:bg-base-200 rounded"
+                >
+                  {item.label}
+                </a>
               </li>
             ))
           }

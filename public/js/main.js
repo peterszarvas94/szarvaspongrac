@@ -3,3 +3,4 @@
 
 import "auth";
 import "content-manager";
+import "images";

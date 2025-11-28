@@ -1,5 +1,5 @@
 ---
-import { X } from "@lucide/astro";
+import { Trash, X } from "@lucide/astro";
 import { Image } from "astro:assets";
 
 export interface Props {
@@ -18,23 +18,31 @@ const { images, title } = Astro.props;
       const popoverId = `image-popover-${index}`;
       return (
         <div class="break-inside-avoid mb-4 block">
-          <button
-            {...({ commandfor: popoverId } as any)}
-            command="show-popover"
-            class="w-full block cursor-pointer border-0 bg-transparent p-0"
-            type="button"
-            aria-label="Kép megnyitása"
-            title="Kép megnyitása"
-          >
-            <Image
-              src={image}
-              alt={`${title} ${index + 1}`}
-              width={200}
-              height={250}
-              class="w-full block rounded-lg shadow-lg hover:shadow-xl"
-              loading="lazy"
-            />
-          </button>
+          <div class="relative">
+            <button
+              {...({ commandfor: popoverId } as any)}
+              command="show-popover"
+              class="w-full block cursor-pointer border-0 bg-transparent p-0"
+              type="button"
+              aria-label="Kép megnyitása"
+              title="Kép megnyitása"
+            >
+              <Image
+                src={image}
+                alt={`${title} ${index + 1}`}
+                width={200}
+                height={250}
+                class="w-full block rounded-lg shadow-lg hover:shadow-xl"
+                loading="lazy"
+              />
+            </button>
+            <button
+              data-delete={image}
+              class="absolute right-4 top-4 border border-base-100 btn btn-error btn-sm"
+            >
+              <Trash class="size-4" />
+            </button>
+          </div>
 
           <div
             id={popoverId}
