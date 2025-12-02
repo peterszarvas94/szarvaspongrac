@@ -3,16 +3,9 @@ import { PB_URL } from "env";
 
 const pb = new PocketBase(PB_URL);
 
-/**
- * Logs in a user with email and password
- * @param {string} email - User's email
- * @param {string} password - User's password
- * @returns {Promise<Object>} Auth data including user info
- * TODO: replace this with normal REST
- */
 async function login(email, password) {
   try {
-    await pb.collection("users").authWithPassword(email, password);
+    await pb.collection("_superusers").authWithPassword(email, password);
   } catch (error) {
     console.error("Login failed:", error);
     throw error;
@@ -28,9 +21,6 @@ async function logout() {
   }
 }
 
-/**
- * @returns {boolean} True if authenticated
- */
 function isAuthenticated() {
   return pb.authStore.isValid;
 }
@@ -75,9 +65,6 @@ export function updateAuthUI() {
   });
 }
 
-/**
- * Updates the admin page UI based on authentication status
- */
 function updateAdminUI() {
   const logoutButtons = document.querySelectorAll("[data-logout]");
   logoutButtons.forEach((button) =>

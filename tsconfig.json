@@ -18,6 +18,9 @@
       ],
       "images": [
         "./public/js/images.js"
+      ],
+      "random": [
+        "./public/js/random.js"
       ]
     }
   },
