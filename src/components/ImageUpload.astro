@@ -1,5 +1,5 @@
 ---
-import { ImageUp } from "lucide-astro";
+import { ImagePlus, ImageUp, X } from "lucide-astro";
 
 interface Props {
   key: string;
@@ -10,20 +10,28 @@ const { key }: Props = Astro.props;
 
 <form
   data-auth="true"
-  class="hidden w-full"
+  class="hidden max-w-xl mx-auto w-full"
   data-upload={key}
 >
-  <label
-    for="file-upload"
-    class="cursor-pointer w-full block"
-  >
-    <div
-      class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full"
+  <div class="flex gap-2 flex-wrap">
+    <label
+      for="file-upload"
+      class="cursor-pointer w-full block"
+      tabindex="0"
     >
-      <ImageUp class="w-10 h-10 text-base-content opacity-60" />
-      <span class="text-base-content font-medium">Feltöltés</span>
-    </div>
-  </label>
+      <div
+        class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full"
+      >
+        <ImagePlus class="w-10 h-10 text-base-content opacity-60" />
+        <span class="text-base-content font-medium">Képek kiválasztása</span>
+      </div>
+    </label>
+    <ul
+      data-files
+      class="w-full"
+    >
+    </ul>
+  </div>
   <input
     id="file-upload"
     type="file"
@@ -32,5 +40,25 @@ const { key }: Props = Astro.props;
     accept="image/*"
     name="files"
   />
-  <button type="submit" class="btn mt-2">Feltöltés</button>
+  <div class="flex justify-center">
+    <button
+      type="submit"
+      class="btn mt-2"
+    >
+      <ImageUp class="size-6" />
+      Feltöltés
+    </button>
+  </div>
 </form>
+
+<template id="file-row">
+  <li class="flex gap-2 item-center">
+    <button
+      class="btn btn-xs btn-square btn-ghost"
+      type="button"
+    >
+      <X class="text-error size-4" />
+    </button>
+    <span></span>
+  </li>
+</template>
