@@ -4,7 +4,7 @@
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
     "auth": "/js/auth.js",
-    "images": "/js/images.js",
-    "random": "/js/random.js"
+    "gallery": "/js/gallery.js",
+    "popover": "/js/popover.js"
   }
 }

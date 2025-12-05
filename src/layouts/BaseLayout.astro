@@ -7,12 +7,15 @@ export interface Props {
   title?: string;
   description?: string;
   mainClass?: string;
+  /** any script from `/public/js/` */
+  scripts?: string[];
 }
 
 const {
   title = "Szarvas Pongrác - Grafikus, Festő, Illusztrátor",
   description = "Szarvas Pongrác grafikus, festő, illusztrátor honlapja - Modern verzió",
   mainClass = "",
+  scripts = [],
 } = Astro.props;
 ---
 
@@ -61,6 +64,15 @@ const {
       type="module"
       src="/js/main.js"
     ></script>
+    {
+      scripts.map((script) => (
+        <script
+          is:inline
+          type="module"
+          src={`/js/${script}.js`}
+        />
+      ))
+    }
 
     <!-- <script type="speculationrules" is:raw is:inline> -->
     <!--   { -->

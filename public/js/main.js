@@ -1,6 +1,3 @@
-// main entry for app
-// initializes other modules
-
+// loaded for every page
 import "auth";
 import "content-manager";
-import "images";
