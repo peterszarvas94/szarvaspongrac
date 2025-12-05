@@ -20,12 +20,12 @@
       "env": [
         "./public/js/env.js"
       ],
-      "images": [
-        "./public/js/images.js"
+      "gallery": [
+        "public/js/gallery.js"
       ],
-      "random": [
-        "./public/js/random.js"
-      ]
+      "popover": [
+        "public/js/popover.js"
+      ],
     }
   },
   "include": [

@@ -1,0 +1,44 @@
+---
+import { X } from "lucide-astro";
+---
+
+{/* one popover for all images template */}
+<div
+  id="image-popover"
+  popover
+  class="w-screen h-screen bg-base-300/90 backdrop-blur-sm border-0 m-0 p-4 fixed inset-0"
+>
+  <div class="w-full h-full flex items-center justify-center relative">
+    <button
+      commandfor="image-popover"
+      command="hide-popover"
+      class="absolute top-4 right-4 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer"
+      aria-label="Kép bezárása (Esc)"
+      title="Kép bezárása (Esc)"
+      type="button"
+    >
+      <X class="w-6 h-6 text-base-100" />
+    </button>
+    {/* src, alt loads on show-popover */}
+    <img
+      src=""
+      alt=""
+      width={1200}
+      height={900}
+      class="max-w-full max-h-full object-contain"
+    />
+  </div>
+</div>
+
+<script is:inline>
+  // Escape key closes open popover
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      /** @type {HTMLElement | null} */
+      const openPopover = document.querySelector("[popover]:popover-open");
+      if (openPopover) {
+        openPopover.hidePopover();
+      }
+    }
+  });
+</script>

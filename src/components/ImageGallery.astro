@@ -1,91 +1,63 @@
 ---
 import { Trash, X } from "@lucide/astro";
-import { Image } from "astro:assets";
 
 export interface Props {
-  images: string[];
-  title: string;
+  key: string;
 }
 
-const { images, title } = Astro.props;
+const { key } = Astro.props;
+// gallery.js
+// 1. load images from db with data-images="oil"
+// 2. clone template for every image
+// 3. append images to gallery
+// popover.js
+// 4. on image click, change popover attributes like src, and show-popover
 ---
 
+{/* image gallery */}
 <div
+  id="image-gallery"
+  data-images={key}
   class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4"
 >
-  {
-    images.map((image, index) => {
-      const popoverId = `image-popover-${index}`;
-      return (
-        <div class="break-inside-avoid mb-4 block">
-          <div class="relative">
-            <button
-              {...({ commandfor: popoverId } as any)}
-              command="show-popover"
-              class="w-full block cursor-pointer border-0 bg-transparent p-0"
-              type="button"
-              aria-label="Kép megnyitása"
-              title="Kép megnyitása"
-            >
-              <Image
-                src={image}
-                alt={`${title} ${index + 1}`}
-                width={200}
-                height={250}
-                class="w-full block rounded-lg shadow-lg hover:shadow-xl"
-                loading="lazy"
-              />
-            </button>
-            <button
-              data-delete={image}
-              class="absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square"
-            >
-              <Trash
-                data-auth="true"
-                class="size-4"
-              />
-            </button>
-          </div>
-
-          <div
-            id={popoverId}
-            popover
-            class="w-screen h-screen bg-base-300/90 backdrop-blur-sm border-0 m-0 p-4 fixed inset-0"
-          >
-            <div class="w-full h-full flex items-center justify-center relative">
-              <button
-                {...({ commandfor: popoverId } as any)}
-                command="hide-popover"
-                class="absolute top-4 right-4 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer"
-                aria-label="Kép bezárása (Esc)"
-                title="Kép bezárása (Esc)"
-                type="button"
-              >
-                <X class="w-6 h-6 text-base-100" />
-              </button>
-              <Image
-                src={image}
-                alt={`${title} ${index + 1}`}
-                width={1200}
-                height={900}
-                class="max-w-full max-h-full object-contain"
-              />
-            </div>
-          </div>
-        </div>
-      );
-    })
-  }
 </div>
 
-<script is:inline>
-  // Escape key closes open popover
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const openPopover = document.querySelector("[popover]:popover-open");
-      if (openPopover) {
-        openPopover.hidePopover();
-      }
-    }
-  });
-</script>
+{/* image template */}
+<template id="image-gallery-item">
+  <div class="break-inside-avoid mb-4 block">
+    <div class="relative">
+      <button
+        commandfor="image-popover"
+        command="show-popover"
+        class="w-full block cursor-pointer border-0 bg-transparent p-0"
+        type="button"
+        aria-label="Kép megnyitása"
+        title="Kép megnyitása"
+      >
+        {/* src, alt loads on show-popover */}
+        <img
+          src=""
+          alt=""
+          width={200}
+          height={250}
+          class="w-full block rounded-lg shadow-lg hover:shadow-xl"
+          loading="lazy"
+        />
+        {/* data-delete="image", loads on show-popover*/}
+        {
+          /* data-auth not work on images, need to re-run after images appended */
+        }
+        <button
+          data-delete=""
+          class="absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square"
+          data-auth="true"
+        >
+          <Trash
+            data-auth="true"
+            class="size-4"
+          />
+        </button>
+      </button>
+    </div>
+  </div>
+</template>
