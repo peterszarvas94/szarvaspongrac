@@ -1,4 +1,0 @@
-- [x] remove astro implementation of view transion and speculatios rules, and change them to normal html ones
-- [ ] figure out what is wrong with auth
-- [ ] remove weird astro event listener (maybe needed in dev)
-- [x] clean up js code, specially content-manager.js

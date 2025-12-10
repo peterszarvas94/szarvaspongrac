@@ -1,5 +1,6 @@
 import PocketBase from "pocketbase";
 import { PB_URL } from "env";
+import { updateElements } from "auth";
 
 const pb = new PocketBase(PB_URL);
 let dt = new DataTransfer();
@@ -147,7 +148,7 @@ async function initImages() {
     gallery.appendChild(element);
   });
 
-  // TODO: data-auth for button does not work
+  updateElements();
 }
 
 function initDeleteButtons() {

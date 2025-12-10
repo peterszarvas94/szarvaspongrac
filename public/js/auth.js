@@ -3,6 +3,10 @@ import { PB_URL } from "env";
 
 const pb = new PocketBase(PB_URL);
 
+/**
+ * @param {string} email
+ * @param {string} password
+ */
 async function login(email, password) {
   try {
     await pb.collection("_superusers").authWithPassword(email, password);
@@ -32,22 +36,28 @@ function getCurrentUser() {
   return pb.authStore.record;
 }
 
-export function updateAuthUI() {
-  /** @type {HTMLFormElement} */
-  const form = document.getElementById("login-form");
+export function updateAuthForm() {
+  const form =
+    /** @type {HTMLFormElement | null} */
+    (document.getElementById("login-form"));
   if (!form) return;
 
-  /** @type {HTMLFormElement} */
-  const emailInput = form.querySelector("#email");
+  const emailInput =
+    /** @type {HTMLInputElement} */
+    (form.querySelector("#email"));
 
   /** @type {HTMLInputElement} */
-  const passwordInput = form.querySelector("#password");
+  const passwordInput =
+    /** @type {HTMLInputElement} */
+    (form.querySelector("#password"));
 
   /** @type {HTMLElement} */
-  const messageDiv = form.querySelector("#message");
+  const messageDiv =
+    /** @type {HTMLDivElement} */
+    (form.querySelector("#message"));
 
   if (document.getElementById("login-section")) {
-    updateAdminUI();
+    updateElements();
   }
 
   form.addEventListener("submit", async (e) => {
@@ -57,7 +67,7 @@ export function updateAuthUI() {
 
     try {
       await login(email, password);
-      setTimeout(() => updateAdminUI(), 100);
+      setTimeout(() => updateElements(), 100);
     } catch (error) {
       messageDiv.textContent = "Hibás email vagy jelszó.";
       messageDiv.className = "mt-4 text-center text-error";
@@ -65,7 +75,7 @@ export function updateAuthUI() {
   });
 }
 
-function updateAdminUI() {
+export function updateElements() {
   const logoutButtons = document.querySelectorAll("[data-logout]");
   logoutButtons.forEach((button) =>
     button.addEventListener(
@@ -73,14 +83,15 @@ function updateAdminUI() {
       async () => {
         await logout();
 
-        setTimeout(() => updateAdminUI(), 100);
+        setTimeout(() => updateElements(), 100);
       },
       { once: true },
     ),
   );
 
+  /** @type {NodeListOf<HTMLElement>} */
   const controlledElements = document.querySelectorAll("[data-auth]");
-  controlledElements.forEach((element) => {
+  Array.from(controlledElements).forEach((element) => {
     if ((element.dataset.auth === "true") === isAuthenticated()) {
       element.classList.remove("hidden");
     } else {
@@ -89,7 +100,11 @@ function updateAdminUI() {
   });
 
   if (isAuthenticated()) {
+    /** @type {any} */
     const user = getCurrentUser();
+    if (!user) {
+      throw new Error(`Authenticated, but user is ${user}`);
+    }
     const emailFields = document.querySelectorAll("[data-email]");
     emailFields.forEach((field) => {
       field.textContent = user.email;
@@ -98,8 +113,8 @@ function updateAdminUI() {
 }
 
 async function updateAll() {
-  updateAuthUI();
-  updateAdminUI();
+  updateAuthForm();
+  updateElements();
 }
 
 export async function init() {

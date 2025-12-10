@@ -50,7 +50,8 @@ async function updateAll() {
   });
   await updateElementsOnPage("link", (element, item) => {
     element.setAttribute("href", item.url);
-    element.querySelector("span").innerHTML = item.text;
+    /** @type {HTMLSpanElement} */ (element.querySelector("span")).innerHTML =
+      item.text;
   });
 }
 

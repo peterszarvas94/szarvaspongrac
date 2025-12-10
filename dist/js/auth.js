@@ -8,7 +8,6 @@ const pb = new PocketBase(PB_URL);
  * @param {string} email - User's email
  * @param {string} password - User's password
  * @returns {Promise<Object>} Auth data including user info
- * TODO: replace this with normal REST
  */
 async function login(email, password) {
   try {
