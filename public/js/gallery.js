@@ -57,20 +57,40 @@ function initUploadForm() {
     document.querySelector("#file-upload")
   );
 
+  const label = /** @type {HTMLLabelElement} */ (
+    document.querySelector("label[for='file-upload']")
+  );
+
+  label.addEventListener("dragenter", (e) => {
+    e.preventDefault();
+    updateLabelClasses(label, true);
+  });
+
+  label.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    updateLabelClasses(label, true);
+  });
+
+  label.addEventListener("dragleave", (e) => {
+    e.preventDefault();
+    updateLabelClasses(label, false);
+  });
+
+  label.addEventListener("drop", (e) => {
+    e.preventDefault();
+    updateLabelClasses(label, false);
+
+    const newFiles = Array.from(e.dataTransfer?.files ?? []);
+    appendFilesToDt(newFiles);
+    updateInputFiles(input);
+    updateFileList([...dt.files]);
+  });
+
   input.addEventListener("change", () => {
     const newFiles = input.files ? Array.from(input.files) : [];
 
-    newFiles.forEach((f) => {
-      if (
-        ![...dt.files].some(
-          (existing) => existing.name === f.name && existing.size === f.size,
-        )
-      ) {
-        dt.items.add(f);
-      }
-    });
-
-    input.files = dt.files;
+    appendFilesToDt(newFiles);
+    updateInputFiles(input);
     updateFileList([...dt.files]);
   });
 
@@ -99,9 +119,7 @@ function initUploadForm() {
     try {
       await batch.send();
       alert("Sikeres feltöltés");
-      // dt = new DataTransfer();
-      // input.files = dt.files;
-      // updateFileList([]);
+      // NOTE: should add manually, not reload
       window.location.reload();
     } catch (error) {
       alert("Nem sikerült a feltöltés");
@@ -111,8 +129,39 @@ function initUploadForm() {
 }
 
 /**
- * @param {string} key
+ * @param {HTMLLabelElement} label
+ * @param {boolean} active
  */
+function updateLabelClasses(label, active) {
+  const div = /** @type {HTMLDivElement} */ (label.querySelector("div"));
+  if (active) {
+    div.classList.remove("border-base-300");
+    div.classList.add("border-base-content");
+  } else {
+    div.classList.remove("border-base-content");
+    div.classList.add("border-base-300");
+  }
+}
+
+/** @param {File[]} newFiles */
+function appendFilesToDt(newFiles) {
+  newFiles.forEach((f) => {
+    if (
+      ![...dt.files].some(
+        (existing) => existing.name === f.name && existing.size === f.size,
+      )
+    ) {
+      dt.items.add(f);
+    }
+  });
+}
+
+/** @param {HTMLInputElement} input */
+function updateInputFiles(input) {
+  input.files = dt.files;
+}
+
+/** @param {string} key */
 async function getImageUrls(key) {
   try {
     const images = await pb
@@ -145,6 +194,12 @@ async function initImages() {
     );
     const img = /** @type {HTMLImageElement} */ (element.querySelector("img"));
     img.setAttribute("src", image.url);
+
+    const deleteButton = /** @type {HTMLButtonElement}*/ (
+      element.querySelector("button[data-delete]")
+    );
+    deleteButton.setAttribute("data-delete", image.id);
+
     gallery.appendChild(element);
   });
 
@@ -156,9 +211,28 @@ function initDeleteButtons() {
   const deleteButtons = document.querySelectorAll("[data-delete]");
 
   Array.from(deleteButtons).forEach((button) => {
-    const image = button.dataset.delete;
-    button.addEventListener("click", () => {
-      console.log("deleting:", image);
+    const id = button.dataset.delete;
+    if (!id) {
+      console.error("No image id for button", button);
+      return;
+    }
+    button.addEventListener("click", async () => {
+      const confirmed = window.confirm(
+        "Törlöd ezt a képet? Nem vonható vissza!",
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      try {
+        await pb.collection("image").delete(id);
+        window.alert("Törölve");
+        // NOTE: should remove manually, not reload
+        window.location.reload();
+      } catch (error) {
+        window.alert("Nem sikerült törölni a képet");
+        console.error({ msg: "Error deleting the image", id, error });
+      }
     });
   });
 }

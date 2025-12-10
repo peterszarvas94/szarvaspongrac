@@ -1,5 +1,5 @@
 function initPopover() {
-  console.log("innnnnit poppppp");
+  console.log("initialized popover, todo...");
 }
 
 function updateAll() {
