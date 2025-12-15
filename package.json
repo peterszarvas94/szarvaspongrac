@@ -9,9 +9,8 @@
     "astro": "astro",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "pb:dev:mac": "./bin/pocketbase_mac_arm64 serve --dev --dir=./pb_data_dev",
-    "pb:dev:linux": "./bin/pocketbase_linux_amd64 serve --dev --dir=./pb_data_dev",
-    "pb:prod": "./bin/pocketbase_linux_amd64 serve --dir=./pb_data_prod"
+    "pb:dev:mac": "./bin/pocketbase_mac_arm64 serve --dev --dir=./bin/pb_data --migrationsDir=./bin/pb_migrations",
+    "pb:dev:linux": "./bin/pocketbase_linux_amd64 serve --dev --dir=./bin/pb_data --migrationsDir=./bin/pb_migrations"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.12",

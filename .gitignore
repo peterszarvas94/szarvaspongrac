@@ -12,7 +12,6 @@ pnpm-debug.log*
 
 # environment variables
 .env
-.env.production
 
 # macOS-specific files
 .DS_Store
@@ -20,4 +19,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-pb_data_prod/
+# data
+/bin/pb_data
