@@ -7,7 +7,7 @@
     <meta name="author" content="Szarvas Pongrác">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <meta name="pb-url" content="http://127.0.0.1:8090">
+    <meta name="pb-url" content="https://api.pengoe.hu">
     <title>Életrajz - Szarvas Pongrác</title>
 
     <script type="importmap">{
@@ -15,10 +15,13 @@
     "pocketbase": "/js/pocketbase/pocketbase@0.26.3.es.js",
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
-    "auth": "/js/auth.js"
+    "auth": "/js/auth.js",
+    "gallery": "/js/gallery.js",
+    "popover": "/js/popover.js"
   }
 }</script>
     <script type="module" src="/js/main.js"></script>
+    
 
     <!-- <script type="speculationrules" is:raw is:inline> -->
     <!--   { -->
@@ -30,7 +33,7 @@
     <!--     ] -->
     <!--   } -->
     <!-- </script> -->
-  <link rel="stylesheet" href="/assets/kapcsolat.t0hh5wbY.css">
+  <link rel="stylesheet" href="/assets/kapcsolat.Dgd76vnV.css">
 <style>/* Simple prose styling for clean content */
   .prose h1 {
     margin: 0 auto;
@@ -110,12 +113,12 @@
       </div>
 
       <!-- Desktop Navigation -->
-      <nav class="hidden md:flex space-x-8">
-        <a href="/eletrajz" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+      <nav class="hidden md:flex gap-8 py-2 text-sm font-medium text-base-content/70">
+        <a href="/eletrajz" class="hover:link hover:text-base-content">
               Életrajz
-            </a><a href="/kepzomuveszet" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+            </a><a href="/kepzomuveszet" class="hover:link hover:text-base-content">
               Képzőművészet
-            </a><a href="/kapcsolat" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+            </a><a href="/kapcsolat" class="hover:link hover:text-base-content">
               Kapcsolat
             </a>
       </nav>
@@ -131,11 +134,17 @@
         </label>
         <ul class="absolute top-16 right-4 menu menu-lg bg-base-100 rounded-box shadow-lg p-2 w-52 hidden peer-checked:block z-10">
           <li>
-                <a href="/eletrajz" class="block px-4 py-2 hover:bg-base-200 rounded">Életrajz</a>
+                <a href="/eletrajz" class="px-4 py-2 hover:bg-base-200 rounded">
+                  Életrajz
+                </a>
               </li><li>
-                <a href="/kepzomuveszet" class="block px-4 py-2 hover:bg-base-200 rounded">Képzőművészet</a>
+                <a href="/kepzomuveszet" class="px-4 py-2 hover:bg-base-200 rounded">
+                  Képzőművészet
+                </a>
               </li><li>
-                <a href="/kapcsolat" class="block px-4 py-2 hover:bg-base-200 rounded">Kapcsolat</a>
+                <a href="/kapcsolat" class="px-4 py-2 hover:bg-base-200 rounded">
+                  Kapcsolat
+                </a>
               </li>
         </ul>
       </div>

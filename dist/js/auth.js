@@ -4,14 +4,12 @@ import { PB_URL } from "env";
 const pb = new PocketBase(PB_URL);
 
 /**
- * Logs in a user with email and password
- * @param {string} email - User's email
- * @param {string} password - User's password
- * @returns {Promise<Object>} Auth data including user info
+ * @param {string} email
+ * @param {string} password
  */
 async function login(email, password) {
   try {
-    await pb.collection("users").authWithPassword(email, password);
+    await pb.collection("_superusers").authWithPassword(email, password);
   } catch (error) {
     console.error("Login failed:", error);
     throw error;
@@ -27,9 +25,6 @@ async function logout() {
   }
 }
 
-/**
- * @returns {boolean} True if authenticated
- */
 function isAuthenticated() {
   return pb.authStore.isValid;
 }
@@ -41,22 +36,28 @@ function getCurrentUser() {
   return pb.authStore.record;
 }
 
-export function updateAuthUI() {
-  /** @type {HTMLFormElement} */
-  const form = document.getElementById("login-form");
+export function updateAuthForm() {
+  const form =
+    /** @type {HTMLFormElement | null} */
+    (document.getElementById("login-form"));
   if (!form) return;
 
-  /** @type {HTMLFormElement} */
-  const emailInput = form.querySelector("#email");
+  const emailInput =
+    /** @type {HTMLInputElement} */
+    (form.querySelector("#email"));
 
   /** @type {HTMLInputElement} */
-  const passwordInput = form.querySelector("#password");
+  const passwordInput =
+    /** @type {HTMLInputElement} */
+    (form.querySelector("#password"));
 
   /** @type {HTMLElement} */
-  const messageDiv = form.querySelector("#message");
+  const messageDiv =
+    /** @type {HTMLDivElement} */
+    (form.querySelector("#message"));
 
   if (document.getElementById("login-section")) {
-    updateAdminUI();
+    updateElements();
   }
 
   form.addEventListener("submit", async (e) => {
@@ -66,7 +67,7 @@ export function updateAuthUI() {
 
     try {
       await login(email, password);
-      setTimeout(() => updateAdminUI(), 100);
+      setTimeout(() => updateElements(), 100);
     } catch (error) {
       messageDiv.textContent = "Hibás email vagy jelszó.";
       messageDiv.className = "mt-4 text-center text-error";
@@ -74,45 +75,46 @@ export function updateAuthUI() {
   });
 }
 
-/**
- * Updates the admin page UI based on authentication status
- */
-function updateAdminUI() {
-  const loginSection = document.getElementById("login-section");
-  const userSection = document.getElementById("user-section");
-  const userEmail = document.getElementById("user-email");
-  const logoutBtn = document.getElementById("logout-btn");
+export function updateElements() {
+  const logoutButtons = document.querySelectorAll("[data-logout]");
+  logoutButtons.forEach((button) =>
+    button.addEventListener(
+      "click",
+      async () => {
+        await logout();
 
-  if (!loginSection || !userSection) return;
+        setTimeout(() => updateElements(), 100);
+      },
+      { once: true },
+    ),
+  );
+
+  /** @type {NodeListOf<HTMLElement>} */
+  const controlledElements = document.querySelectorAll("[data-auth]");
+  Array.from(controlledElements).forEach((element) => {
+    if ((element.dataset.auth === "true") === isAuthenticated()) {
+      element.classList.remove("hidden");
+    } else {
+      element.classList.add("hidden");
+    }
+  });
 
   if (isAuthenticated()) {
+    /** @type {any} */
     const user = getCurrentUser();
-
-    loginSection.classList.add("hidden");
-    userSection.classList.remove("hidden");
-
-    if (userEmail) userEmail.textContent = user.email;
-
-    if (logoutBtn) {
-      logoutBtn.addEventListener(
-        "click",
-        async () => {
-          await logout();
-
-          setTimeout(() => updateAdminUI(), 100);
-        },
-        { once: true },
-      );
+    if (!user) {
+      throw new Error(`Authenticated, but user is ${user}`);
     }
-  } else {
-    loginSection.classList.remove("hidden");
-    userSection.classList.add("hidden");
+    const emailFields = document.querySelectorAll("[data-email]");
+    emailFields.forEach((field) => {
+      field.textContent = user.email;
+    });
   }
 }
 
 async function updateAll() {
-  updateAuthUI();
-  updateAdminUI();
+  updateAuthForm();
+  updateElements();
 }
 
 export async function init() {

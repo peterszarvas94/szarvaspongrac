@@ -7,7 +7,7 @@
     <meta name="author" content="Szarvas Pongrác">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <meta name="pb-url" content="http://127.0.0.1:8090">
+    <meta name="pb-url" content="https://api.pengoe.hu">
     <title>Admin - Szarvas Pongrác</title>
 
     <script type="importmap">{
@@ -15,10 +15,13 @@
     "pocketbase": "/js/pocketbase/pocketbase@0.26.3.es.js",
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
-    "auth": "/js/auth.js"
+    "auth": "/js/auth.js",
+    "gallery": "/js/gallery.js",
+    "popover": "/js/popover.js"
   }
 }</script>
     <script type="module" src="/js/main.js"></script>
+    
 
     <!-- <script type="speculationrules" is:raw is:inline> -->
     <!--   { -->
@@ -30,7 +33,7 @@
     <!--     ] -->
     <!--   } -->
     <!-- </script> -->
-  <link rel="stylesheet" href="/assets/kapcsolat.t0hh5wbY.css"></head>
+  <link rel="stylesheet" href="/assets/kapcsolat.Dgd76vnV.css"></head>
   <body class="bg-base-200 min-h-screen relative font-inter">
     <header class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
@@ -43,12 +46,12 @@
       </div>
 
       <!-- Desktop Navigation -->
-      <nav class="hidden md:flex space-x-8">
-        <a href="/eletrajz" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+      <nav class="hidden md:flex gap-8 py-2 text-sm font-medium text-base-content/70">
+        <a href="/eletrajz" class="hover:link hover:text-base-content">
               Életrajz
-            </a><a href="/kepzomuveszet" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+            </a><a href="/kepzomuveszet" class="hover:link hover:text-base-content">
               Képzőművészet
-            </a><a href="/kapcsolat" class="text-base-content/70 hover:link hover:text-base-content px-3 py-2 text-sm font-medium">
+            </a><a href="/kapcsolat" class="hover:link hover:text-base-content">
               Kapcsolat
             </a>
       </nav>
@@ -64,11 +67,17 @@
         </label>
         <ul class="absolute top-16 right-4 menu menu-lg bg-base-100 rounded-box shadow-lg p-2 w-52 hidden peer-checked:block z-10">
           <li>
-                <a href="/eletrajz" class="block px-4 py-2 hover:bg-base-200 rounded">Életrajz</a>
+                <a href="/eletrajz" class="px-4 py-2 hover:bg-base-200 rounded">
+                  Életrajz
+                </a>
               </li><li>
-                <a href="/kepzomuveszet" class="block px-4 py-2 hover:bg-base-200 rounded">Képzőművészet</a>
+                <a href="/kepzomuveszet" class="px-4 py-2 hover:bg-base-200 rounded">
+                  Képzőművészet
+                </a>
               </li><li>
-                <a href="/kapcsolat" class="block px-4 py-2 hover:bg-base-200 rounded">Kapcsolat</a>
+                <a href="/kapcsolat" class="px-4 py-2 hover:bg-base-200 rounded">
+                  Kapcsolat
+                </a>
               </li>
         </ul>
       </div>
@@ -88,8 +97,7 @@
   <div class="max-w-md mx-auto">
     <div class="card bg-base-100 shadow-xl">
       <div class="card-body">
-        <!-- Login Form - Hidden when logged in -->
-        <div id="login-section">
+        <div data-auth="false" class="hidden">
           <h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
           <form id="login-form">
             <div>
@@ -126,28 +134,26 @@
           </form>
         </div>
 
-        <!-- User Info - Hidden when not logged in -->
-        <div id="user-section" class="hidden">
-          <div class="text-center">
-            <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-user w-16 h-16 mx-auto text-primary mb-4">
+        <div data-auth="true" class="hidden text-center">
+          <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-user w-16 h-16 mx-auto text-primary mb-4">
 	
 	<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
 	<circle cx="12" cy="7" r="4"></circle>
 
 </svg>
-            <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
-            <p id="user-email" class="text-lg mb-6"></p>
-            <button id="logout-btn" class="btn btn-outline btn-error btn-block">
-              <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-log-out w-4 h-4 mr-2">
+          <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
+          <p data-email class="text-lg mb-6">
+          </p>
+          <button data-logout class="btn btn-outline btn-error btn-block">
+            <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-log-out w-4 h-4 mr-2">
 	
 	<path d="m16 17 5-5-5-5"></path>
 	<path d="M21 12H9"></path>
 	<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
 
 </svg>
-              Kijelentkezés
-            </button>
-          </div>
+            Kijelentkezés
+          </button>
         </div>
       </div>
     </div>
