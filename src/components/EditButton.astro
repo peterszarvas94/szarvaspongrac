@@ -1,0 +1,25 @@
+---
+import { Pencil, PencilOff } from "lucide-astro";
+---
+
+<button
+  data-auth="true"
+  class="btn"
+>
+  <Pencil
+    class="size-4"
+    data-edit="false"
+  />
+  Szerkesztés
+</button>
+
+<button
+  data-auth="true"
+  class="btn"
+>
+  <PencilOff
+    class="size-4"
+    data-edit="true"
+  />
+  Kilépés a szerkesztésből
+</button>

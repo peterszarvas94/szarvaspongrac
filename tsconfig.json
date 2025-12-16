@@ -29,6 +29,9 @@
       "popover": [
         "public/js/popover.js"
       ],
+      "stateu": [
+        "public/js/state.js"
+      ],
     }
   },
   "include": [
