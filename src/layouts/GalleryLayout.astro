@@ -10,7 +10,6 @@ export interface Props {
   title: string;
   description: string;
   pageTitle: string;
-  galleryTitle: string;
   key: string;
   backHref?: string;
   backText?: string;
@@ -20,7 +19,6 @@ const {
   title,
   description,
   pageTitle,
-  galleryTitle,
   key,
   backHref = "/kepzomuveszet",
   backText = "Vissza a Képzőművészethez",
@@ -31,7 +29,7 @@ const {
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["gallery", "popover"]}
+  scripts={["image-upload", "gallery", "popover"]}
 >
   <PageTitle title={pageTitle} />
 
@@ -39,7 +37,10 @@ const {
   <div
     class="flex flex-col items-center gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
   >
-    <ImageUpload key={key} />
+    <ImageUpload
+      key={key}
+      multiple
+    />
 
     <ImagePopover />
     <ImageGallery key={key} />

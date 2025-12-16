@@ -20,6 +20,9 @@
       "env": [
         "./public/js/env.js"
       ],
+      "image-upload": [
+        "public/js/image-upload.js"
+      ],
       "gallery": [
         "public/js/gallery.js"
       ],

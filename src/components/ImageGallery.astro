@@ -6,12 +6,6 @@ export interface Props {
 }
 
 const { key } = Astro.props;
-// gallery.js
-// 1. load images from db with data-images="oil"
-// 2. clone template for every image
-// 3. append images to gallery
-// popover.js
-// 4. on image click, change popover attributes like src, and show-popover
 ---
 
 {/* image gallery */}
@@ -34,7 +28,6 @@ const { key } = Astro.props;
         aria-label="Kép megnyitása"
         title="Kép megnyitása"
       >
-        {/* src, alt loads on show-popover */}
         <img
           src=""
           alt=""

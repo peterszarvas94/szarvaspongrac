@@ -3,9 +3,10 @@ import { ImagePlus, ImageUp, X } from "lucide-astro";
 
 interface Props {
   key: string;
+  multiple?: boolean;
 }
 
-const { key }: Props = Astro.props;
+const { key, multiple }: Props = Astro.props;
 ---
 
 <form
@@ -26,39 +27,37 @@ const { key }: Props = Astro.props;
         <span class="text-base-content font-medium">Képek kiválasztása</span>
       </div>
     </label>
-    <ul
-      data-files
-      class="w-full"
-    >
-    </ul>
-  </div>
-  <input
-    id="file-upload"
-    type="file"
-    multiple
-    class="hidden"
-    accept="image/*"
-    name="files"
-  />
-  <div class="flex justify-center">
-    <button
-      type="submit"
-      class="btn mt-2"
-    >
-      <ImageUp class="size-6" />
-      Feltöltés
-    </button>
-  </div>
-</form>
 
-<template id="file-row">
-  <li class="flex gap-2 item-center">
-    <button
-      class="btn btn-xs btn-square btn-ghost"
-      type="button"
-    >
-      <X class="text-error size-4" />
-    </button>
-    <span></span>
-  </li>
-</template>
+    <div class="w-full flex flex-wrap justify-between gap-2">
+      <ul data-files></ul>
+      <button
+        type="submit"
+        class="btn mt-2"
+      >
+        <ImageUp class="size-6" />
+        Feltöltés
+      </button>
+    </div>
+
+    <input
+      id="file-upload"
+      type="file"
+      multiple={multiple}
+      class="hidden"
+      accept="image/*"
+      name="files"
+    />
+  </div>
+
+  <template id="file-row">
+    <li class="flex gap-2 item-center">
+      <button
+        class="btn btn-xs btn-square btn-ghost"
+        type="button"
+      >
+        <X class="text-error size-4" />
+      </button>
+      <span></span>
+    </li>
+  </template>
+</form>

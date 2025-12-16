@@ -3,8 +3,10 @@ import BaseLayout from "./BaseLayout.astro";
 import Footer from "../components/Footer.astro";
 import PageTitle from "../components/PageTitle.astro";
 import { Image } from "astro:assets";
+import ImageUpload from "src/components/ImageUpload.astro";
 
 export interface Props {
+  key: string;
   title: string;
   description: string;
   pageTitle?: string;
@@ -15,21 +17,27 @@ export interface Props {
   };
 }
 
-const { title, description, pageTitle, image } = Astro.props;
+const { key, title, description, pageTitle, image } = Astro.props;
 ---
 
 <BaseLayout
   title={title}
   description={description}
   mainClass="py-4"
+  scripts={["image-upload"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     {
-      image && (
+    image && (
+
+        <ImageUpload
+          key={key}
+        />
+
         <figure class="flex flex-col items-center mb-8">
-          {typeof image.src === 'string' ? (
+          {typeof image.src === "string" ? (
             <img
               src={image.src}
               alt={image.alt}
