@@ -2,24 +2,22 @@
 import { Pencil, PencilOff } from "lucide-astro";
 ---
 
-<button
-  data-auth="true"
-  class="btn"
->
-  <Pencil
-    class="size-4"
+<div data-auth="true">
+  <button
+    data-edit-toggle
     data-edit="false"
-  />
-  Szerkesztés
-</button>
+    class="btn"
+  >
+    <Pencil class="size-4" />
+    Szerkesztés
+  </button>
 
-<button
-  data-auth="true"
-  class="btn"
->
-  <PencilOff
-    class="size-4"
+  <button
+    data-edit-toggle
     data-edit="true"
-  />
-  Kilépés a szerkesztésből
-</button>
+    class="btn hidden"
+  >
+    <PencilOff class="size-4" />
+    Kilépés a szerkesztésből
+  </button>
+</div>

@@ -7,6 +7,6 @@
     "image-upload": "/js/image-upload.js",
     "gallery": "/js/gallery.js",
     "popover": "/js/popover.js",
-    "state": "/js/state.js"
+    "edit": "/js/edit.js"
   }
 }

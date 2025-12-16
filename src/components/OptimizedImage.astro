@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image } from "astro:assets";
 
 export interface Props {
   src: string;
@@ -7,43 +7,15 @@ export interface Props {
   width?: number;
   height?: number;
   class?: string;
-  loading?: 'lazy' | 'eager';
+  loading?: "lazy" | "eager";
 }
 
-const { 
-  src, 
-  alt, 
-  width = 300, 
-  height = 400, 
+const {
+  src,
+  alt,
+  width = 300,
+  height = 400,
   class: className = "",
-  loading = "lazy"
+  loading = "lazy",
 } = Astro.props;
-
-// For images in public directory, use regular img tag with cache headers
-if (src.startsWith('/images/')) {
----
-<img 
-  src={src} 
-  alt={alt} 
-  width={width}
-  height={height}
-  class={className}
-  loading={loading}
-  decoding="async"
-/>
----
-} else {
-  // For imported images, use Astro's Image component
-  const image = await import(src);
----
-<Image 
-  src={image.default} 
-  alt={alt} 
-  width={width}
-  height={height}
-  class={className}
-  loading={loading}
-/>
----
-}
 ---

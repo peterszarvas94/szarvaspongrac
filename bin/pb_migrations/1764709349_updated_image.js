@@ -1,42 +1,51 @@
 /// <reference path="../pb_data/types.d.ts" />
-migrate((app) => {
-  const collection = app.findCollectionByNameOrId("pbc_242989748")
+migrate(
+  (app) => {
+    const collection = app.findCollectionByNameOrId("pbc_242989748");
 
-  // update field
-  collection.fields.addAt(2, new Field({
-    "hidden": false,
-    "id": "file2359244304",
-    "maxSelect": 1,
-    "maxSize": 50000000,
-    "mimeTypes": [],
-    "name": "file",
-    "presentable": false,
-    "protected": false,
-    "required": true,
-    "system": false,
-    "thumbs": [],
-    "type": "file"
-  }))
+    // update field
+    collection.fields.addAt(
+      2,
+      new Field({
+        hidden: false,
+        id: "file2359244304",
+        maxSelect: 1,
+        maxSize: 50000000,
+        mimeTypes: [],
+        name: "file",
+        presentable: false,
+        protected: false,
+        required: true,
+        system: false,
+        thumbs: [],
+        type: "file",
+      }),
+    );
 
-  return app.save(collection)
-}, (app) => {
-  const collection = app.findCollectionByNameOrId("pbc_242989748")
+    return app.save(collection);
+  },
+  (app) => {
+    const collection = app.findCollectionByNameOrId("pbc_242989748");
 
-  // update field
-  collection.fields.addAt(2, new Field({
-    "hidden": false,
-    "id": "file2359244304",
-    "maxSelect": 1,
-    "maxSize": 0,
-    "mimeTypes": [],
-    "name": "file",
-    "presentable": false,
-    "protected": false,
-    "required": false,
-    "system": false,
-    "thumbs": [],
-    "type": "file"
-  }))
+    // update field
+    collection.fields.addAt(
+      2,
+      new Field({
+        hidden: false,
+        id: "file2359244304",
+        maxSelect: 1,
+        maxSize: 0,
+        mimeTypes: [],
+        name: "file",
+        presentable: false,
+        protected: false,
+        required: false,
+        system: false,
+        thumbs: [],
+        type: "file",
+      }),
+    );
 
-  return app.save(collection)
-})
+    return app.save(collection);
+  },
+);

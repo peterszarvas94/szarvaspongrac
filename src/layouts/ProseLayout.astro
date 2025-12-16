@@ -4,6 +4,7 @@ import Footer from "../components/Footer.astro";
 import PageTitle from "../components/PageTitle.astro";
 import { Image } from "astro:assets";
 import ImageUpload from "src/components/ImageUpload.astro";
+import EditButton from "src/components/EditButton.astro";
 
 export interface Props {
   key: string;
@@ -24,36 +25,43 @@ const { key, title, description, pageTitle, image } = Astro.props;
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["image-upload", "state"]}
+  scripts={["image-upload", "edit"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     {
-    image && (
+      image && (
+        <>
+          <div class="flex justify-center p-4">
+            <EditButton />
+          </div>
 
-        <ImageUpload
-          key={key}
-        />
+          <div data-edit="true">
+            <ImageUpload key={key} />
+          </div>
 
-        <figure class="flex flex-col items-center mb-8">
-          {typeof image.src === "string" ? (
-            <img
-              src={image.src}
-              alt={image.alt}
-              class="rounded-md w-full max-w-64 h-auto"
-            />
-          ) : (
-            <Image
-              src={image.src}
-              alt={image.alt}
-              class="rounded-md w-full max-w-64 h-auto"
-            />
-          )}
-          <figcaption class="text-base-content/70 italic mt-2">
-            {image.caption}
-          </figcaption>
-        </figure>
+          <div data-edit="false">
+            <figure class="flex flex-col items-center mb-8">
+              {typeof image.src === "string" ? (
+                <img
+                  src={image.src}
+                  alt={image.alt}
+                  class="rounded-md w-full max-w-64 h-auto"
+                />
+              ) : (
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  class="rounded-md w-full max-w-64 h-auto"
+                />
+              )}
+              <figcaption class="text-base-content/70 italic mt-2">
+                {image.caption}
+              </figcaption>
+            </figure>
+          </div>
+        </>
       )
     }
 
