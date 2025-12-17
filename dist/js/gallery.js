@@ -1,32 +1,10 @@
-import PocketBase from "pocketbase";
-import { PB_URL } from "env";
-import { initLogoutButtons } from "auth";
+import { deleteImage, getImageUrls } from "db";
 
-const pb = new PocketBase(PB_URL);
-
-/** @param {string} key */
-async function getImageUrls(key) {
-  try {
-    const images = await pb
-      .collection("image")
-      .getFullList({ filter: `key="${key}"` });
-
-    return images.map((record) => ({
-      id: record.id,
-      url: pb.files.getURL(record, record.file),
-      filename: record.file,
-    }));
-  } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
-  }
-}
-
-async function initImages() {
+async function initGallery() {
   const gallery = /**@type {HTMLDivElement}*/ (
     document.querySelector("[data-images]")
   );
-  const imageTemplate = /**@type {HTMLTemplateElement}*/ (
+  const imageTemplate = /** @type {HTMLTemplateElement} */ (
     document.querySelector("template#image-gallery-item")
   );
   const key = gallery.dataset.images ?? "";
@@ -45,8 +23,6 @@ async function initImages() {
 
     gallery.appendChild(element);
   });
-
-  initLogoutButtons();
 }
 
 export function initDeleteButtons() {
@@ -68,7 +44,7 @@ export function initDeleteButtons() {
       }
 
       try {
-        await pb.collection("image").delete(id);
+        await deleteImage(id);
         window.alert("Törölve");
         // NOTE: should remove manually, not reload
         window.location.reload();
@@ -80,14 +56,39 @@ export function initDeleteButtons() {
   });
 }
 
-async function updateAll() {
-  await initImages();
-  initDeleteButtons();
+function initPopover() {
+  const popover = /** @type {HTMLDivElement}*/ (
+    document.getElementById("image-popover")
+  );
+  const popoverImg = popover.querySelector("img");
+
+  const buttons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    document.querySelectorAll("button[commandfor='image-popover']")
+  );
+
+  buttons.forEach((button) =>
+    button.addEventListener("click", () => {
+      const url = button.querySelector("img")?.getAttribute("src") || "";
+      popoverImg?.setAttribute("src", url);
+    }),
+  );
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      /** @type {HTMLElement | null} */
+      const openPopover = document.querySelector("[popover]:popover-open");
+      if (openPopover) {
+        openPopover.hidePopover();
+      }
+    }
+  });
 }
 
-export async function init() {
-  await updateAll();
-  document.addEventListener("astro:page-load", updateAll);
+async function init() {
+  await initGallery();
+  initDeleteButtons();
+  initPopover();
 }
 
 await init();
+document.addEventListener("astro:page-load", init);

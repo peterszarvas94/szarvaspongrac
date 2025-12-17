@@ -1,5 +1,5 @@
 ---
-import { ImagePlus, ImageUp, X } from "lucide-astro";
+import { ImagePlus, Upload, X } from "lucide-astro";
 
 interface Props {
   key: string;
@@ -39,7 +39,7 @@ const { key, multiple }: Props = Astro.props;
         type="submit"
         class="btn mt-2"
       >
-        <ImageUp class="size-6" />
+        <Upload class="size-4" />
         Feltöltés
       </button>
     </div>

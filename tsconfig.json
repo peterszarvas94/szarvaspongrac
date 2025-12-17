@@ -8,44 +8,18 @@
     "strict": true,
     "baseUrl": ".",
     "paths": {
-      "pocketbase": [
-        "./public/js/pocketbase/pocketbase@0.26.3.es.d.ts"
-      ],
-      "content-manager": [
-        "./public/js/content-manager.js"
-      ],
-      "auth": [
-        "./public/js/auth.js"
-      ],
-      "env": [
-        "./public/js/env.js"
-      ],
-      "image-upload": [
-        "public/js/image-upload.js"
-      ],
-      "gallery": [
-        "public/js/gallery.js"
-      ],
-      "edit": [
-        "public/js/edit.js"
-      ],
-      "prose": [
-        "public/js/prose.js"
-      ],
-      "db": [
-        "public/js/db.js"
-      ],
-      "footer": [
-        "public/js/footer.js"
-      ],
+      "pocketbase": ["./public/js/pocketbase/pocketbase@0.26.3.es.d.ts"],
+      "content-manager": ["./public/js/content-manager.js"],
+      "auth": ["./public/js/auth.js"],
+      "env": ["./public/js/env.js"],
+      "image-upload": ["public/js/image-upload.js"],
+      "gallery": ["public/js/gallery.js"],
+      "edit": ["public/js/edit.js"],
+      "prose": ["public/js/prose.js"],
+      "db": ["public/js/db.js"],
+      "footer": ["public/js/footer.js"]
     }
   },
-  "include": [
-    ".astro/types.d.ts",
-    "**/*",
-    "**/*.js"
-  ],
-  "exclude": [
-    "dist"
-  ]
+  "include": [".astro/types.d.ts", "**/*", "**/*.js"],
+  "exclude": ["dist"]
 }
