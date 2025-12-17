@@ -30,17 +30,3 @@ import { Copyright, Mail, Phone, Settings } from "@lucide/astro";
     </div>
   </div>
 </footer>
-
-<script>
-  // Dynamic copyright year
-  const currentYear = new Date().getFullYear();
-  const yearElement = document.querySelector("[data-copyright-year]");
-
-  if (yearElement) {
-    if (currentYear === 2025) {
-      yearElement.textContent = "2025";
-    } else {
-      yearElement.textContent = `2025-${currentYear}`;
-    }
-  }
-</script>

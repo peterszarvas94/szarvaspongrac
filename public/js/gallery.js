@@ -72,6 +72,16 @@ function initPopover() {
       popoverImg?.setAttribute("src", url);
     }),
   );
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      /** @type {HTMLElement | null} */
+      const openPopover = document.querySelector("[popover]:popover-open");
+      if (openPopover) {
+        openPopover.hidePopover();
+      }
+    }
+  });
 }
 
 async function init() {

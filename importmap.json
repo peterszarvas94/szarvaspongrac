@@ -8,6 +8,7 @@
     "gallery": "/js/gallery.js",
     "edit": "/js/edit.js",
     "prose": "/js/prose.js",
-    "db": "/js/db.js"
+    "db": "/js/db.js",
+    "footer": "/js/footer.js"
   }
 }

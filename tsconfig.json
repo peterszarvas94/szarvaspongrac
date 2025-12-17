@@ -34,7 +34,10 @@
       ],
       "db": [
         "public/js/db.js"
-      ]
+      ],
+      "footer": [
+        "public/js/footer.js"
+      ],
     }
   },
   "include": [
