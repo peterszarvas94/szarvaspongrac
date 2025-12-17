@@ -57,7 +57,7 @@ export function updateAuthForm() {
     (form.querySelector("#message"));
 
   if (document.getElementById("login-section")) {
-    updateElements();
+    initLogoutButtons();
   }
 
   form.addEventListener("submit", async (e) => {
@@ -67,7 +67,7 @@ export function updateAuthForm() {
 
     try {
       await login(email, password);
-      setTimeout(() => updateElements(), 100);
+      setTimeout(() => initLogoutButtons(), 100);
     } catch (error) {
       messageDiv.textContent = "Hibás email vagy jelszó.";
       messageDiv.className = "mt-4 text-center text-error";
@@ -75,7 +75,7 @@ export function updateAuthForm() {
   });
 }
 
-export function updateElements() {
+export function initLogoutButtons() {
   const logoutButtons = document.querySelectorAll("[data-logout]");
   logoutButtons.forEach((button) =>
     button.addEventListener(
@@ -83,7 +83,7 @@ export function updateElements() {
       async () => {
         await logout();
 
-        setTimeout(() => updateElements(), 100);
+        setTimeout(() => initLogoutButtons(), 100);
       },
       { once: true },
     ),
@@ -114,7 +114,7 @@ export function updateElements() {
 
 async function updateAll() {
   updateAuthForm();
-  updateElements();
+  initLogoutButtons();
 }
 
 export async function init() {

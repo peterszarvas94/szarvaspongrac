@@ -7,6 +7,8 @@
     "image-upload": "/js/image-upload.js",
     "gallery": "/js/gallery.js",
     "popover": "/js/popover.js",
-    "edit": "/js/edit.js"
+    "edit": "/js/edit.js",
+    "prose": "/js/prose.js",
+    "db": "/js/db.js"
   }
 }

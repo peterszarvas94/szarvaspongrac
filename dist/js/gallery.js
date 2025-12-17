@@ -1,6 +1,6 @@
 import PocketBase from "pocketbase";
 import { PB_URL } from "env";
-import { updateElements } from "auth";
+import { initLogoutButtons } from "auth";
 
 const pb = new PocketBase(PB_URL);
 
@@ -46,10 +46,10 @@ async function initImages() {
     gallery.appendChild(element);
   });
 
-  updateElements();
+  initLogoutButtons();
 }
 
-function initDeleteButtons() {
+export function initDeleteButtons() {
   /** @type {NodeListOf<HTMLButtonElement>} */
   const deleteButtons = document.querySelectorAll("[data-delete]");
 

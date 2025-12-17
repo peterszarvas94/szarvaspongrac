@@ -12,8 +12,6 @@ export interface Props {
   description: string;
   pageTitle?: string;
   image?: {
-    src: any;
-    alt: string;
     caption: string;
   };
 }
@@ -25,7 +23,7 @@ const { key, title, description, pageTitle, image } = Astro.props;
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["image-upload", "edit"]}
+  scripts={["image-upload", "prose"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
@@ -33,29 +31,16 @@ const { key, title, description, pageTitle, image } = Astro.props;
     {
       image && (
         <>
-          <div class="flex justify-center p-4">
-            <EditButton />
-          </div>
+          <EditButton />
 
-          <div data-edit="true">
-            <ImageUpload key={key} />
-          </div>
+          <ImageUpload key={key} />
 
           <div data-edit="false">
             <figure class="flex flex-col items-center mb-8">
-              {typeof image.src === "string" ? (
-                <img
-                  src={image.src}
-                  alt={image.alt}
-                  class="rounded-md w-full max-w-64 h-auto"
-                />
-              ) : (
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  class="rounded-md w-full max-w-64 h-auto"
-                />
-              )}
+              <img
+                data-image="cv"
+                class="rounded-md w-full max-w-64 h-auto"
+              />
               <figcaption class="text-base-content/70 italic mt-2">
                 {image.caption}
               </figcaption>

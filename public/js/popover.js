@@ -1,14 +1,6 @@
-function initPopover() {
+function init() {
   console.log("initialized popover, todo...");
 }
 
-function updateAll() {
-  initPopover();
-}
-
-export function init() {
-  updateAll();
-  document.addEventListener("astro:page-load", updateAll);
-}
-
 init();
+document.addEventListener("astro:page-load", init);

@@ -10,11 +10,14 @@ const { key, multiple }: Props = Astro.props;
 ---
 
 <form
-  data-auth="true"
+  data-edit="true"
   class="hidden max-w-xl mx-auto w-full"
   data-upload={key}
 >
-  <div class="flex gap-2 flex-wrap">
+  <div
+    data-auth="true"
+    class="w-full flex gap-2 flex-wrap"
+  >
     <label
       for="file-upload"
       class="cursor-pointer w-full block"
@@ -24,7 +27,9 @@ const { key, multiple }: Props = Astro.props;
         class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full"
       >
         <ImagePlus class="w-10 h-10 text-base-content opacity-60" />
-        <span class="text-base-content font-medium">Képek kiválasztása</span>
+        <span class="text-base-content font-medium">
+          {multiple ? "Képek kiválasztása" : "Kép kiválasztása"}
+        </span>
       </div>
     </label>
 
@@ -48,16 +53,16 @@ const { key, multiple }: Props = Astro.props;
       name="files"
     />
   </div>
-
-  <template id="file-row">
-    <li class="flex gap-2 item-center">
-      <button
-        class="btn btn-xs btn-square btn-ghost"
-        type="button"
-      >
-        <X class="text-error size-4" />
-      </button>
-      <span></span>
-    </li>
-  </template>
 </form>
+
+<template id="file-row">
+  <li class="flex gap-2 item-center">
+    <button
+      class="btn btn-xs btn-square btn-ghost"
+      type="button"
+    >
+      <X class="text-error size-4" />
+    </button>
+    <span></span>
+  </li>
+</template>

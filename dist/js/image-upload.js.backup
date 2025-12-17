@@ -126,10 +126,6 @@ async function replaceSingleItem(key, file) {
         alert("Nem sikerült a feltöltés");
         console.error("Upload error:", e);
       });
-
-    alert("Sikeres feltöltés");
-    // TODO: change item instead of reloading
-    window.location.reload();
   } catch (e) {
     console.error("Unexpected error:", e);
   }
@@ -155,7 +151,7 @@ async function batchUpload(key, files) {
   }
 }
 
-function init() {
+function initUploadForm() {
   const uploadForm = /** @type {HTMLFormElement} */ (
     document.querySelector("[data-upload]")
   );
@@ -219,5 +215,13 @@ function init() {
   });
 }
 
-init();
-document.addEventListener("astro:page-load", init);
+async function updateAll() {
+  initUploadForm();
+}
+
+export async function init() {
+  await updateAll();
+  document.addEventListener("astro:page-load", updateAll);
+}
+
+await init();

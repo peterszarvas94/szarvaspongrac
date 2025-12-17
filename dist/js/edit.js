@@ -16,11 +16,11 @@ function updateEditUI() {
   const editElements = document.querySelectorAll("[data-edit]");
   editElements.forEach((element) => {
     const edit = element.dataset.edit;
-    if (edit && !editMode) {
+    if (edit !== String(editMode)) {
       element.classList.add("hidden");
     }
 
-    if (!edit && editMode) {
+    if (edit === String(editMode)) {
       element.classList.remove("hidden");
     }
   });

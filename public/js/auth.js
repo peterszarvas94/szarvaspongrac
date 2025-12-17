@@ -1,40 +1,4 @@
-import PocketBase from "pocketbase";
-import { PB_URL } from "env";
-
-const pb = new PocketBase(PB_URL);
-
-/**
- * @param {string} email
- * @param {string} password
- */
-async function login(email, password) {
-  try {
-    await pb.collection("_superusers").authWithPassword(email, password);
-  } catch (error) {
-    console.error("Login failed:", error);
-    throw error;
-  }
-}
-
-async function logout() {
-  try {
-    pb.authStore.clear();
-  } catch (error) {
-    console.error("Logout failed:", error);
-    throw error;
-  }
-}
-
-function isAuthenticated() {
-  return pb.authStore.isValid;
-}
-
-/**
- * @returns {Object | null} User data or null
- */
-function getCurrentUser() {
-  return pb.authStore.record;
-}
+import { getCurrentUser, isAuthenticated, login, logout } from "db";
 
 export function updateAuthForm() {
   const form =
@@ -57,7 +21,7 @@ export function updateAuthForm() {
     (form.querySelector("#message"));
 
   if (document.getElementById("login-section")) {
-    updateElements();
+    initLogoutButtons();
   }
 
   form.addEventListener("submit", async (e) => {
@@ -67,7 +31,7 @@ export function updateAuthForm() {
 
     try {
       await login(email, password);
-      setTimeout(() => updateElements(), 100);
+      setTimeout(() => initLogoutButtons(), 100);
     } catch (error) {
       messageDiv.textContent = "Hibás email vagy jelszó.";
       messageDiv.className = "mt-4 text-center text-error";
@@ -75,15 +39,14 @@ export function updateAuthForm() {
   });
 }
 
-export function updateElements() {
+export function initLogoutButtons() {
   const logoutButtons = document.querySelectorAll("[data-logout]");
   logoutButtons.forEach((button) =>
     button.addEventListener(
       "click",
       async () => {
         await logout();
-
-        setTimeout(() => updateElements(), 100);
+        setTimeout(() => initLogoutButtons(), 100);
       },
       { once: true },
     ),
@@ -112,17 +75,10 @@ export function updateElements() {
   }
 }
 
-async function updateAll() {
+async function init() {
   updateAuthForm();
-  updateElements();
-}
-
-export async function init() {
-  // first update on load
-  updateAll();
-
-  // dev server page nav
-  document.addEventListener("astro:page-load", updateAll);
+  initLogoutButtons();
 }
 
 init();
+document.addEventListener("astro:page-load", init);

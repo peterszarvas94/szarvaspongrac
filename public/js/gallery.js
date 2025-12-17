@@ -1,36 +1,14 @@
-import PocketBase from "pocketbase";
-import { PB_URL } from "env";
-import { updateElements } from "auth";
+import { deleteImage, getImageUrls } from "db";
 
-const pb = new PocketBase(PB_URL);
-
-/** @param {string} key */
-async function getImageUrls(key) {
-  try {
-    const images = await pb
-      .collection("image")
-      .getFullList({ filter: `key="${key}"` });
-
-    return images.map((record) => ({
-      id: record.id,
-      url: pb.files.getURL(record, record.file),
-      filename: record.file,
-    }));
-  } catch (error) {
-    console.error("Fetch error:", error);
-    throw error;
-  }
-}
-
-async function initImages() {
+async function initGallery() {
   const gallery = /**@type {HTMLDivElement}*/ (
     document.querySelector("[data-images]")
   );
-  const imageTemplate = /**@type {HTMLTemplateElement}*/ (
+  const imageTemplate = /** @type {HTMLTemplateElement} */ (
     document.querySelector("template#image-gallery-item")
   );
   const key = gallery.dataset.images ?? "";
-  const images = await getImageUrls(key);
+  const images = (await getImageUrls(key)) ?? [];
   images.forEach((image) => {
     const element = /** @type {DocumentFragment} */ (
       imageTemplate.content.cloneNode(true)
@@ -45,11 +23,9 @@ async function initImages() {
 
     gallery.appendChild(element);
   });
-
-  updateElements();
 }
 
-function initDeleteButtons() {
+export function initDeleteButtons() {
   /** @type {NodeListOf<HTMLButtonElement>} */
   const deleteButtons = document.querySelectorAll("[data-delete]");
 
@@ -68,7 +44,7 @@ function initDeleteButtons() {
       }
 
       try {
-        await pb.collection("image").delete(id);
+        await deleteImage(id);
         window.alert("Törölve");
         // NOTE: should remove manually, not reload
         window.location.reload();
@@ -80,14 +56,10 @@ function initDeleteButtons() {
   });
 }
 
-async function updateAll() {
-  await initImages();
+async function init() {
+  await initGallery();
   initDeleteButtons();
 }
 
-export async function init() {
-  await updateAll();
-  document.addEventListener("astro:page-load", updateAll);
-}
-
 await init();
+document.addEventListener("astro:page-load", init);
