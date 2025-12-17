@@ -26,9 +26,6 @@
       "gallery": [
         "public/js/gallery.js"
       ],
-      "popover": [
-        "public/js/popover.js"
-      ],
       "edit": [
         "public/js/edit.js"
       ],

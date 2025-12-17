@@ -59,6 +59,8 @@ export function initDeleteButtons() {
 async function init() {
   await initGallery();
   initDeleteButtons();
+  // TODO:
+  // initPopover
 }
 
 await init();
