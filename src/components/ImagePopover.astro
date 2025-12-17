@@ -19,26 +19,10 @@ import { X } from "lucide-astro";
     >
       <X class="w-6 h-6 text-base-100" />
     </button>
-    {/* src, alt loads on show-popover */}
     <img
       src=""
       alt=""
-      width={1200}
-      height={900}
-      class="max-w-full max-h-full object-contain"
+      class="w-auto max-w-full max-h-full object-contain"
     />
   </div>
 </div>
-
-<script is:inline>
-  // Escape key closes open popover
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      /** @type {HTMLElement | null} */
-      const openPopover = document.querySelector("[popover]:popover-open");
-      if (openPopover) {
-        openPopover.hidePopover();
-      }
-    }
-  });
-</script>

@@ -8,7 +8,7 @@ async function initGallery() {
     document.querySelector("template#image-gallery-item")
   );
   const key = gallery.dataset.images ?? "";
-  const images = (await getImageUrls(key)) ?? [];
+  const images = await getImageUrls(key);
   images.forEach((image) => {
     const element = /** @type {DocumentFragment} */ (
       imageTemplate.content.cloneNode(true)
@@ -56,11 +56,28 @@ export function initDeleteButtons() {
   });
 }
 
+function initPopover() {
+  const popover = /** @type {HTMLDivElement}*/ (
+    document.getElementById("image-popover")
+  );
+  const popoverImg = popover.querySelector("img");
+
+  const buttons = /** @type {NodeListOf<HTMLButtonElement>} */ (
+    document.querySelectorAll("button[commandfor='image-popover']")
+  );
+
+  buttons.forEach((button) =>
+    button.addEventListener("click", () => {
+      const url = button.querySelector("img")?.getAttribute("src") || "";
+      popoverImg?.setAttribute("src", url);
+    }),
+  );
+}
+
 async function init() {
   await initGallery();
   initDeleteButtons();
-  // TODO:
-  // initPopover
+  initPopover();
 }
 
 await init();
