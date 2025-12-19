@@ -22,7 +22,7 @@ const { key, title, description, pageTitle, image } = Astro.props;
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["image-upload", "prose"]}
+  scripts={["image-upload", "prose", "richtext"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
@@ -32,6 +32,12 @@ const { key, title, description, pageTitle, image } = Astro.props;
         <>
           <EditButton />
 
+          <div class="mb-4">
+            <div id="editor" data-key={key}></div>
+            <button id="save-button" class="btn btn-primary">
+              Mentés
+            </button>
+          </div>
           <ImageUpload key={key} />
 
           <div data-edit="false">
