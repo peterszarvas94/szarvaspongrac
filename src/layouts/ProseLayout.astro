@@ -2,8 +2,8 @@
 import BaseLayout from "./BaseLayout.astro";
 import Footer from "../components/Footer.astro";
 import PageTitle from "../components/PageTitle.astro";
-import ImageUpload from "src/components/ImageUpload.astro";
-import EditButton from "src/components/EditButton.astro";
+import ImageUpload from "../components/ImageUpload.astro";
+import EditButton from "../components/EditButton.astro";
 
 export interface Props {
   key: string;
@@ -22,7 +22,7 @@ const { key, title, description, pageTitle, image } = Astro.props;
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["image-upload", "prose", "richtext"]}
+  scripts={["richtext", "image-upload", "prose"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
@@ -32,12 +32,14 @@ const { key, title, description, pageTitle, image } = Astro.props;
         <>
           <EditButton />
 
-          <div class="mb-4">
-            <div id="editor" data-key={key}></div>
-            <button id="save-button" class="btn btn-primary">
-              Mentés
-            </button>
+          <div id="editor">
+            <h2>Demo Content</h2>
+            <p>
+              Preset build with <code>snow</code> theme, and some common
+              formats.
+            </p>
           </div>
+
           <ImageUpload key={key} />
 
           <div data-edit="false">

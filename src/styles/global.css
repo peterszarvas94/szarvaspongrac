@@ -1,7 +1,4 @@
-/* Quill Editor Styles */
-@import url("/css/quill/quill.core.css");
-@import url("/css/quill/quill.snow.css");
-
+@import "./pell.css";
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 @plugin "daisyui" {

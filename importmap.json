@@ -1,7 +1,7 @@
 {
   "imports": {
-    "pocketbase": "/js/pocketbase/pocketbase@0.26.3.es.js",
-    "quill": "/js/quill/quill.js",
+    "pocketbase": "/js/pocketbase/dist/pocketbase.es.js",
+    "pell": "/js/pell/dist/pell.js",
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
     "auth": "/js/auth.js",
@@ -10,7 +10,6 @@
     "edit": "/js/edit.js",
     "prose": "/js/prose.js",
     "db": "/js/db.js",
-    "footer": "/js/footer.js",
-    "richtext": "/js/richtext.js"
+    "footer": "/js/footer.js"
   }
 }

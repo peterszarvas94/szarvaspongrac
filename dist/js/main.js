@@ -3,3 +3,4 @@ import "auth";
 import "edit";
 import "content-manager";
 import "footer";
+import tinymce from "tinymce";
