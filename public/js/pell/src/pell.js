@@ -7,7 +7,7 @@ const createElement = (tag) => document.createElement(tag);
 const queryCommandState = (command) => document.queryCommandState(command);
 const queryCommandValue = (command) => document.queryCommandValue(command);
 
-export const exec = (command, value = null) =>
+const exec = (command, value = null) =>
   document.execCommand(command, false, value);
 
 const defaultActions = {
@@ -100,7 +100,7 @@ const defaultClasses = {
   selected: "pell-button-selected",
 };
 
-export const init = (settings) => {
+const init = (settings) => {
   const actions = settings.actions
     ? settings.actions.map((action) => {
         if (typeof action === "string") return defaultActions[action];
@@ -164,4 +164,4 @@ export const init = (settings) => {
   return settings.element;
 };
 
-export default { exec, init };
+export { queryCommandState, exec, init };

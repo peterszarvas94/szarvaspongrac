@@ -1,15 +1,29 @@
 import { updateElementsOnPage } from "content-manager";
-import pell from "pell";
-const { exec, init } = pell;
+import { exec, init, queryCommandState } from "pell";
 
+// TODO:
+// - make this dynamic by key so its reusable
+// - replace all icons with lucide icons
 const settings = {
   element: document.getElementById("editor"),
   onChange: (html) => console.log(html),
   // defaultParagraphSeparator: "div",
-  styleWithCSS: false,
+  styleWithCSS: true,
   actions: [
-    "bold",
-    "italic",
+    {
+      name: "bold",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bold-icon lucide-bold"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/></svg>',
+      title: "Bold",
+      state: () => queryCommandState("bold"),
+      result: () => exec("bold"),
+    },
+    {
+      name: "italic",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-italic-icon lucide-italic"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>',
+      title: "Italic",
+      state: () => queryCommandState("italic"),
+      result: () => exec("italic"),
+    },
     "underline",
     "strikethrough",
     "heading1",
@@ -21,7 +35,16 @@ const settings = {
     "code",
     "line",
     "link",
-    "image",
+    {
+      name: "image",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-icon lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
+      title: "Image",
+      result: () => {
+        // TODO: file selector + upload to pb
+        const url = window.prompt("Enter the image URL");
+        if (url) exec("insertImage", url);
+      },
+    },
     {
       name: "justifyLeft",
       icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-text-align-start-icon lucide-text-align-start"><path d="M21 5H3"/><path d="M15 12H3"/><path d="M17 19H3"/></svg>',
@@ -54,7 +77,7 @@ const settings = {
     },
     {
       name: "superscript",
-      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-superscript-icon lucide-superscript"><path d="m4 19 8-8"/><path d="m12 19-8-8"/><path d="M20 12h-4c0-1.5.442-2 1.5-2.5S20 8.334 20 7.002c0-.472-.17-.93-.484-1.29a2.105 2.105 0 0 0-2.617-.436c-.42.239-.738.614-.899 1.06"/></svg>',
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-superscript-icon lucide-superscript"><path d="m4 19 8-8"/><path d="m12 19-8-8"/><path d="M20 12h-4c0-1.5.442-2 1.5-2.5S20 8.334 20 7.002c0-.472-.17-.93-.484-1.29a2.105 2.105 0 0 0-2.617-.436c-.42.239-.738.614-.899 1.06"/></svg>',
       title: "Superscript",
       result: () => exec("superscript"),
     },
@@ -70,7 +93,6 @@ const settings = {
       title: "Redo",
       resutl: () => exec("redo"),
     },
-
     // "fontName",
     // "fontSize",
     // "indent",
