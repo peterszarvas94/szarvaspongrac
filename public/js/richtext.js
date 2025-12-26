@@ -1,7 +1,13 @@
 import { updateContentsOnPage } from "content-manager";
 import { uploadImage } from "image-upload";
 import { getURLFromRecord } from "db";
-import { formatBlock, exec, init as initEditor, queryCommandState } from "pell";
+import {
+  insertImage,
+  formatBlock,
+  exec,
+  init as initEditor,
+  queryCommandState,
+} from "pell";
 
 let currentHtml = "";
 
@@ -105,8 +111,7 @@ const actions = [
         if (file && file.name !== "") {
           const created = await uploadImage({ key: "test", file });
           const url = getURLFromRecord(created);
-          // TODO: somehow style this?
-          if (url) exec("insertImage", url);
+          if (url) insertImage(url);
           document.body.removeChild(input);
         }
       });
@@ -173,7 +178,7 @@ function getSettings(element, key) {
   return {
     element,
     content: `<div data-content="${key}"></div>`,
-    styleWithCSS: true,
+    styleWithCSS: false,
     actions,
     onChange: (html) => (currentHtml = html),
     // defaultParagraphSeparator: "div",

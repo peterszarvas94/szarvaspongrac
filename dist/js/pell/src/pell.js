@@ -10,6 +10,14 @@ const queryCommandValue = (command) => document.queryCommandValue(command);
 export const exec = (command, value = null) =>
   document.execCommand(command, false, value);
 
+function insertImage(url) {
+  const img = document.createElement("img");
+  img.src = url;
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+  sel.getRangeAt(0).insertNode(img);
+}
+
 const defaultActions = {
   bold: {
     icon: "<b>B</b>",

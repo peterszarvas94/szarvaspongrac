@@ -1,14 +1,32 @@
 const defaultParagraphSeparatorString = "defaultParagraphSeparator";
-const formatBlock = "formatBlock";
+export const formatBlock = "formatBlock";
 const addEventListener = (parent, type, listener) =>
   parent.addEventListener(type, listener);
 const appendChild = (parent, child) => parent.appendChild(child);
 const createElement = (tag) => document.createElement(tag);
-const queryCommandState = (command) => document.queryCommandState(command);
+export const queryCommandState = (command) =>
+  document.queryCommandState(command);
 const queryCommandValue = (command) => document.queryCommandValue(command);
 
-const exec = (command, value = null) =>
+export const exec = (command, value = null) =>
   document.execCommand(command, false, value);
+
+export function insertImage(url) {
+  const imgWrapper = document.createElement("div");
+  imgWrapper.classList.add("pell-img-wrapper");
+  const img = document.createElement("img");
+  img.src = url;
+  imgWrapper.appendChild(img);
+
+  const sel = window.getSelection();
+  if (!sel.rangeCount) return;
+
+  const range = sel.getRangeAt(0);
+  let node = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+
+  node.after(imgWrapper);
+}
 
 const defaultActions = {
   bold: {
@@ -100,7 +118,7 @@ const defaultClasses = {
   selected: "pell-button-selected",
 };
 
-const init = (settings) => {
+export const init = (settings) => {
   const actions = settings.actions
     ? settings.actions.map((action) => {
         if (typeof action === "string") return defaultActions[action];
@@ -163,5 +181,3 @@ const init = (settings) => {
   exec(defaultParagraphSeparatorString, defaultParagraphSeparator);
   return settings.element;
 };
-
-export { formatBlock, queryCommandState, exec, init };

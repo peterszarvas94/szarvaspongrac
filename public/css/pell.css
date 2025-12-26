@@ -33,3 +33,27 @@
 .pell-button-selected {
   background-color: #f0f0f0;
 }
+
+.pell-img-wrapper {
+  display: flex;
+
+  img {
+    display: block;
+  }
+
+  &:has(img[style*="text-align: left;"]) {
+    justify-content: flex-start;
+  }
+
+  &:has(img[style*="text-align: center;"]) {
+    justify-content: center;
+  }
+
+  &:has(img[style*="text-align: right;"]) {
+    justify-content: flex-end;
+  }
+
+  &:has(img[style*="text-align: justify;"]) {
+    justify-content: space-between;
+  }
+}
