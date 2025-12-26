@@ -12,6 +12,7 @@ async function updateElementsOnPage(collection, transformer) {
 
   const filters = elements
     .map((element) => element.dataset[collection])
+
     .filter((key) => key !== undefined)
     .map((key) => createFilter(key));
 

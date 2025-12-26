@@ -1,7 +1,7 @@
 {
   "imports": {
     "pocketbase": "/js/pocketbase/dist/pocketbase.es.js",
-    "pell": "/js/pell/dist/pell.js",
+    "pell": "/js/pell/src/pell.js",
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
     "auth": "/js/auth.js",

@@ -1,142 +1,82 @@
-import "quill";
-import { pb } from "db";
+import pell from "pell";
+const { exec, init } = pell;
 
-/* eslint-disable */
-
-// Initialize Quill editor
-const initQuill = () => {
-  const editorElement = document.getElementById("editor");
-  if (!editorElement || !window.Quill) return;
-
-  const quill = new window.Quill("#editor", {
-    theme: "snow",
-    modules: {
-      toolbar: [
-        [{ header: [1, 2, 3, false] }],
-        ["bold", "italic", "underline", "strike"],
-        [{ list: "ordered" }, { list: "bullet" }],
-        ["link"],
-        ["clean"],
-      ],
+const settings = {
+  element: document.getElementById("editor"),
+  onChange: (html) => console.log(html),
+  // defaultParagraphSeparator: "div",
+  styleWithCSS: false,
+  actions: [
+    "bold",
+    "italic",
+    "underline",
+    "strikethrough",
+    "heading1",
+    "heading2",
+    "paragraph",
+    "quote",
+    "olist",
+    "ulist",
+    "code",
+    "line",
+    "link",
+    "image",
+    {
+      name: "justifyLeft",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-text-align-start-icon lucide-text-align-start"><path d="M21 5H3"/><path d="M15 12H3"/><path d="M17 19H3"/></svg>',
+      title: "Justify left",
+      result: () => exec("justifyLeft"),
     },
-    placeholder: "Írj valamit...",
-  });
+    {
+      name: "justifyCenter",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-text-align-center-icon lucide-text-align-center"><path d="M21 5H3"/><path d="M17 12H7"/><path d="M19 19H5"/></svg>',
+      title: "Justify center",
+      result: () => exec("justifyCenter"),
+    },
+    {
+      name: "justifyRight",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-text-align-end-icon lucide-text-align-end"><path d="M21 5H3"/><path d="M21 12H9"/><path d="M21 19H7"/></svg>',
+      title: "Justify right",
+      result: () => exec("justifyRight"),
+    },
+    {
+      name: "justifyFull",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-text-align-justify-icon lucide-text-align-justify"><path d="M3 5h18"/><path d="M3 12h18"/><path d="M3 19h18"/></svg>',
+      title: "Justify full",
+      result: () => exec("justifyFull"),
+    },
+    {
+      name: "subscript",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-subscript-icon lucide-subscript"><path d="m4 5 8 8"/><path d="m12 5-8 8"/><path d="M20 19h-4c0-1.5.44-2 1.5-2.5S20 15.33 20 14c0-.47-.17-.93-.48-1.29a2.11 2.11 0 0 0-2.62-.44c-.42.24-.74.62-.9 1.07"/></svg>',
+      title: "Subscript",
+      result: () => exec("subscript"),
+    },
+    {
+      name: "superscript",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-superscript-icon lucide-superscript"><path d="m4 19 8-8"/><path d="m12 19-8-8"/><path d="M20 12h-4c0-1.5.442-2 1.5-2.5S20 8.334 20 7.002c0-.472-.17-.93-.484-1.29a2.105 2.105 0 0 0-2.617-.436c-.42.239-.738.614-.899 1.06"/></svg>',
+      title: "Superscript",
+      result: () => exec("superscript"),
+    },
+    {
+      name: "undo",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo-icon lucide-undo"><path d="M3 7v6h6"/><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>',
+      title: "Undo",
+      result: () => exec("undo"),
+    },
+    {
+      name: "redo",
+      icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-redo-icon lucide-redo"><path d="M21 7v6h-6"/><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3l3 2.7"/></svg>',
+      title: "Redo",
+      resutl: () => exec("redo"),
+    },
 
-  // Make quill instance globally accessible
-  window.quill = quill;
-
-  // Load initial content if there's a data-key
-  loadInitialContent();
+    // "fontName",
+    // "fontSize",
+    // "indent",
+    // "outdent",
+    // "clearFormatting",
+  ],
+  content: "<h1>hello world</h1>",
 };
 
-// Content operations
-async function loadInitialContent() {
-  const editorElement = document.getElementById("editor");
-  const dataKey = editorElement?.dataset?.key;
-  if (!dataKey) return;
-
-  try {
-    // Get content from PocketBase
-    const record = await pb
-      .collection("content")
-      .getFirstListItem(`key="${dataKey}"`);
-    if (record && record.value && window.quill) {
-      window.quill.root.innerHTML = record.value;
-    }
-  } catch (error) {
-    console.error("Failed to load content:", error);
-  }
-}
-
-// Save content to PocketBase
-let isSaving = false;
-async function saveContent() {
-  if (!window.quill || isSaving) return;
-
-  isSaving = true;
-  const saveButton = document.getElementById("save-button");
-  if (saveButton) {
-    saveButton.disabled = true;
-    saveButton.textContent = "Mentés...";
-  }
-
-  try {
-    const editorElement = document.getElementById("editor");
-    const dataKey = editorElement?.dataset?.key;
-
-    if (!dataKey) {
-      throw new Error("No data-key found on editor element");
-    }
-
-    const content = window.quill.root.innerHTML;
-
-    // Check if record exists
-    const existingRecord = await pb
-      .collection("content")
-      .getFirstListItem(`key="${dataKey}"`);
-
-    if (existingRecord) {
-      // Update existing record
-      await pb
-        .collection("content")
-        .update(existingRecord.id, { value: content });
-    } else {
-      // Create new record
-      await pb.collection("content").create({ key: dataKey, value: content });
-    }
-
-    if (saveButton) {
-      saveButton.disabled = false;
-      saveButton.textContent = "Mentve";
-    }
-
-    console.log("Content saved successfully");
-  } catch (error) {
-    console.error("Failed to save content:", error);
-
-    if (saveButton) {
-      saveButton.disabled = false;
-      saveButton.textContent = "Hiba!";
-    }
-
-    alert("Hiba történt a mentés során: " + error.message);
-  } finally {
-    isSaving = false;
-  }
-}
-
-// Get current content
-function getContent() {
-  return window.quill ? window.quill.root.innerHTML : "";
-}
-
-// Set content
-function setContent(html) {
-  if (window.quill) {
-    window.quill.root.innerHTML = html;
-  }
-}
-
-// Initialize when DOM is ready
-const init = () => {
-  initQuill();
-
-  // Add save button functionality if it exists
-  const saveButton = document.getElementById("save-button");
-  if (saveButton) {
-    saveButton.addEventListener("click", saveContent);
-  }
-
-  // Expose functions globally
-  window.quillAPI = {
-    save: saveContent,
-    getContent: getContent,
-    setContent: setContent,
-  };
-};
-
-if (document.readyState === "loading") {
-  document.addEventListener("DOMContentLoaded", init);
-} else {
-  init();
-}
+init(settings);

@@ -12,8 +12,8 @@
 
     <script type="importmap">{
   "imports": {
-    "pocketbase": "/js/pocketbase/pocketbase@0.26.3.es.js",
-    "quill": "/js/quill/quill.js",
+    "pocketbase": "/js/pocketbase/dist/pocketbase.es.js",
+    "pell": "/js/pell/src/pell.js",
     "content-manager": "/js/content-manager.js",
     "env": "/js/env.js",
     "auth": "/js/auth.js",
@@ -22,23 +22,12 @@
     "edit": "/js/edit.js",
     "prose": "/js/prose.js",
     "db": "/js/db.js",
-    "footer": "/js/footer.js",
-    "richtext": "/js/richtext.js"
+    "footer": "/js/footer.js"
   }
 }</script>
     <script type="module" src="/js/main.js"></script>
-    <script type="module" src="/js/image-upload.js"></script><script type="module" src="/js/prose.js"></script><script type="module" src="/js/richtext.js"></script>
-    <!-- <script type="speculationrules" is:raw is:inline> -->
-    <!--   { -->
-    <!--     "prefetch": [ -->
-    <!--       { -->
-    <!--         "where": { "href_matches": "*" }, -->
-    <!--         "eagerness": "eager" -->
-    <!--       } -->
-    <!--     ] -->
-    <!--   } -->
-    <!-- </script> -->
-  <link rel="stylesheet" href="/assets/kapcsolat.BE8HNZgR.css"></head>
+    <script type="module" src="/js/richtext.js"></script><script type="module" src="/js/image-upload.js"></script><script type="module" src="/js/prose.js"></script>
+  <link rel="stylesheet" href="/assets/kapcsolat.WyXaEaMY.css"></head>
   <body class="bg-base-200 min-h-screen relative font-inter">
     <header class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
@@ -119,12 +108,10 @@
   </button>
 </div>
 
-          <div class="mb-4">
-            <div id="editor" data-key="cv"></div>
-            <button id="save-button" class="btn btn-primary">
-              Mentés
-            </button>
+          <div class="prose max-w-[unset] border">
+            <div id="editor"></div>
           </div>
+
           <form data-edit="true" class="hidden max-w-xl mx-auto w-full" data-upload="cv">
   <div data-auth="true" class="w-full flex gap-2 flex-wrap">
     <label for="file-upload" class="cursor-pointer w-full block" tabindex="0">
