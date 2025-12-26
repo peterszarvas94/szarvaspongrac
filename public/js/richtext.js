@@ -1,7 +1,9 @@
 import { updateContentsOnPage } from "content-manager";
+import { uploadImage } from "image-upload";
+import { getURLFromRecord } from "db";
 import { formatBlock, exec, init as initEditor, queryCommandState } from "pell";
 
-const currentHtml = "";
+let currentHtml = "";
 
 const actions = [
   {
@@ -94,9 +96,22 @@ const actions = [
     icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-image-icon lucide-image"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>',
     title: "Image",
     result: () => {
-      // TODO: file selector + upload to pb
-      const url = window.prompt("Enter the image URL");
-      if (url) exec("insertImage", url);
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.style.display = "none";
+      input.addEventListener("change", async () => {
+        const file = input.files[0];
+        if (file && file.name !== "") {
+          const created = await uploadImage({ key: "test", file });
+          const url = getURLFromRecord(created);
+          // TODO: somehow style this?
+          if (url) exec("insertImage", url);
+          document.body.removeChild(input);
+        }
+      });
+      document.body.appendChild(input);
+      input.click();
     },
   },
   {
