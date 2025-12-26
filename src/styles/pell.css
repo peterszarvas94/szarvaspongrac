@@ -10,7 +10,12 @@
   border-bottom: 1px solid rgba(10, 10, 10, 0.1);
   position: sticky;
   top: 5rem;
+  margin: 0 auto;
+  width: fit-content;
   left: 0;
+  right: 0;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .pell-button {
@@ -20,7 +25,9 @@
   height: 30px;
   outline: 0;
   width: 30px;
-  vertical-align: bottom;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .pell-button-selected {

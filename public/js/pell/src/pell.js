@@ -164,4 +164,4 @@ const init = (settings) => {
   return settings.element;
 };
 
-export { queryCommandState, exec, init };
+export { formatBlock, queryCommandState, exec, init };

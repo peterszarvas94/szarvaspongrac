@@ -1,5 +1,7 @@
-import { updateElementsOnPage } from "content-manager";
-import { exec, init as initEditor, queryCommandState } from "pell";
+import { updateContentsOnPage } from "content-manager";
+import { formatBlock, exec, init as initEditor, queryCommandState } from "pell";
+
+const currentHtml = "";
 
 const actions = [
   {
@@ -158,7 +160,7 @@ function getSettings(element, key) {
     content: `<div data-content="${key}"></div>`,
     styleWithCSS: true,
     actions,
-    onChange: (html) => console.log(html),
+    onChange: (html) => (currentHtml = html),
     // defaultParagraphSeparator: "div",
   };
 }
@@ -174,10 +176,7 @@ function initEditorsOnPage() {
 
 async function init() {
   initEditorsOnPage();
-
-  await updateElementsOnPage("content", (element, item) => {
-    element.innerHTML = item.value;
-  });
+  await updateContentsOnPage();
 }
 
 await init();

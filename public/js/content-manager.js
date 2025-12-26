@@ -28,15 +28,23 @@ export async function updateElementsOnPage(collection, transformer) {
   });
 }
 
-async function init() {
+async function updateContentsOnPage() {
   await updateElementsOnPage("content", (element, item) => {
     element.innerHTML = item.value;
   });
+}
+
+async function updateLinksOnPage() {
   await updateElementsOnPage("link", (element, item) => {
     element.setAttribute("href", item.url);
     const span = /** @type {HTMLSpanElement} */ (element.querySelector("span"));
     span.innerHTML = item.text;
   });
+}
+
+async function init() {
+  await updateContentsOnPage();
+  await updateLinksOnPage();
 }
 
 await init();
