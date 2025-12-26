@@ -1,10 +1,15 @@
 ---
+export interface Props {
+  key: string;
+}
 
+const { key } = Astro.props;
 ---
 
+<!-- TODO: better styling -->
 <div
   data-edit="true"
   class="prose max-w-[unset] border"
 >
-  <div id="editor"></div>
+  <div data-content-editor={key}></div>
 </div>

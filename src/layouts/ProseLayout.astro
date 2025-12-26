@@ -28,7 +28,7 @@ const { key, title, description, pageTitle, image } = Astro.props;
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <EditButton />
-    <Editor />
+    <Editor key={key} />
 
     <!-- Prose Content -->
     <article
