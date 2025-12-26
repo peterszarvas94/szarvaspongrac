@@ -4,7 +4,7 @@ import { combineFilters, createFilter, getCollection } from "db";
  * @param {string} collection
  * @param {(element: HTMLElement, item: any) => void} transformer
  **/
-async function updateElementsOnPage(collection, transformer) {
+export async function updateElementsOnPage(collection, transformer) {
   /** @type {NodeListOf<HTMLElement>} */
   const elementsOnPage = document.querySelectorAll(`[data-${collection}]`);
   const elements = Array.from(elementsOnPage);

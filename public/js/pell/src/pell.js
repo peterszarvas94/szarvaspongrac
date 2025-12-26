@@ -161,7 +161,6 @@ export const init = (settings) => {
 
   if (settings.styleWithCSS) exec("styleWithCSS");
   exec(defaultParagraphSeparatorString, defaultParagraphSeparator);
-
   return settings.element;
 };
 

@@ -2,8 +2,8 @@
 import BaseLayout from "./BaseLayout.astro";
 import Footer from "../components/Footer.astro";
 import PageTitle from "../components/PageTitle.astro";
-import ImageUpload from "../components/ImageUpload.astro";
 import EditButton from "../components/EditButton.astro";
+import Editor from "../components/Editor.astro";
 
 export interface Props {
   key: string;
@@ -27,34 +27,14 @@ const { key, title, description, pageTitle, image } = Astro.props;
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    {
-      image && (
-        <>
-          <EditButton />
-
-          <div class="prose max-w-[unset] border">
-            <div id="editor" />
-          </div>
-
-          <ImageUpload key={key} />
-
-          <div data-edit="false">
-            <figure class="flex flex-col items-center mb-8">
-              <img
-                data-image="cv"
-                class="rounded-md w-full max-w-64 h-auto"
-              />
-              <figcaption class="text-base-content/70 italic mt-2">
-                {image.caption}
-              </figcaption>
-            </figure>
-          </div>
-        </>
-      )
-    }
+    <EditButton />
+    <Editor />
 
     <!-- Prose Content -->
-    <article class="prose max-w-none">
+    <article
+      data-edit="false"
+      class="prose max-w-none"
+    >
       <slot />
     </article>
   </div>

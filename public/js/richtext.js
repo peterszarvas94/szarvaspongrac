@@ -1,3 +1,4 @@
+import { updateElementsOnPage } from "content-manager";
 import pell from "pell";
 const { exec, init } = pell;
 
@@ -76,7 +77,11 @@ const settings = {
     // "outdent",
     // "clearFormatting",
   ],
-  content: "<h1>hello world</h1>",
+  content: '<div data-content="cv.cv"></div>',
 };
 
 init(settings);
+
+await updateElementsOnPage("content", (element, item) => {
+  element.innerHTML = item.value;
+});
