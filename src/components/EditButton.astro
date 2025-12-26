@@ -1,5 +1,5 @@
 ---
-import { Pencil, PencilOff } from "lucide-astro";
+import { Pencil, Save, X } from "lucide-astro";
 ---
 
 <div
@@ -15,12 +15,21 @@ import { Pencil, PencilOff } from "lucide-astro";
     Szerkesztés
   </button>
 
-  <button
-    data-edit-toggle
-    data-edit="true"
-    class="btn hidden"
-  >
-    <PencilOff class="size-4" />
-    Kilépés a szerkesztésből
-  </button>
+  <div class="join">
+    <button
+      data-edit-toggle
+      data-edit="true"
+      class="join-item btn hidden"
+    >
+      <X class="size-4" />
+      Mégsem
+    </button>
+    <button
+      data-edit="true"
+      class="join-item btn btn-primary hidden"
+    >
+      <Save class="size-4" />
+      Mentés
+    </button>
+  </div>
 </div>

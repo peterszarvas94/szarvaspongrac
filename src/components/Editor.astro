@@ -6,10 +6,9 @@ export interface Props {
 const { key } = Astro.props;
 ---
 
-<!-- TODO: better styling -->
 <div
   data-edit="true"
-  class="prose max-w-[unset] border"
+  class="prose max-w-[unset]"
 >
   <div data-content-editor={key}></div>
 </div>
