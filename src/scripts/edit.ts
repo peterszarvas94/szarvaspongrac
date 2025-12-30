@@ -1,16 +1,6 @@
-function isLocalhost() {
-  return (
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1"
-  );
-}
-
 function getEditMode(): boolean {
   const stored = localStorage.getItem("editMode");
-  if (stored !== null) {
-    return stored === "true";
-  }
-  return isLocalhost();
+  return stored === "true";
 }
 
 function setEditMode(value: boolean) {
@@ -26,7 +16,6 @@ function initEditButtons() {
     button.addEventListener("click", () => {
       editMode = !editMode;
       setEditMode(editMode);
-      console.log("Edit mode:", editMode);
       updateEditUI();
     });
   });
@@ -47,7 +36,6 @@ function updateEditUI() {
 
 function initEdit() {
   editMode = getEditMode();
-  console.log("Edit mode:", editMode);
   initEditButtons();
   updateEditUI();
 }
