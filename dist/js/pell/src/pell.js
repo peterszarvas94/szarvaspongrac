@@ -1,21 +1,31 @@
 const defaultParagraphSeparatorString = "defaultParagraphSeparator";
-const formatBlock = "formatBlock";
+export const formatBlock = "formatBlock";
 const addEventListener = (parent, type, listener) =>
   parent.addEventListener(type, listener);
 const appendChild = (parent, child) => parent.appendChild(child);
 const createElement = (tag) => document.createElement(tag);
-const queryCommandState = (command) => document.queryCommandState(command);
+export const queryCommandState = (command) =>
+  document.queryCommandState(command);
 const queryCommandValue = (command) => document.queryCommandValue(command);
 
 export const exec = (command, value = null) =>
   document.execCommand(command, false, value);
 
-function insertImage(url) {
+export function insertImage(url) {
+  const imgWrapper = document.createElement("div");
+  imgWrapper.classList.add("pell-img-wrapper");
   const img = document.createElement("img");
   img.src = url;
+  imgWrapper.appendChild(img);
+
   const sel = window.getSelection();
   if (!sel.rangeCount) return;
-  sel.getRangeAt(0).insertNode(img);
+
+  const range = sel.getRangeAt(0);
+  let node = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+
+  node.after(imgWrapper);
 }
 
 const defaultActions = {
@@ -169,8 +179,5 @@ export const init = (settings) => {
 
   if (settings.styleWithCSS) exec("styleWithCSS");
   exec(defaultParagraphSeparatorString, defaultParagraphSeparator);
-
   return settings.element;
 };
-
-export default { exec, init };

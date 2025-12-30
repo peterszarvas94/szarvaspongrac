@@ -4,7 +4,10 @@
   "compilerOptions": {
     "noEmit": true,
     "strict": true,
+    "jsx": "preserve",
+    "jsxImportSource": "solid-js",
+    "allowImportingTsExtensions": true
   },
-  "include": [],
-  "exclude": []
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
 }

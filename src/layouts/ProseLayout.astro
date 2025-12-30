@@ -3,7 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import Footer from "../components/Footer.astro";
 import PageTitle from "../components/PageTitle.astro";
 import EditButton from "../components/EditButton.astro";
-import Editor from "../components/Editor.astro";
+import Editor from "../components/Editor";
 
 export interface Props {
   key: string;
@@ -22,13 +22,19 @@ const { key, title, description, pageTitle, image } = Astro.props;
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["richtext", "prose"]}
+  scripts={["prose"]}
+  styles={["tiptap"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <EditButton />
-    <Editor key={key} />
+    <div data-edit="true">
+      <Editor
+        key={key}
+        client:load
+      />
+    </div>
 
     <!-- Prose Content -->
     <article

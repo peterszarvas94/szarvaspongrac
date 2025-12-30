@@ -99,6 +99,16 @@ function updateFiles(input, files) {
   updateFileList();
 }
 
+export async function uploadImage({ key, file }) {
+  return await pb
+    .collection("image")
+    .create({ key, file })
+    .catch((e) => {
+      alert("Nem sikerült a feltöltés");
+      console.error("Upload error:", e);
+    });
+}
+
 /**
  * @param {string} key
  * @param {File} file
@@ -119,13 +129,7 @@ async function replaceSingleItem(key, file) {
         });
     }
 
-    await pb
-      .collection("image")
-      .create({ key, file })
-      .catch((e) => {
-        alert("Nem sikerült a feltöltés");
-        console.error("Upload error:", e);
-      });
+    await uploadImage({ key, file });
 
     alert("Sikeres feltöltés");
     // TODO: change item instead of reloading
@@ -167,6 +171,7 @@ function init() {
   const label = /** @type {HTMLLabelElement} */ (
     document.querySelector("label[for='file-upload']")
   );
+  if (!label) return;
 
   label.addEventListener("dragenter", (e) => {
     e.preventDefault();

@@ -36,6 +36,10 @@ export function getCurrentUser() {
   return pb.authStore.record;
 }
 
+export function getURLFromRecord(record) {
+  return pb.files.getURL(record, record.file);
+}
+
 /** @param {string} key */
 export async function getImageUrls(key) {
   try {
@@ -45,7 +49,7 @@ export async function getImageUrls(key) {
 
     return images.map((record) => ({
       id: record.id,
-      url: pb.files.getURL(record, record.file),
+      url: getURLFromRecord(record),
       filename: record.file,
     }));
   } catch (error) {

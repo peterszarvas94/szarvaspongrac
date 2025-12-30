@@ -2,11 +2,12 @@
 import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
+import solidJs from "@astrojs/solid-js";
 
 // https://astro.build/config
 export default defineConfig({
   site: "https://szarvaspongrac.hu",
-  integrations: [mdx()],
+  integrations: [mdx(), solidJs()],
   build: {
     assets: "assets",
   },
