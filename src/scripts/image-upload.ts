@@ -1,11 +1,10 @@
+/// <reference types="astro/client" />
 import PocketBase from "pocketbase";
-import { PB_URL } from "env";
 
-const pb = new PocketBase(PB_URL);
+const pb = new PocketBase(import.meta.env.PUBLIC_PB_URL);
 let dt = new DataTransfer();
 
-/** @param {File[]} newFiles */
-function appendFilesToDt(newFiles) {
+function appendFilesToDt(newFiles: File[]) {
   newFiles.forEach((f) => {
     if (
       ![...dt.files].some(
@@ -17,22 +16,18 @@ function appendFilesToDt(newFiles) {
   });
 }
 
-/** @param {File[]} newFiles */
-function replaceDtFiles(newFiles) {
+function replaceDtFiles(newFiles: File[]) {
   dt.items.clear();
   appendFilesToDt(newFiles);
 }
 
-/** @param {HTMLInputElement} input */
-function updateInputFiles(input) {
+function updateInputFiles(input: HTMLInputElement) {
   input.files = dt.files;
 }
-/**
- * @param {HTMLLabelElement} label
- * @param {boolean} active
- */
-function updateLabelClasses(label, active) {
-  const div = /** @type {HTMLDivElement} */ (label.querySelector("div"));
+
+function updateLabelClasses(label: HTMLLabelElement, active: boolean) {
+  const div = label.querySelector("div");
+  if (!div) return;
   if (active) {
     div.classList.remove("border-base-300");
     div.classList.add("border-base-content");
@@ -42,11 +37,9 @@ function updateLabelClasses(label, active) {
   }
 }
 
-/** @param {File} file */
-function removeFile(file) {
-  const input = /** @type {HTMLInputElement} */ (
-    document.querySelector("#file-upload")
-  );
+function removeFile(file: File) {
+  const input = document.querySelector<HTMLInputElement>("#file-upload");
+  if (!input) return;
 
   const newDt = new DataTransfer();
   [...dt.files].forEach((f) => {
@@ -59,36 +52,25 @@ function removeFile(file) {
 }
 
 function updateFileList() {
-  const fileList = /** @type {HTMLUListElement} */ (
-    document.querySelector("[data-files]")
-  );
+  const fileList = document.querySelector<HTMLUListElement>("[data-files]");
+  if (!fileList) return;
   fileList.innerHTML = "";
 
-  const template = /** @type {HTMLTemplateElement} */ (
-    document.querySelector("#file-row")
-  );
+  const template = document.querySelector<HTMLTemplateElement>("#file-row");
+  if (!template) return;
 
   [...dt.files].forEach((file) => {
-    const row = /** @type {DocumentFragment} */ (
-      template.content.cloneNode(true)
-    );
+    const row = template.content.cloneNode(true) as DocumentFragment;
+    const span = row.querySelector("span");
+    const button = row.querySelector("button");
 
-    const span = /** @type {HTMLSpanElement} */ (row.querySelector("span"));
-    const button = /** @type {HTMLButtonElement} */ (
-      row.querySelector("button")
-    );
-
-    span.textContent = file.name;
-    button.onclick = () => removeFile(file);
+    if (span) span.textContent = file.name;
+    if (button) button.onclick = () => removeFile(file);
     fileList.appendChild(row);
   });
 }
 
-/**
- * @param {HTMLInputElement} input
- * @param {File[]} files
- */
-function updateFiles(input, files) {
+function updateFiles(input: HTMLInputElement, files: File[]) {
   if (input.hasAttribute("multiple")) {
     appendFilesToDt(files);
   } else {
@@ -99,7 +81,7 @@ function updateFiles(input, files) {
   updateFileList();
 }
 
-export async function uploadImage({ key, file }) {
+export async function uploadImage({ key, file }: { key: string; file: File }) {
   return await pb
     .collection("image")
     .create({ key, file })
@@ -109,11 +91,7 @@ export async function uploadImage({ key, file }) {
     });
 }
 
-/**
- * @param {string} key
- * @param {File} file
- **/
-async function replaceSingleItem(key, file) {
+async function replaceSingleItem(key: string, file: File) {
   try {
     const existing = await pb
       .collection("image")
@@ -132,26 +110,19 @@ async function replaceSingleItem(key, file) {
     await uploadImage({ key, file });
 
     alert("Sikeres feltöltés");
-    // TODO: change item instead of reloading
     window.location.reload();
   } catch (e) {
     console.error("Unexpected error:", e);
   }
 }
 
-/**
- * @param {string} key
- * @param {File[]} files
- **/
-async function batchUpload(key, files) {
+async function batchUpload(key: string, files: File[]) {
   const batch = pb.createBatch();
-
   files.forEach((file) => batch.collection("image").create({ key, file }));
 
   try {
     await batch.send();
     alert("Sikeres feltöltés");
-    // TODO: append items in gallery instead of reloading
     window.location.reload();
   } catch (e) {
     alert("Nem sikerült a feltöltés");
@@ -160,18 +131,12 @@ async function batchUpload(key, files) {
 }
 
 function init() {
-  const uploadForm = /** @type {HTMLFormElement} */ (
-    document.querySelector("[data-upload]")
+  const uploadForm = document.querySelector<HTMLFormElement>("[data-upload]");
+  const input = document.querySelector<HTMLInputElement>("#file-upload");
+  const label = document.querySelector<HTMLLabelElement>(
+    "label[for='file-upload']",
   );
-
-  const input = /** @type {HTMLInputElement} */ (
-    document.querySelector("#file-upload")
-  );
-
-  const label = /** @type {HTMLLabelElement} */ (
-    document.querySelector("label[for='file-upload']")
-  );
-  if (!label) return;
+  if (!uploadForm || !input || !label) return;
 
   label.addEventListener("dragenter", (e) => {
     e.preventDefault();
@@ -191,8 +156,7 @@ function init() {
   label.addEventListener("drop", (e) => {
     e.preventDefault();
     updateLabelClasses(label, false);
-
-    let newFiles = Array.from(e.dataTransfer?.files ?? []);
+    const newFiles = Array.from(e.dataTransfer?.files ?? []);
     updateFiles(input, newFiles);
   });
 
@@ -205,8 +169,7 @@ function init() {
     event.preventDefault();
 
     const formData = new FormData(uploadForm);
-
-    const files = /** @type {File[]} */ (formData.getAll("files"));
+    const files = formData.getAll("files") as File[];
 
     if (files.length === 0 || files[0].name === "") {
       alert("Nincs kép kiválasztva");

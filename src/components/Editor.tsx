@@ -3,7 +3,6 @@ import { Editor as TipTap } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
-import Image from "@tiptap/extension-image";
 import {
   Bold,
   Italic,
@@ -22,8 +21,11 @@ import {
   TextAlignEnd,
   TextAlignJustify,
   ImageIcon,
+  Camera,
 } from "lucide-solid";
-import { getContent } from "@lib/config";
+import { Figure } from "@lib/tiptap-figure";
+import { getContent, pb, getURLFromRecord } from "@lib/db";
+import "@styles/tiptap.css";
 
 interface ToolbarAction {
   action: string;
@@ -34,80 +36,80 @@ interface ToolbarAction {
 const iconProps = { size: 16 };
 
 const toolbarActions: ToolbarAction[] = [
-  { action: "bold", icon: () => <Bold {...iconProps} />, title: "Bold" },
-  { action: "italic", icon: () => <Italic {...iconProps} />, title: "Italic" },
+  { action: "bold", icon: () => <Bold {...iconProps} />, title: "Félkövér" },
+  { action: "italic", icon: () => <Italic {...iconProps} />, title: "Dőlt" },
   {
     action: "strike",
     icon: () => <Strikethrough {...iconProps} />,
-    title: "Strikethrough",
+    title: "Áthúzott",
   },
   { action: "divider1", icon: () => <></>, title: "" },
   {
     action: "heading1",
     icon: () => <Heading1 {...iconProps} />,
-    title: "Heading 1",
+    title: "Címsor 1",
   },
   {
     action: "heading2",
     icon: () => <Heading2 {...iconProps} />,
-    title: "Heading 2",
+    title: "Címsor 2",
   },
   {
     action: "heading3",
     icon: () => <Heading3 {...iconProps} />,
-    title: "Heading 3",
+    title: "Címsor 3",
   },
   {
     action: "paragraph",
     icon: () => <Pilcrow {...iconProps} />,
-    title: "Paragraph",
+    title: "Bekezdés",
   },
   { action: "divider2", icon: () => <></>, title: "" },
   {
     action: "bulletList",
     icon: () => <List {...iconProps} />,
-    title: "Bullet List",
+    title: "Felsorolás",
   },
   {
     action: "orderedList",
     icon: () => <ListOrdered {...iconProps} />,
-    title: "Numbered List",
+    title: "Számozott lista",
   },
   {
     action: "blockquote",
     icon: () => <Quote {...iconProps} />,
-    title: "Blockquote",
+    title: "Idézet",
   },
   { action: "divider3", icon: () => <></>, title: "" },
   {
     action: "alignLeft",
     icon: () => <TextAlignStart {...iconProps} />,
-    title: "Align Left",
+    title: "Balra igazítás",
   },
   {
     action: "alignCenter",
     icon: () => <TextAlignCenter {...iconProps} />,
-    title: "Align Center",
+    title: "Középre igazítás",
   },
   {
     action: "alignRight",
     icon: () => <TextAlignEnd {...iconProps} />,
-    title: "Align Right",
+    title: "Jobbra igazítás",
   },
   {
     action: "alignJustify",
     icon: () => <TextAlignJustify {...iconProps} />,
-    title: "Justify",
+    title: "Sorkizárt",
   },
   { action: "divider4", icon: () => <></>, title: "" },
   {
-    action: "image",
+    action: "figure",
     icon: () => <ImageIcon {...iconProps} />,
-    title: "Insert Image",
+    title: "Kép felirattal",
   },
   { action: "divider5", icon: () => <></>, title: "" },
-  { action: "undo", icon: () => <Undo {...iconProps} />, title: "Undo" },
-  { action: "redo", icon: () => <Redo {...iconProps} />, title: "Redo" },
+  { action: "undo", icon: () => <Undo {...iconProps} />, title: "Visszavonás" },
+  { action: "redo", icon: () => <Redo {...iconProps} />, title: "Újra" },
 ];
 
 interface Props {
@@ -116,6 +118,8 @@ interface Props {
 
 export default function Editor(props: Props) {
   let editorElement: HTMLDivElement | undefined;
+  let fileInputRef: HTMLInputElement | undefined;
+  let figureInputRef: HTMLInputElement | undefined;
   const [editor, setEditor] = createSignal<TipTap | null>(null);
 
   const [activeStates, setActiveStates] = createSignal<Record<string, boolean>>(
@@ -191,10 +195,10 @@ export default function Editor(props: Props) {
         e.chain().focus().setTextAlign("justify").run();
         break;
       case "image":
-        const url = prompt("Enter image URL:");
-        if (url) {
-          e.chain().focus().setImage({ src: url }).run();
-        }
+        fileInputRef?.click();
+        break;
+      case "figure":
+        figureInputRef?.click();
         break;
       case "undo":
         e.chain().focus().undo().run();
@@ -206,6 +210,32 @@ export default function Editor(props: Props) {
     updateActiveStates();
   };
 
+  const handleFigureUpload = async (e: Event) => {
+    const input = e.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file || file.name === "") return;
+
+    try {
+      const record = await pb.collection("image").create({
+        key: props.key,
+        file,
+      });
+      const url = getURLFromRecord(record);
+      const filename = file.name;
+
+      editor()
+        ?.chain()
+        .focus()
+        .setFigure({ src: url, caption: filename })
+        .run();
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert("Nem sikerült feltölteni a képet");
+    }
+
+    input.value = "";
+  };
+
   onMount(async () => {
     if (!editorElement) return;
     const initialContent = await getContent(props.key);
@@ -215,15 +245,12 @@ export default function Editor(props: Props) {
       extensions: [
         StarterKit,
         Placeholder.configure({
-          placeholder: "Start writing...",
+          placeholder: "Kezdj el írni...",
         }),
         TextAlign.configure({
-          types: ["heading", "paragraph"],
+          types: ["heading", "paragraph", "image"],
         }),
-        Image.configure({
-          inline: false,
-          allowBase64: true,
-        }),
+        Figure,
       ],
       content: initialContent,
       onUpdate: ({ editor }) => {
@@ -271,6 +298,13 @@ export default function Editor(props: Props) {
         type="hidden"
         name={props.key}
         value={htmlContent()}
+      />
+      <input
+        ref={figureInputRef}
+        type="file"
+        accept="image/*"
+        class="hidden"
+        onChange={handleFigureUpload}
       />
     </div>
   );

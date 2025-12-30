@@ -1,24 +1,12 @@
-import { getCurrentUser, isAuthenticated, login, logout } from "db";
+import { getCurrentUser, isAuthenticated, login, logout } from "@lib/db";
 
 export function updateAuthForm() {
-  const form =
-    /** @type {HTMLFormElement | null} */
-    (document.getElementById("login-form"));
+  const form = document.getElementById("login-form") as HTMLFormElement | null;
   if (!form) return;
 
-  const emailInput =
-    /** @type {HTMLInputElement} */
-    (form.querySelector("#email"));
-
-  /** @type {HTMLInputElement} */
-  const passwordInput =
-    /** @type {HTMLInputElement} */
-    (form.querySelector("#password"));
-
-  /** @type {HTMLElement} */
-  const messageDiv =
-    /** @type {HTMLDivElement} */
-    (form.querySelector("#message"));
+  const emailInput = form.querySelector("#email") as HTMLInputElement;
+  const passwordInput = form.querySelector("#password") as HTMLInputElement;
+  const messageDiv = form.querySelector("#message") as HTMLDivElement;
 
   if (document.getElementById("login-section")) {
     initLogoutButtons();
@@ -52,8 +40,8 @@ export function initLogoutButtons() {
     ),
   );
 
-  /** @type {NodeListOf<HTMLElement>} */
-  const controlledElements = document.querySelectorAll("[data-auth]");
+  const controlledElements =
+    document.querySelectorAll<HTMLElement>("[data-auth]");
   Array.from(controlledElements).forEach((element) => {
     if ((element.dataset.auth === "true") === isAuthenticated()) {
       element.classList.remove("hidden");
@@ -63,7 +51,6 @@ export function initLogoutButtons() {
   });
 
   if (isAuthenticated()) {
-    /** @type {any} */
     const user = getCurrentUser();
     if (!user) {
       throw new Error(`Authenticated, but user is ${user}`);
@@ -75,7 +62,7 @@ export function initLogoutButtons() {
   }
 }
 
-async function init() {
+function init() {
   updateAuthForm();
   initLogoutButtons();
 }

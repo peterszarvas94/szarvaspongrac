@@ -1,13 +1,9 @@
-import PocketBase from "pocketbase";
-import { PB_URL } from "env";
+/// <reference types="astro/client" />
+import PocketBase, { type RecordModel } from "pocketbase";
 
-export const pb = new PocketBase(PB_URL);
+export const pb = new PocketBase(import.meta.env.PUBLIC_PB_URL);
 
-/**
- * @param {string} email
- * @param {string} password
- */
-export async function login(email, password) {
+export async function login(email: string, password: string) {
   try {
     await pb.collection("_superusers").authWithPassword(email, password);
   } catch (error) {
@@ -29,19 +25,15 @@ export function isAuthenticated() {
   return pb.authStore.isValid;
 }
 
-/**
- * @returns {Object | null} User data or null
- */
 export function getCurrentUser() {
   return pb.authStore.record;
 }
 
-export function getURLFromRecord(record) {
+export function getURLFromRecord(record: RecordModel) {
   return pb.files.getURL(record, record.file);
 }
 
-/** @param {string} key */
-export async function getImageUrls(key) {
+export async function getImageUrls(key: string) {
   try {
     const images = await pb
       .collection("image")
@@ -58,39 +50,43 @@ export async function getImageUrls(key) {
   }
 }
 
-/** @param {string} id */
-export async function deleteImage(id) {
+export async function deleteImage(id: string) {
   try {
     await pb.collection("image").delete(id);
   } catch (error) {
     console.error("Delete error:", error);
-    return;
   }
 }
 
-/** @param {string} key */
-export function createFilter(key) {
+export function createFilter(key: string) {
   return `key="${key}"`;
 }
 
-/** @param {string[]} filters */
-export function combineFilters(filters) {
+export function combineFilters(filters: string[]) {
   if (filters.length > 1) {
     return `(${filters.join(")||(")})`;
   }
   return filters[0];
 }
 
-/**
- * @param {string} collection
- * @param {string} filter
- **/
-export async function getCollection(collection, filter) {
+export async function getCollection(collection: string, filter: string) {
   try {
     const items = await pb.collection(collection).getFullList({ filter });
     return items;
   } catch (error) {
     console.error("Fetch error:", error);
     return [];
+  }
+}
+
+export async function getContent(key: string): Promise<string> {
+  try {
+    const records = await pb
+      .collection("content")
+      .getFullList({ filter: `key="${key}"` });
+    return records.length > 0 ? records[0].value : "";
+  } catch (error) {
+    console.error("Failed to load content:", error);
+    return "";
   }
 }

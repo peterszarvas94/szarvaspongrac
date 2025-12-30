@@ -1,33 +1,32 @@
-import { deleteImage, getImageUrls } from "db";
+import { deleteImage, getImageUrls } from "@lib/db";
 
 async function initGallery() {
-  const gallery = /**@type {HTMLDivElement}*/ (
-    document.querySelector("[data-images]")
+  const gallery = document.querySelector<HTMLDivElement>("[data-images]");
+  const imageTemplate = document.querySelector<HTMLTemplateElement>(
+    "template#image-gallery-item",
   );
-  const imageTemplate = /** @type {HTMLTemplateElement} */ (
-    document.querySelector("template#image-gallery-item")
-  );
+  if (!gallery || !imageTemplate) return;
+
   const key = gallery.dataset.images ?? "";
   const images = await getImageUrls(key);
-  images.forEach((image) => {
-    const element = /** @type {DocumentFragment} */ (
-      imageTemplate.content.cloneNode(true)
-    );
-    const img = /** @type {HTMLImageElement} */ (element.querySelector("img"));
-    img.setAttribute("src", image.url);
 
-    const deleteButton = /** @type {HTMLButtonElement}*/ (
-      element.querySelector("button[data-delete]")
+  images.forEach((image) => {
+    const element = imageTemplate.content.cloneNode(true) as DocumentFragment;
+    const img = element.querySelector("img");
+    if (img) img.setAttribute("src", image.url);
+
+    const deleteButton = element.querySelector<HTMLButtonElement>(
+      "button[data-delete]",
     );
-    deleteButton.setAttribute("data-delete", image.id);
+    if (deleteButton) deleteButton.setAttribute("data-delete", image.id);
 
     gallery.appendChild(element);
   });
 }
 
 export function initDeleteButtons() {
-  /** @type {NodeListOf<HTMLButtonElement>} */
-  const deleteButtons = document.querySelectorAll("[data-delete]");
+  const deleteButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-delete]");
 
   Array.from(deleteButtons).forEach((button) => {
     const id = button.dataset.delete;
@@ -39,14 +38,11 @@ export function initDeleteButtons() {
       const confirmed = window.confirm(
         "Törlöd ezt a képet? Nem vonható vissza!",
       );
-      if (!confirmed) {
-        return;
-      }
+      if (!confirmed) return;
 
       try {
         await deleteImage(id);
         window.alert("Törölve");
-        // NOTE: should remove manually, not reload
         window.location.reload();
       } catch (error) {
         window.alert("Nem sikerült törölni a képet");
@@ -57,13 +53,12 @@ export function initDeleteButtons() {
 }
 
 function initPopover() {
-  const popover = /** @type {HTMLDivElement}*/ (
-    document.getElementById("image-popover")
-  );
-  const popoverImg = popover.querySelector("img");
+  const popover = document.getElementById("image-popover") as HTMLDivElement;
+  if (!popover) return;
 
-  const buttons = /** @type {NodeListOf<HTMLButtonElement>} */ (
-    document.querySelectorAll("button[commandfor='image-popover']")
+  const popoverImg = popover.querySelector("img");
+  const buttons = document.querySelectorAll<HTMLButtonElement>(
+    "button[commandfor='image-popover']",
   );
 
   buttons.forEach((button) =>
@@ -75,8 +70,9 @@ function initPopover() {
 
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      /** @type {HTMLElement | null} */
-      const openPopover = document.querySelector("[popover]:popover-open");
+      const openPopover = document.querySelector<HTMLElement>(
+        "[popover]:popover-open",
+      );
       if (openPopover) {
         openPopover.hidePopover();
       }
@@ -90,5 +86,5 @@ async function init() {
   initPopover();
 }
 
-await init();
+init();
 document.addEventListener("astro:page-load", init);

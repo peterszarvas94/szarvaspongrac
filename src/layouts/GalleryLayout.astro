@@ -30,7 +30,6 @@ const {
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["image-upload", "gallery"]}
 >
   <PageTitle title={pageTitle} />
 
@@ -72,3 +71,9 @@ const {
 
   <Footer slot="footer" />
 </BaseLayout>
+
+<script>
+  import "@scripts/image-upload";
+  import "@scripts/gallery";
+  import "@scripts/edit";
+</script>

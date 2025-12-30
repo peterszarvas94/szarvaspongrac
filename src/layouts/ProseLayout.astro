@@ -4,27 +4,21 @@ import Footer from "@components/Footer.astro";
 import PageTitle from "@components/PageTitle.astro";
 import EditButton from "@components/EditButton.astro";
 import Editor from "@components/Editor";
-import PocketBase from "pocketbase";
 
 export interface Props {
   key: string;
   title: string;
   description: string;
   pageTitle?: string;
-  image?: {
-    caption: string;
-  };
 }
 
-const { key, title, description, pageTitle, image } = Astro.props;
+const { key, title, description, pageTitle } = Astro.props;
 ---
 
 <BaseLayout
   title={title}
   description={description}
   mainClass="py-4"
-  scripts={["prose"]}
-  styles={["tiptap"]}
 >
   {pageTitle && <PageTitle title={pageTitle} />}
 
@@ -50,3 +44,8 @@ const { key, title, description, pageTitle, image } = Astro.props;
 
   <Footer slot="footer" />
 </BaseLayout>
+
+<script>
+  import "@scripts/prose";
+  import "@scripts/edit";
+</script>
