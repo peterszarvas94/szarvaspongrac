@@ -1,5 +1,5 @@
 import { createSignal, onMount, onCleanup, For, type JSX } from "solid-js";
-import { Editor } from "@tiptap/core";
+import { Editor as TipTap } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
@@ -23,10 +23,7 @@ import {
   TextAlignJustify,
   ImageIcon,
 } from "lucide-solid";
-
-interface EditorProps {
-  key: string;
-}
+import { getContent } from "@lib/config";
 
 interface ToolbarAction {
   action: string;
@@ -113,9 +110,13 @@ const toolbarActions: ToolbarAction[] = [
   { action: "redo", icon: () => <Redo {...iconProps} />, title: "Redo" },
 ];
 
-export default function TiptapEditor(props: EditorProps) {
+interface Props {
+  key: string;
+}
+
+export default function Editor(props: Props) {
   let editorElement: HTMLDivElement | undefined;
-  const [editor, setEditor] = createSignal<Editor | null>(null);
+  const [editor, setEditor] = createSignal<TipTap | null>(null);
 
   const [activeStates, setActiveStates] = createSignal<Record<string, boolean>>(
     {},
@@ -205,10 +206,11 @@ export default function TiptapEditor(props: EditorProps) {
     updateActiveStates();
   };
 
-  onMount(() => {
+  onMount(async () => {
     if (!editorElement) return;
+    const initialContent = await getContent(props.key);
 
-    const newEditor = new Editor({
+    const newEditor = new TipTap({
       element: editorElement,
       extensions: [
         StarterKit,
@@ -223,7 +225,7 @@ export default function TiptapEditor(props: EditorProps) {
           allowBase64: true,
         }),
       ],
-      content: "",
+      content: initialContent,
       onUpdate: ({ editor }) => {
         const html = editor.getHTML();
         setHtmlContent(html);

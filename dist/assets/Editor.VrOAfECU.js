@@ -25841,7 +25841,7 @@ var Undo = (props) => createComponent(Icon_default, mergeProps(props, {
 }));
 var undo_default = Undo;
 
-var _tmpl$ = /* @__PURE__ */ template(`<div class=pell-editor><div class=pell-actionbar></div><div class=pell-content></div><input type=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<div class=pell-divider>`), _tmpl$3 = /* @__PURE__ */ template(`<button type=button>`);
+var _tmpl$ = /* @__PURE__ */ template(`<div class=tiptap-editor><div class=tiptap-actionbar></div><div class="prose tiptap-content"></div><input type=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<div class=tiptap-divider>`), _tmpl$3 = /* @__PURE__ */ template(`<button type=button>`);
 const iconProps = {
   size: 16
 };
@@ -26080,7 +26080,7 @@ function TiptapEditor(props) {
         _el$6.$$click = () => executeAction(item.action);
         insert(_el$6, () => item.icon());
         createRenderEffect((_p$) => {
-          var _v$ = `pell-button ${activeStates()[item.action] ? "pell-button-selected" : ""}`, _v$2 = item.title;
+          var _v$ = `tiptap-button ${activeStates()[item.action] ? "tiptap-button-selected" : ""}`, _v$2 = item.title;
           _v$ !== _p$.e && className(_el$6, _p$.e = _v$);
           _v$2 !== _p$.t && setAttribute(_el$6, "title", _p$.t = _v$2);
           return _p$;

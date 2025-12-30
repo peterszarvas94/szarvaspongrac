@@ -2,17 +2,20 @@
 
 ## Commands
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview built site
-- `npm run format` - Format code with Prettier
-- `npm run format:check` - Check formatting
+Always use bun over npm.
+
+- `bun run dev` - Start development server
+- `bun run build` - Build for production
+- `bun run preview` - Preview built site
+- `bun run format` - Format code with Prettier
+- `bun run format:check` - Check formatting
 
 ## Tech Stack
 
 - Astro 5.x with TypeScript (strict mode)
 - TailwindCSS 4.x with DaisyUI
 - Prettier with Astro plugin
+- For client islands use Solid.js
 
 ## Code Style
 
@@ -42,7 +45,7 @@
 - NEVER stop or restart dev server
 - NEVER run tests (no test framework configured)
 - ALWAYS plan tasks first using TodoWrite
-- ALWAYS build for static files (`npm run build`)
+- ALWAYS build for static files (`bun run build`)
 - Problem solving order: 1. HTML 2. CSS (TailwindCSS + DaisyUI) 3. TypeScript
 - only do what the user asked, no more, no less
 
