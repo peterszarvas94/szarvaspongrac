@@ -1,6 +1,5 @@
-import { s as splitProps, g as getNextElement, t as template, a as spread, m as mergeProps, b as memo, i as insert, c as createComponent, D as Dynamic, F as For, r as runHydrationEvents, d as delegateEvents, e as createSignal, o as onMount, f as createRenderEffect, h as onCleanup, u as use, j as setAttribute, k as setProperty, S as Show, l as className } from './web.D_mfR7QF.js';
+import { s as splitProps, g as getNextElement, t as template, a as spread, m as mergeProps, b as memo, i as insert, c as createComponent, D as Dynamic, F as For, r as runHydrationEvents, d as delegateEvents, e as createSignal, o as onMount, f as createRenderEffect, h as onCleanup, u as use, j as setAttribute, k as setProperty, l as className } from './web.DvoXsGsi.js';
 import { p as pb, g as getURLFromRecord, a as getContent } from './db.D1KCNAzE.js';
-/* empty css                           */
 
 // ::- Persistent data structure representing an ordered mapping from
 // strings to values, with some convenient update methods.
@@ -18414,580 +18413,6 @@ function wrappingInputRule(config) {
     undoable: config.undoable
   });
 }
-
-// src/lib/ResizableNodeView.ts
-var isTouchEvent = (e) => {
-  return "touches" in e;
-};
-var ResizableNodeView = class {
-  /**
-   * Creates a new ResizableNodeView instance.
-   *
-   * The constructor sets up the resize handles, applies initial sizing from
-   * node attributes, and configures all resize behavior options.
-   *
-   * @param options - Configuration options for the resizable node view
-   */
-  constructor(options) {
-    /** Active resize handle directions */
-    this.directions = ["bottom-left", "bottom-right", "top-left", "top-right"];
-    /** Minimum allowed dimensions */
-    this.minSize = {
-      height: 8,
-      width: 8
-    };
-    /** Whether to always preserve aspect ratio */
-    this.preserveAspectRatio = false;
-    /** CSS class names for elements */
-    this.classNames = {
-      container: "",
-      wrapper: "",
-      handle: "",
-      resizing: ""
-    };
-    /** Initial width of the element (for aspect ratio calculation) */
-    this.initialWidth = 0;
-    /** Initial height of the element (for aspect ratio calculation) */
-    this.initialHeight = 0;
-    /** Calculated aspect ratio (width / height) */
-    this.aspectRatio = 1;
-    /** Whether a resize operation is currently active */
-    this.isResizing = false;
-    /** The handle currently being dragged */
-    this.activeHandle = null;
-    /** Starting mouse X position when resize began */
-    this.startX = 0;
-    /** Starting mouse Y position when resize began */
-    this.startY = 0;
-    /** Element width when resize began */
-    this.startWidth = 0;
-    /** Element height when resize began */
-    this.startHeight = 0;
-    /** Whether Shift key is currently pressed (for temporary aspect ratio lock) */
-    this.isShiftKeyPressed = false;
-    /** Last known editable state of the editor */
-    this.lastEditableState = void 0;
-    /** Map of handle elements by direction */
-    this.handleMap = /* @__PURE__ */ new Map();
-    /**
-     * Handles mouse movement during an active resize.
-     *
-     * Calculates the delta from the starting position, computes new dimensions
-     * based on the active handle direction, applies constraints and aspect ratio,
-     * then updates the element's style and calls the onResize callback.
-     *
-     * @param event - The mouse move event
-     */
-    this.handleMouseMove = (event) => {
-      if (!this.isResizing || !this.activeHandle) {
-        return;
-      }
-      const deltaX = event.clientX - this.startX;
-      const deltaY = event.clientY - this.startY;
-      this.handleResize(deltaX, deltaY);
-    };
-    this.handleTouchMove = (event) => {
-      if (!this.isResizing || !this.activeHandle) {
-        return;
-      }
-      const touch = event.touches[0];
-      if (!touch) {
-        return;
-      }
-      const deltaX = touch.clientX - this.startX;
-      const deltaY = touch.clientY - this.startY;
-      this.handleResize(deltaX, deltaY);
-    };
-    /**
-     * Completes the resize operation when the mouse button is released.
-     *
-     * Captures final dimensions, calls the onCommit callback to persist changes,
-     * removes the resizing state and class, and cleans up document-level listeners.
-     */
-    this.handleMouseUp = () => {
-      if (!this.isResizing) {
-        return;
-      }
-      const finalWidth = this.element.offsetWidth;
-      const finalHeight = this.element.offsetHeight;
-      this.onCommit(finalWidth, finalHeight);
-      this.isResizing = false;
-      this.activeHandle = null;
-      this.container.dataset.resizeState = "false";
-      if (this.classNames.resizing) {
-        this.container.classList.remove(this.classNames.resizing);
-      }
-      document.removeEventListener("mousemove", this.handleMouseMove);
-      document.removeEventListener("mouseup", this.handleMouseUp);
-      document.removeEventListener("keydown", this.handleKeyDown);
-      document.removeEventListener("keyup", this.handleKeyUp);
-    };
-    /**
-     * Tracks Shift key state to enable temporary aspect ratio locking.
-     *
-     * When Shift is pressed during resize, aspect ratio is preserved even if
-     * preserveAspectRatio is false.
-     *
-     * @param event - The keyboard event
-     */
-    this.handleKeyDown = (event) => {
-      if (event.key === "Shift") {
-        this.isShiftKeyPressed = true;
-      }
-    };
-    /**
-     * Tracks Shift key release to disable temporary aspect ratio locking.
-     *
-     * @param event - The keyboard event
-     */
-    this.handleKeyUp = (event) => {
-      if (event.key === "Shift") {
-        this.isShiftKeyPressed = false;
-      }
-    };
-    var _a, _b, _c, _d, _e, _f;
-    this.node = options.node;
-    this.editor = options.editor;
-    this.element = options.element;
-    this.contentElement = options.contentElement;
-    this.getPos = options.getPos;
-    this.onResize = options.onResize;
-    this.onCommit = options.onCommit;
-    this.onUpdate = options.onUpdate;
-    if ((_a = options.options) == null ? void 0 : _a.min) {
-      this.minSize = {
-        ...this.minSize,
-        ...options.options.min
-      };
-    }
-    if ((_b = options.options) == null ? void 0 : _b.max) {
-      this.maxSize = options.options.max;
-    }
-    if ((_c = options == null ? void 0 : options.options) == null ? void 0 : _c.directions) {
-      this.directions = options.options.directions;
-    }
-    if ((_d = options.options) == null ? void 0 : _d.preserveAspectRatio) {
-      this.preserveAspectRatio = options.options.preserveAspectRatio;
-    }
-    if ((_e = options.options) == null ? void 0 : _e.className) {
-      this.classNames = {
-        container: options.options.className.container || "",
-        wrapper: options.options.className.wrapper || "",
-        handle: options.options.className.handle || "",
-        resizing: options.options.className.resizing || ""
-      };
-    }
-    if ((_f = options.options) == null ? void 0 : _f.createCustomHandle) {
-      this.createCustomHandle = options.options.createCustomHandle;
-    }
-    this.wrapper = this.createWrapper();
-    this.container = this.createContainer();
-    this.applyInitialSize();
-    this.attachHandles();
-    this.editor.on("update", this.handleEditorUpdate.bind(this));
-  }
-  /**
-   * Returns the top-level DOM node that should be placed in the editor.
-   *
-   * This is required by the ProseMirror NodeView interface. The container
-   * includes the wrapper, handles, and the actual content element.
-   *
-   * @returns The container element to be inserted into the editor
-   */
-  get dom() {
-    return this.container;
-  }
-  get contentDOM() {
-    return this.contentElement;
-  }
-  handleEditorUpdate() {
-    const isEditable = this.editor.isEditable;
-    if (isEditable === this.lastEditableState) {
-      return;
-    }
-    this.lastEditableState = isEditable;
-    if (!isEditable) {
-      this.removeHandles();
-    } else if (isEditable && this.handleMap.size === 0) {
-      this.attachHandles();
-    }
-  }
-  /**
-   * Called when the node's content or attributes change.
-   *
-   * Updates the internal node reference. If a custom `onUpdate` callback
-   * was provided, it will be called to handle additional update logic.
-   *
-   * @param node - The new/updated node
-   * @param decorations - Node decorations
-   * @param innerDecorations - Inner decorations
-   * @returns `false` if the node type has changed (requires full rebuild), otherwise the result of `onUpdate` or `true`
-   */
-  update(node, decorations, innerDecorations) {
-    if (node.type !== this.node.type) {
-      return false;
-    }
-    this.node = node;
-    if (this.onUpdate) {
-      return this.onUpdate(node, decorations, innerDecorations);
-    }
-    return true;
-  }
-  /**
-   * Cleanup method called when the node view is being removed.
-   *
-   * Removes all event listeners to prevent memory leaks. This is required
-   * by the ProseMirror NodeView interface. If a resize is active when
-   * destroy is called, it will be properly cancelled.
-   */
-  destroy() {
-    if (this.isResizing) {
-      this.container.dataset.resizeState = "false";
-      if (this.classNames.resizing) {
-        this.container.classList.remove(this.classNames.resizing);
-      }
-      document.removeEventListener("mousemove", this.handleMouseMove);
-      document.removeEventListener("mouseup", this.handleMouseUp);
-      document.removeEventListener("keydown", this.handleKeyDown);
-      document.removeEventListener("keyup", this.handleKeyUp);
-      this.isResizing = false;
-      this.activeHandle = null;
-    }
-    this.editor.off("update", this.handleEditorUpdate.bind(this));
-    this.container.remove();
-  }
-  /**
-   * Creates the outer container element.
-   *
-   * The container is the top-level element returned by the NodeView and
-   * wraps the entire resizable node. It's set up with flexbox to handle
-   * alignment and includes data attributes for styling and identification.
-   *
-   * @returns The container element
-   */
-  createContainer() {
-    const element = document.createElement("div");
-    element.dataset.resizeContainer = "";
-    element.dataset.node = this.node.type.name;
-    element.style.display = "flex";
-    if (this.classNames.container) {
-      element.className = this.classNames.container;
-    }
-    element.appendChild(this.wrapper);
-    return element;
-  }
-  /**
-   * Creates the wrapper element that contains the content and handles.
-   *
-   * The wrapper uses relative positioning so that resize handles can be
-   * positioned absolutely within it. This is the direct parent of the
-   * content element being made resizable.
-   *
-   * @returns The wrapper element
-   */
-  createWrapper() {
-    const element = document.createElement("div");
-    element.style.position = "relative";
-    element.style.display = "block";
-    element.dataset.resizeWrapper = "";
-    if (this.classNames.wrapper) {
-      element.className = this.classNames.wrapper;
-    }
-    element.appendChild(this.element);
-    return element;
-  }
-  /**
-   * Creates a resize handle element for a specific direction.
-   *
-   * Each handle is absolutely positioned and includes a data attribute
-   * identifying its direction for styling purposes.
-   *
-   * @param direction - The resize direction for this handle
-   * @returns The handle element
-   */
-  createHandle(direction) {
-    const handle = document.createElement("div");
-    handle.dataset.resizeHandle = direction;
-    handle.style.position = "absolute";
-    if (this.classNames.handle) {
-      handle.className = this.classNames.handle;
-    }
-    return handle;
-  }
-  /**
-   * Positions a handle element according to its direction.
-   *
-   * Corner handles (e.g., 'top-left') are positioned at the intersection
-   * of two edges. Edge handles (e.g., 'top') span the full width or height.
-   *
-   * @param handle - The handle element to position
-   * @param direction - The direction determining the position
-   */
-  positionHandle(handle, direction) {
-    const isTop = direction.includes("top");
-    const isBottom = direction.includes("bottom");
-    const isLeft = direction.includes("left");
-    const isRight = direction.includes("right");
-    if (isTop) {
-      handle.style.top = "0";
-    }
-    if (isBottom) {
-      handle.style.bottom = "0";
-    }
-    if (isLeft) {
-      handle.style.left = "0";
-    }
-    if (isRight) {
-      handle.style.right = "0";
-    }
-    if (direction === "top" || direction === "bottom") {
-      handle.style.left = "0";
-      handle.style.right = "0";
-    }
-    if (direction === "left" || direction === "right") {
-      handle.style.top = "0";
-      handle.style.bottom = "0";
-    }
-  }
-  /**
-   * Creates and attaches all resize handles to the wrapper.
-   *
-   * Iterates through the configured directions, creates a handle for each,
-   * positions it, attaches the mousedown listener, and appends it to the DOM.
-   */
-  attachHandles() {
-    this.directions.forEach((direction) => {
-      let handle;
-      if (this.createCustomHandle) {
-        handle = this.createCustomHandle(direction);
-      } else {
-        handle = this.createHandle(direction);
-      }
-      if (!(handle instanceof HTMLElement)) {
-        console.warn(
-          `[ResizableNodeView] createCustomHandle("${direction}") did not return an HTMLElement. Falling back to default handle.`
-        );
-        handle = this.createHandle(direction);
-      }
-      if (!this.createCustomHandle) {
-        this.positionHandle(handle, direction);
-      }
-      handle.addEventListener("mousedown", (event) => this.handleResizeStart(event, direction));
-      handle.addEventListener("touchstart", (event) => this.handleResizeStart(event, direction));
-      this.handleMap.set(direction, handle);
-      this.wrapper.appendChild(handle);
-    });
-  }
-  /**
-   * Removes all resize handles from the wrapper.
-   *
-   * Cleans up the handle map and removes each handle element from the DOM.
-   */
-  removeHandles() {
-    this.handleMap.forEach((el) => el.remove());
-    this.handleMap.clear();
-  }
-  /**
-   * Applies initial sizing from node attributes to the element.
-   *
-   * If width/height attributes exist on the node, they're applied to the element.
-   * Otherwise, the element's natural/current dimensions are measured. The aspect
-   * ratio is calculated for later use in aspect-ratio-preserving resizes.
-   */
-  applyInitialSize() {
-    const width = this.node.attrs.width;
-    const height = this.node.attrs.height;
-    if (width) {
-      this.element.style.width = `${width}px`;
-      this.initialWidth = width;
-    } else {
-      this.initialWidth = this.element.offsetWidth;
-    }
-    if (height) {
-      this.element.style.height = `${height}px`;
-      this.initialHeight = height;
-    } else {
-      this.initialHeight = this.element.offsetHeight;
-    }
-    if (this.initialWidth > 0 && this.initialHeight > 0) {
-      this.aspectRatio = this.initialWidth / this.initialHeight;
-    }
-  }
-  /**
-   * Initiates a resize operation when a handle is clicked.
-   *
-   * Captures the starting mouse position and element dimensions, sets up
-   * the resize state, adds the resizing class and state attribute, and
-   * attaches document-level listeners for mouse movement and keyboard input.
-   *
-   * @param event - The mouse down event
-   * @param direction - The direction of the handle being dragged
-   */
-  handleResizeStart(event, direction) {
-    event.preventDefault();
-    event.stopPropagation();
-    this.isResizing = true;
-    this.activeHandle = direction;
-    if (isTouchEvent(event)) {
-      this.startX = event.touches[0].clientX;
-      this.startY = event.touches[0].clientY;
-    } else {
-      this.startX = event.clientX;
-      this.startY = event.clientY;
-    }
-    this.startWidth = this.element.offsetWidth;
-    this.startHeight = this.element.offsetHeight;
-    if (this.startWidth > 0 && this.startHeight > 0) {
-      this.aspectRatio = this.startWidth / this.startHeight;
-    }
-    this.getPos();
-    this.container.dataset.resizeState = "true";
-    if (this.classNames.resizing) {
-      this.container.classList.add(this.classNames.resizing);
-    }
-    document.addEventListener("mousemove", this.handleMouseMove);
-    document.addEventListener("touchmove", this.handleTouchMove);
-    document.addEventListener("mouseup", this.handleMouseUp);
-    document.addEventListener("keydown", this.handleKeyDown);
-    document.addEventListener("keyup", this.handleKeyUp);
-  }
-  handleResize(deltaX, deltaY) {
-    if (!this.activeHandle) {
-      return;
-    }
-    const shouldPreserveAspectRatio = this.preserveAspectRatio || this.isShiftKeyPressed;
-    const { width, height } = this.calculateNewDimensions(this.activeHandle, deltaX, deltaY);
-    const constrained = this.applyConstraints(width, height, shouldPreserveAspectRatio);
-    this.element.style.width = `${constrained.width}px`;
-    this.element.style.height = `${constrained.height}px`;
-    if (this.onResize) {
-      this.onResize(constrained.width, constrained.height);
-    }
-  }
-  /**
-   * Calculates new dimensions based on mouse delta and resize direction.
-   *
-   * Takes the starting dimensions and applies the mouse movement delta
-   * according to the handle direction. For corner handles, both dimensions
-   * are affected. For edge handles, only one dimension changes. If aspect
-   * ratio should be preserved, delegates to applyAspectRatio.
-   *
-   * @param direction - The active resize handle direction
-   * @param deltaX - Horizontal mouse movement since resize start
-   * @param deltaY - Vertical mouse movement since resize start
-   * @returns The calculated width and height
-   */
-  calculateNewDimensions(direction, deltaX, deltaY) {
-    let newWidth = this.startWidth;
-    let newHeight = this.startHeight;
-    const isRight = direction.includes("right");
-    const isLeft = direction.includes("left");
-    const isBottom = direction.includes("bottom");
-    const isTop = direction.includes("top");
-    if (isRight) {
-      newWidth = this.startWidth + deltaX;
-    } else if (isLeft) {
-      newWidth = this.startWidth - deltaX;
-    }
-    if (isBottom) {
-      newHeight = this.startHeight + deltaY;
-    } else if (isTop) {
-      newHeight = this.startHeight - deltaY;
-    }
-    if (direction === "right" || direction === "left") {
-      newWidth = this.startWidth + (isRight ? deltaX : -deltaX);
-    }
-    if (direction === "top" || direction === "bottom") {
-      newHeight = this.startHeight + (isBottom ? deltaY : -deltaY);
-    }
-    const shouldPreserveAspectRatio = this.preserveAspectRatio || this.isShiftKeyPressed;
-    if (shouldPreserveAspectRatio) {
-      return this.applyAspectRatio(newWidth, newHeight, direction);
-    }
-    return { width: newWidth, height: newHeight };
-  }
-  /**
-   * Applies min/max constraints to dimensions.
-   *
-   * When aspect ratio is NOT preserved, constraints are applied independently
-   * to width and height. When aspect ratio IS preserved, constraints are
-   * applied while maintaining the aspect ratio—if one dimension hits a limit,
-   * the other is recalculated proportionally.
-   *
-   * This ensures that aspect ratio is never broken when constrained.
-   *
-   * @param width - The unconstrained width
-   * @param height - The unconstrained height
-   * @param preserveAspectRatio - Whether to maintain aspect ratio while constraining
-   * @returns The constrained dimensions
-   */
-  applyConstraints(width, height, preserveAspectRatio) {
-    var _a, _b, _c, _d;
-    if (!preserveAspectRatio) {
-      let constrainedWidth2 = Math.max(this.minSize.width, width);
-      let constrainedHeight2 = Math.max(this.minSize.height, height);
-      if ((_a = this.maxSize) == null ? void 0 : _a.width) {
-        constrainedWidth2 = Math.min(this.maxSize.width, constrainedWidth2);
-      }
-      if ((_b = this.maxSize) == null ? void 0 : _b.height) {
-        constrainedHeight2 = Math.min(this.maxSize.height, constrainedHeight2);
-      }
-      return { width: constrainedWidth2, height: constrainedHeight2 };
-    }
-    let constrainedWidth = width;
-    let constrainedHeight = height;
-    if (constrainedWidth < this.minSize.width) {
-      constrainedWidth = this.minSize.width;
-      constrainedHeight = constrainedWidth / this.aspectRatio;
-    }
-    if (constrainedHeight < this.minSize.height) {
-      constrainedHeight = this.minSize.height;
-      constrainedWidth = constrainedHeight * this.aspectRatio;
-    }
-    if (((_c = this.maxSize) == null ? void 0 : _c.width) && constrainedWidth > this.maxSize.width) {
-      constrainedWidth = this.maxSize.width;
-      constrainedHeight = constrainedWidth / this.aspectRatio;
-    }
-    if (((_d = this.maxSize) == null ? void 0 : _d.height) && constrainedHeight > this.maxSize.height) {
-      constrainedHeight = this.maxSize.height;
-      constrainedWidth = constrainedHeight * this.aspectRatio;
-    }
-    return { width: constrainedWidth, height: constrainedHeight };
-  }
-  /**
-   * Adjusts dimensions to maintain the original aspect ratio.
-   *
-   * For horizontal handles (left/right), uses width as the primary dimension
-   * and calculates height from it. For vertical handles (top/bottom), uses
-   * height as primary and calculates width. For corner handles, uses width
-   * as the primary dimension.
-   *
-   * @param width - The new width
-   * @param height - The new height
-   * @param direction - The active resize direction
-   * @returns Dimensions adjusted to preserve aspect ratio
-   */
-  applyAspectRatio(width, height, direction) {
-    const isHorizontal = direction === "left" || direction === "right";
-    const isVertical = direction === "top" || direction === "bottom";
-    if (isHorizontal) {
-      return {
-        width,
-        height: width / this.aspectRatio
-      };
-    }
-    if (isVertical) {
-      return {
-        width: height * this.aspectRatio,
-        height
-      };
-    }
-    return {
-      width,
-      height: width / this.aspectRatio
-    };
-  }
-};
 function canInsertNode(state, nodeType) {
   const { selection } = state;
   const { $from } = selection;
@@ -19613,7 +19038,7 @@ var h = (tag, attributes) => {
 };
 
 // src/blockquote.tsx
-var inputRegex$4 = /^\s*>\s$/;
+var inputRegex$3 = /^\s*>\s$/;
 var Blockquote = Node3.create({
   name: "blockquote",
   addOptions() {
@@ -19675,7 +19100,7 @@ ${prefix}
   addInputRules() {
     return [
       wrappingInputRule({
-        find: inputRegex$4,
+        find: inputRegex$3,
         type: this.type
       })
     ];
@@ -19769,7 +19194,7 @@ var Bold$1 = Mark.create({
 });
 
 // src/code.ts
-var inputRegex$3 = /(^|[^`])`([^`]+)`(?!`)$/;
+var inputRegex$2 = /(^|[^`])`([^`]+)`(?!`)$/;
 var pasteRegex$1 = /(^|[^`])`([^`]+)`(?!`)/g;
 var Code = Mark.create({
   name: "code",
@@ -19818,7 +19243,7 @@ var Code = Mark.create({
   addInputRules() {
     return [
       markInputRule({
-        find: inputRegex$3,
+        find: inputRegex$2,
         type: this.type
       })
     ];
@@ -23298,7 +22723,7 @@ var OrderedList = Node3.create({
     return [inputRule];
   }
 });
-var inputRegex$2 = /^\s*(\[([( |x])?\])\s$/;
+var inputRegex$1 = /^\s*(\[([( |x])?\])\s$/;
 var TaskItem = Node3.create({
   name: "taskItem",
   addOptions() {
@@ -23459,7 +22884,7 @@ var TaskItem = Node3.create({
   addInputRules() {
     return [
       wrappingInputRule({
-        find: inputRegex$2,
+        find: inputRegex$1,
         type: this.type,
         getAttributes: (match) => ({
           checked: match[match.length - 1] === "x"
@@ -23673,7 +23098,7 @@ var Paragraph = Node3.create({
 });
 
 // src/strike.ts
-var inputRegex$1 = /(?:^|\s)(~~(?!\s+~~)((?:[^~]+))~~(?!\s+~~))$/;
+var inputRegex = /(?:^|\s)(~~(?!\s+~~)((?:[^~]+))~~(?!\s+~~))$/;
 var pasteRegex = /(?:^|\s)(~~(?!\s+~~)((?:[^~]+))~~(?!\s+~~))/g;
 var Strike = Mark.create({
   name: "strike",
@@ -23731,7 +23156,7 @@ var Strike = Mark.create({
   addInputRules() {
     return [
       markInputRule({
-        find: inputRegex$1,
+        find: inputRegex,
         type: this.type
       })
     ];
@@ -25246,10 +24671,10 @@ var StarterKit = Extension.create({
 });
 
 // src/index.ts
-var index_default$3 = StarterKit;
+var index_default$2 = StarterKit;
 
 // src/index.ts
-var index_default$2 = Placeholder;
+var index_default$1 = Placeholder;
 
 // src/text-align.ts
 var TextAlign = Extension.create({
@@ -25316,27 +24741,20 @@ var TextAlign = Extension.create({
 });
 
 // src/index.ts
-var index_default$1 = TextAlign;
+var index_default = TextAlign;
 
-// src/image.ts
-var inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
-var Image$1 = Node3.create({
-  name: "image",
+const ResizableImage = Node3.create({
+  name: "resizableImage",
   addOptions() {
     return {
-      inline: false,
-      allowBase64: false,
-      HTMLAttributes: {},
-      resize: false
+      HTMLAttributes: {}
     };
   },
-  inline() {
-    return this.options.inline;
-  },
-  group() {
-    return this.options.inline ? "inline" : "block";
-  },
+  group: "block",
   draggable: true,
+  atom: true,
+  isolating: true,
+  inline: false,
   addAttributes() {
     return {
       src: {
@@ -25345,104 +24763,62 @@ var Image$1 = Node3.create({
       alt: {
         default: null
       },
-      title: {
-        default: null
-      },
       width: {
-        default: null
+        default: null,
+        parseHTML: (element) => {
+          const width = element.getAttribute("width");
+          return width ? parseInt(width, 10) : null;
+        },
+        renderHTML: (attributes) => {
+          if (!attributes.width) return {};
+          return { width: attributes.width };
+        }
       },
-      height: {
-        default: null
+      style: {
+        default: null,
+        parseHTML: (element) => element.getAttribute("style"),
+        renderHTML: (attributes) => {
+          if (!attributes.style) return {};
+          return { style: attributes.style };
+        }
       }
     };
   },
   parseHTML() {
     return [
       {
-        tag: this.options.allowBase64 ? "img[src]" : 'img[src]:not([src^="data:"])'
+        tag: "img[src]",
+        getAttrs: (node) => {
+          const img = node;
+          return {
+            src: img.getAttribute("src"),
+            alt: img.getAttribute("alt"),
+            width: img.getAttribute("width") ? parseInt(img.getAttribute("width")) : null,
+            style: img.getAttribute("style")
+          };
+        }
+      },
+      {
+        tag: "p img[src]",
+        getAttrs: (node) => {
+          const img = node;
+          return {
+            src: img.getAttribute("src"),
+            alt: img.getAttribute("alt"),
+            width: img.getAttribute("width") ? parseInt(img.getAttribute("width")) : null,
+            style: img.getAttribute("style")
+          };
+        }
       }
     ];
   },
   renderHTML({ HTMLAttributes }) {
-    return ["img", mergeAttributes(this.options.HTMLAttributes, HTMLAttributes)];
-  },
-  parseMarkdown: (token, helpers) => {
-    return helpers.createNode("image", {
-      src: token.href,
-      title: token.title,
-      alt: token.text
-    });
-  },
-  renderMarkdown: (node) => {
-    var _a, _b, _c, _d, _e, _f;
-    const src = (_b = (_a = node.attrs) == null ? void 0 : _a.src) != null ? _b : "";
-    const alt = (_d = (_c = node.attrs) == null ? void 0 : _c.alt) != null ? _d : "";
-    const title = (_f = (_e = node.attrs) == null ? void 0 : _e.title) != null ? _f : "";
-    return title ? `![${alt}](${src} "${title}")` : `![${alt}](${src})`;
-  },
-  addNodeView() {
-    if (!this.options.resize || !this.options.resize.enabled || typeof document === "undefined") {
-      return null;
-    }
-    const { directions, minWidth, minHeight, alwaysPreserveAspectRatio } = this.options.resize;
-    return ({ node, getPos, HTMLAttributes, editor }) => {
-      const el = document.createElement("img");
-      Object.entries(HTMLAttributes).forEach(([key, value]) => {
-        if (value != null) {
-          switch (key) {
-            case "width":
-            case "height":
-              break;
-            default:
-              el.setAttribute(key, value);
-              break;
-          }
-        }
-      });
-      el.src = HTMLAttributes.src;
-      const nodeView = new ResizableNodeView({
-        element: el,
-        editor,
-        node,
-        getPos,
-        onResize: (width, height) => {
-          el.style.width = `${width}px`;
-          el.style.height = `${height}px`;
-        },
-        onCommit: (width, height) => {
-          const pos = getPos();
-          if (pos === void 0) {
-            return;
-          }
-          this.editor.chain().setNodeSelection(pos).updateAttributes(this.name, {
-            width,
-            height
-          }).run();
-        },
-        onUpdate: (updatedNode, _decorations, _innerDecorations) => {
-          if (updatedNode.type !== node.type) {
-            return false;
-          }
-          return true;
-        },
-        options: {
-          directions,
-          min: {
-            width: minWidth,
-            height: minHeight
-          },
-          preserveAspectRatio: alwaysPreserveAspectRatio === true
-        }
-      });
-      const dom = nodeView.dom;
-      dom.style.visibility = "hidden";
-      dom.style.pointerEvents = "none";
-      el.onload = () => {
-        dom.style.visibility = "";
-        dom.style.pointerEvents = "";
-      };
-      return nodeView;
-    };
+    return [
+      "img",
+      mergeAttributes(HTMLAttributes, {
+        class: "tiptap-resizable-image"
+      })
+    ];
   },
   addCommands() {
     return {
@@ -25454,406 +24830,76 @@ var Image$1 = Node3.create({
       }
     };
   },
-  addInputRules() {
-    return [
-      nodeInputRule({
-        find: inputRegex,
-        type: this.type,
-        getAttributes: (match) => {
-          const [, , alt, src, title] = match;
-          return { src, alt, title };
+  addNodeView() {
+    return ({ node, getPos, editor }) => {
+      const img = document.createElement("img");
+      img.src = node.attrs.src;
+      img.alt = node.attrs.alt || "";
+      img.classList.add("tiptap-resizable-image");
+      if (node.attrs.width) {
+        img.width = node.attrs.width;
+      }
+      if (node.attrs.style) {
+        img.setAttribute("style", node.attrs.style);
+      }
+      let isResizing = false;
+      let startX = 0;
+      let startWidth = 0;
+      const onContextMenu = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        isResizing = true;
+        startX = e.clientX;
+        startWidth = img.offsetWidth;
+        img.classList.add("resizing");
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+      };
+      const onMouseMove = (e) => {
+        if (!isResizing) return;
+        const diff = e.clientX - startX;
+        const newWidth = Math.max(50, startWidth + diff);
+        img.width = newWidth;
+      };
+      const onMouseUp = () => {
+        if (!isResizing) return;
+        isResizing = false;
+        img.classList.remove("resizing");
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+        const pos = getPos();
+        if (typeof pos === "number") {
+          editor.view.dispatch(
+            editor.view.state.tr.setNodeMarkup(pos, void 0, {
+              ...node.attrs,
+              width: img.width
+            })
+          );
         }
-      })
-    ];
+      };
+      img.addEventListener("contextmenu", onContextMenu);
+      return {
+        dom: img,
+        destroy() {
+          img.removeEventListener("contextmenu", onContextMenu);
+          document.removeEventListener("mousemove", onMouseMove);
+          document.removeEventListener("mouseup", onMouseUp);
+        },
+        update(updatedNode) {
+          if (updatedNode.type.name !== "resizableImage") return false;
+          img.src = updatedNode.attrs.src;
+          img.alt = updatedNode.attrs.alt || "";
+          if (updatedNode.attrs.width) {
+            img.width = updatedNode.attrs.width;
+          }
+          if (updatedNode.attrs.style) {
+            img.setAttribute("style", updatedNode.attrs.style);
+          }
+          return true;
+        }
+      };
+    };
   }
-});
-
-// src/index.ts
-var index_default = Image$1;
-
-const CONSTANTS = {
-    MOBILE_BREAKPOINT: 768,
-    ICON_SIZE: '24px',
-    CONTROLLER_HEIGHT: '25px',
-    DOT_SIZE: {
-        MOBILE: 16,
-        DESKTOP: 9,
-    },
-    DOT_POSITION: {
-        MOBILE: '-8px',
-        DESKTOP: '-4px',
-    },
-    COLORS: {
-        BORDER: '#6C6C6C',
-        BACKGROUND: 'rgba(255, 255, 255, 1)',
-    },
-    ICONS: {
-        LEFT: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/format_align_left/default/20px.svg',
-        CENTER: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/format_align_center/default/20px.svg',
-        RIGHT: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/format_align_right/default/20px.svg',
-    },
-};
-
-const utils = {
-    isMobile() {
-        return document.documentElement.clientWidth < CONSTANTS.MOBILE_BREAKPOINT;
-    },
-    getDotPosition() {
-        return utils.isMobile() ? CONSTANTS.DOT_POSITION.MOBILE : CONSTANTS.DOT_POSITION.DESKTOP;
-    },
-    getDotSize() {
-        return utils.isMobile() ? CONSTANTS.DOT_SIZE.MOBILE : CONSTANTS.DOT_SIZE.DESKTOP;
-    },
-    clearContainerBorder(container) {
-        const containerStyle = container.getAttribute('style');
-        const newStyle = containerStyle === null || containerStyle === void 0 ? void 0 : containerStyle.replace('border: 1px dashed #6C6C6C;', '').replace('border: 1px dashed rgb(108, 108, 108)', '');
-        container.setAttribute('style', newStyle);
-    },
-    removeResizeElements(container) {
-        if (container.childElementCount > 3) {
-            for (let i = 0; i < 5; i++) {
-                container.removeChild(container.lastChild);
-            }
-        }
-    },
-};
-
-class StyleManager {
-    static getContainerStyle(inline, width) {
-        const baseStyle = `width: ${width || '100%'}; height: auto; cursor: pointer;`;
-        const inlineStyle = inline ? 'display: inline-block;' : '';
-        return `${baseStyle} ${inlineStyle}`;
-    }
-    static getWrapperStyle(inline) {
-        return inline ? 'display: inline-block; float: left; padding-right: 8px;' : 'display: flex';
-    }
-    static getPositionControllerStyle(inline) {
-        const width = inline ? '66px' : '100px';
-        return `
-      position: absolute; 
-      top: 0%; 
-      left: 50%; 
-      width: ${width}; 
-      height: ${CONSTANTS.CONTROLLER_HEIGHT}; 
-      z-index: 999; 
-      background-color: ${CONSTANTS.COLORS.BACKGROUND}; 
-      border-radius: 3px; 
-      border: 1px solid ${CONSTANTS.COLORS.BORDER}; 
-      cursor: pointer; 
-      transform: translate(-50%, -50%); 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      padding: 0 6px;
-    `
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-    static getDotStyle(index) {
-        const dotPosition = utils.getDotPosition();
-        const dotSize = utils.getDotSize();
-        const positions = [
-            `top: ${dotPosition}; left: ${dotPosition}; cursor: nwse-resize;`,
-            `top: ${dotPosition}; right: ${dotPosition}; cursor: nesw-resize;`,
-            `bottom: ${dotPosition}; left: ${dotPosition}; cursor: nesw-resize;`,
-            `bottom: ${dotPosition}; right: ${dotPosition}; cursor: nwse-resize;`,
-        ];
-        return `
-      position: absolute; 
-      width: ${dotSize}px; 
-      height: ${dotSize}px; 
-      border: 1.5px solid ${CONSTANTS.COLORS.BORDER}; 
-      border-radius: 50%; 
-      ${positions[index]}
-    `
-            .replace(/\s+/g, ' ')
-            .trim();
-    }
-}
-
-class AttributeParser {
-    static parseImageAttributes(nodeAttrs, imgElement) {
-        Object.entries(nodeAttrs).forEach(([key, value]) => {
-            if (value === undefined || value === null || key === 'wrapperStyle')
-                return;
-            if (key === 'containerStyle') {
-                const width = value.match(/width:\s*([0-9.]+)px/);
-                if (width) {
-                    imgElement.setAttribute('width', width[1]);
-                }
-                return;
-            }
-            imgElement.setAttribute(key, value);
-        });
-    }
-    static extractWidthFromStyle(style) {
-        const width = style.match(/width:\s*([0-9.]+)px/);
-        return width ? width[1] : null;
-    }
-}
-
-class PositionController {
-    constructor(elements, inline, dispatchNodeView) {
-        this.elements = elements;
-        this.inline = inline;
-        this.dispatchNodeView = dispatchNodeView;
-    }
-    createControllerIcon(src) {
-        const controller = document.createElement('img');
-        controller.setAttribute('src', src);
-        controller.setAttribute('style', `width: ${CONSTANTS.ICON_SIZE}; height: ${CONSTANTS.ICON_SIZE}; cursor: pointer;`);
-        controller.addEventListener('mouseover', (e) => {
-            e.target.style.opacity = '0.6';
-        });
-        controller.addEventListener('mouseout', (e) => {
-            e.target.style.opacity = '1';
-        });
-        return controller;
-    }
-    handleLeftClick() {
-        if (!this.inline) {
-            this.elements.container.setAttribute('style', `${this.elements.container.style.cssText} margin: 0 auto 0 0;`);
-        }
-        else {
-            const style = 'display: inline-block; float: left; padding-right: 8px;';
-            this.elements.wrapper.setAttribute('style', style);
-            this.elements.container.setAttribute('style', style);
-        }
-        this.dispatchNodeView();
-    }
-    handleCenterClick() {
-        this.elements.container.setAttribute('style', `${this.elements.container.style.cssText} margin: 0 auto;`);
-        this.dispatchNodeView();
-    }
-    handleRightClick() {
-        if (!this.inline) {
-            this.elements.container.setAttribute('style', `${this.elements.container.style.cssText} margin: 0 0 0 auto;`);
-        }
-        else {
-            const style = 'display: inline-block; float: right; padding-left: 8px;';
-            this.elements.wrapper.setAttribute('style', style);
-            this.elements.container.setAttribute('style', style);
-        }
-        this.dispatchNodeView();
-    }
-    createPositionControls() {
-        const controller = document.createElement('div');
-        controller.setAttribute('style', StyleManager.getPositionControllerStyle(this.inline));
-        const leftController = this.createControllerIcon(CONSTANTS.ICONS.LEFT);
-        leftController.addEventListener('click', () => this.handleLeftClick());
-        controller.appendChild(leftController);
-        if (!this.inline) {
-            const centerController = this.createControllerIcon(CONSTANTS.ICONS.CENTER);
-            centerController.addEventListener('click', () => this.handleCenterClick());
-            controller.appendChild(centerController);
-        }
-        const rightController = this.createControllerIcon(CONSTANTS.ICONS.RIGHT);
-        rightController.addEventListener('click', () => this.handleRightClick());
-        controller.appendChild(rightController);
-        this.elements.container.appendChild(controller);
-        return this;
-    }
-}
-
-class ResizeController {
-    constructor(elements, dispatchNodeView) {
-        this.state = {
-            isResizing: false,
-            startX: 0,
-            startWidth: 0,
-        };
-        this.handleMouseMove = (e, index) => {
-            if (!this.state.isResizing)
-                return;
-            const deltaX = index % 2 === 0 ? -(e.clientX - this.state.startX) : e.clientX - this.state.startX;
-            const newWidth = this.state.startWidth + deltaX;
-            this.elements.container.style.width = newWidth + 'px';
-            this.elements.img.style.width = newWidth + 'px';
-        };
-        this.handleMouseUp = () => {
-            if (this.state.isResizing) {
-                this.state.isResizing = false;
-            }
-            this.dispatchNodeView();
-        };
-        this.handleTouchMove = (e, index) => {
-            if (!this.state.isResizing)
-                return;
-            const deltaX = index % 2 === 0
-                ? -(e.touches[0].clientX - this.state.startX)
-                : e.touches[0].clientX - this.state.startX;
-            const newWidth = this.state.startWidth + deltaX;
-            this.elements.container.style.width = newWidth + 'px';
-            this.elements.img.style.width = newWidth + 'px';
-        };
-        this.handleTouchEnd = () => {
-            if (this.state.isResizing) {
-                this.state.isResizing = false;
-            }
-            this.dispatchNodeView();
-        };
-        this.elements = elements;
-        this.dispatchNodeView = dispatchNodeView;
-    }
-    createResizeHandle(index) {
-        const dot = document.createElement('div');
-        dot.setAttribute('style', StyleManager.getDotStyle(index));
-        dot.addEventListener('mousedown', (e) => {
-            e.preventDefault();
-            this.state.isResizing = true;
-            this.state.startX = e.clientX;
-            this.state.startWidth = this.elements.container.offsetWidth;
-            const onMouseMove = (e) => this.handleMouseMove(e, index);
-            const onMouseUp = () => {
-                this.handleMouseUp();
-                document.removeEventListener('mousemove', onMouseMove);
-                document.removeEventListener('mouseup', onMouseUp);
-            };
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
-        });
-        dot.addEventListener('touchstart', (e) => {
-            e.cancelable && e.preventDefault();
-            this.state.isResizing = true;
-            this.state.startX = e.touches[0].clientX;
-            this.state.startWidth = this.elements.container.offsetWidth;
-            const onTouchMove = (e) => this.handleTouchMove(e, index);
-            const onTouchEnd = () => {
-                this.handleTouchEnd();
-                document.removeEventListener('touchmove', onTouchMove);
-                document.removeEventListener('touchend', onTouchEnd);
-            };
-            document.addEventListener('touchmove', onTouchMove);
-            document.addEventListener('touchend', onTouchEnd);
-        }, { passive: false });
-        return dot;
-    }
-}
-
-class ImageNodeView {
-    constructor(context, inline) {
-        this.clearContainerBorder = () => {
-            utils.clearContainerBorder(this.elements.container);
-        };
-        this.dispatchNodeView = () => {
-            var _a;
-            const { view, getPos } = this.context;
-            if (typeof getPos === 'function') {
-                this.clearContainerBorder();
-                const newAttrs = Object.assign(Object.assign({}, this.context.node.attrs), { width: (_a = AttributeParser.extractWidthFromStyle(this.elements.container.style.cssText)) !== null && _a !== void 0 ? _a : this.context.node.attrs.width, containerStyle: `${this.elements.container.style.cssText}`, wrapperStyle: `${this.elements.wrapper.style.cssText}` });
-                view.dispatch(view.state.tr.setNodeMarkup(getPos(), null, newAttrs));
-            }
-        };
-        this.removeResizeElements = () => {
-            utils.removeResizeElements(this.elements.container);
-        };
-        this.context = context;
-        this.inline = inline;
-        this.elements = this.createElements();
-    }
-    createElements() {
-        return {
-            wrapper: document.createElement('div'),
-            container: document.createElement('div'),
-            img: document.createElement('img'),
-        };
-    }
-    setupImageAttributes() {
-        AttributeParser.parseImageAttributes(this.context.node.attrs, this.elements.img);
-    }
-    setupDOMStructure() {
-        const { wrapperStyle, containerStyle } = this.context.node.attrs;
-        this.elements.wrapper.setAttribute('style', wrapperStyle);
-        this.elements.wrapper.appendChild(this.elements.container);
-        this.elements.container.setAttribute('style', containerStyle);
-        this.elements.container.appendChild(this.elements.img);
-    }
-    createPositionController() {
-        const positionController = new PositionController(this.elements, this.inline, this.dispatchNodeView);
-        positionController.createPositionControls();
-    }
-    createResizeHandler() {
-        const resizeHandler = new ResizeController(this.elements, this.dispatchNodeView);
-        Array.from({ length: 4 }, (_, index) => {
-            const dot = resizeHandler.createResizeHandle(index);
-            this.elements.container.appendChild(dot);
-        });
-    }
-    setupContainerClick() {
-        this.elements.container.addEventListener('click', () => {
-            var _a;
-            const isMobile = utils.isMobile();
-            isMobile && ((_a = document.querySelector('.ProseMirror-focused')) === null || _a === void 0 ? void 0 : _a.blur());
-            this.removeResizeElements();
-            this.createPositionController();
-            this.elements.container.setAttribute('style', `position: relative; border: 1px dashed ${CONSTANTS.COLORS.BORDER}; ${this.context.node.attrs.containerStyle}`);
-            this.createResizeHandler();
-        });
-    }
-    setupContentClick() {
-        document.addEventListener('click', (e) => {
-            const target = e.target;
-            const isClickInside = this.elements.container.contains(target) ||
-                target.style.cssText ===
-                    `width: ${CONSTANTS.ICON_SIZE}; height: ${CONSTANTS.ICON_SIZE}; cursor: pointer;`;
-            if (!isClickInside) {
-                this.clearContainerBorder();
-                this.removeResizeElements();
-            }
-        });
-    }
-    initialize() {
-        this.setupDOMStructure();
-        this.setupImageAttributes();
-        const { editable } = this.context.editor.options;
-        if (!editable)
-            return { dom: this.elements.container };
-        this.setupContainerClick();
-        this.setupContentClick();
-        return {
-            dom: this.elements.wrapper,
-        };
-    }
-}
-
-const ImageResize = index_default.extend({
-    name: 'imageResize',
-    addOptions() {
-        var _a;
-        return Object.assign(Object.assign({}, (_a = this.parent) === null || _a === void 0 ? void 0 : _a.call(this)), { inline: false });
-    },
-    addAttributes() {
-        var _a;
-        const inline = this.options.inline;
-        return Object.assign(Object.assign({}, (_a = this.parent) === null || _a === void 0 ? void 0 : _a.call(this)), { containerStyle: {
-                default: null,
-                parseHTML: (element) => {
-                    const containerStyle = element.getAttribute('containerstyle');
-                    if (containerStyle) {
-                        return containerStyle;
-                    }
-                    const width = element.getAttribute('width');
-                    return width
-                        ? StyleManager.getContainerStyle(inline, `${width}px`)
-                        : `${element.style.cssText}`;
-                },
-            }, wrapperStyle: {
-                default: StyleManager.getWrapperStyle(inline),
-            } });
-    },
-    addNodeView() {
-        return ({ node, editor, getPos }) => {
-            const inline = this.options.inline;
-            const context = {
-                node,
-                editor,
-                view: editor.view,
-                getPos: typeof getPos === 'function' ? getPos : undefined,
-            };
-            const nodeView = new ImageNodeView(context, inline);
-            return nodeView.initialize();
-        };
-    },
 });
 
 /**
@@ -26321,7 +25367,7 @@ const toolbarActions = [{
   title: "Újra"
 }];
 
-var _tmpl$ = /* @__PURE__ */ template(`<div class=tiptap-editor><div class=tiptap-actionbar></div><div class="prose tiptap-content"></div><input type=hidden><input type=file accept=image/* class=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<button type=button>`), _tmpl$3 = /* @__PURE__ */ template(`<div class=tiptap-divider>`);
+var _tmpl$ = /* @__PURE__ */ template(`<div class=tiptap-editor><div class=tiptap-actionbar></div><div class="prose tiptap-content"></div><input type=hidden><input type=file accept=image/* class=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<div class=tiptap-divider>`), _tmpl$3 = /* @__PURE__ */ template(`<button type=button>`);
 function Editor(props) {
   let editorElement;
   let imageInputRef;
@@ -26450,11 +25496,11 @@ function Editor(props) {
     const initialContent = await getContent(props.contentKey);
     const newEditor = new Editor$1({
       element: editorElement,
-      extensions: [index_default$3, index_default$2.configure({
+      extensions: [index_default$2, index_default$1.configure({
         placeholder: "Kezdj el írni..."
-      }), index_default$1.configure({
-        types: ["heading", "paragraph", "image"]
-      }), ImageResize],
+      }), index_default.configure({
+        types: ["heading", "paragraph"]
+      }), ResizableImage],
       content: initialContent,
       onUpdate: ({
         editor: editor2
@@ -26476,37 +25522,29 @@ function Editor(props) {
     var _el$ = getNextElement(_tmpl$), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling, _el$5 = _el$4.nextSibling;
     insert(_el$2, createComponent(For, {
       each: toolbarActions,
-      children: (item) => createComponent(Show, {
-        get when() {
-          return !item.action.startsWith("divider");
-        },
-        get fallback() {
-          return getNextElement(_tmpl$3);
-        },
-        get children() {
-          var _el$6 = getNextElement(_tmpl$2);
-          _el$6.$$click = () => executeAction(item.action);
-          insert(_el$6, () => item.icon());
-          createRenderEffect((_p$) => {
-            var _v$ = `tiptap-button ${activeStates()[item.action] ? "tiptap-button-selected" : ""}`, _v$2 = item.title;
-            _v$ !== _p$.e && className(_el$6, _p$.e = _v$);
-            _v$2 !== _p$.t && setAttribute(_el$6, "title", _p$.t = _v$2);
-            return _p$;
-          }, {
-            e: void 0,
-            t: void 0
-          });
-          runHydrationEvents();
-          return _el$6;
-        }
-      })
+      children: (item) => item.action.startsWith("divider") ? getNextElement(_tmpl$2) : (() => {
+        var _el$7 = getNextElement(_tmpl$3);
+        _el$7.$$click = () => executeAction(item.action);
+        insert(_el$7, () => item.icon());
+        createRenderEffect((_p$) => {
+          var _v$ = `tiptap-button ${activeStates()[item.action] ? "tiptap-button-selected" : ""}`, _v$2 = item.title;
+          _v$ !== _p$.e && className(_el$7, _p$.e = _v$);
+          _v$2 !== _p$.t && setAttribute(_el$7, "title", _p$.t = _v$2);
+          return _p$;
+        }, {
+          e: void 0,
+          t: void 0
+        });
+        runHydrationEvents();
+        return _el$7;
+      })()
     }));
     var _ref$ = editorElement;
     typeof _ref$ === "function" ? use(_ref$, _el$3) : editorElement = _el$3;
     _el$5.addEventListener("change", handleImageUpload);
     var _ref$2 = imageInputRef;
     typeof _ref$2 === "function" ? use(_ref$2, _el$5) : imageInputRef = _el$5;
-    createRenderEffect(() => setAttribute(_el$, "data-pb", `content:${props.contentKey}`));
+    createRenderEffect(() => setAttribute(_el$4, "name", props.contentKey));
     createRenderEffect(() => setProperty(_el$4, "value", htmlContent()));
     return _el$;
   })();

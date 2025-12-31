@@ -1,5 +1,5 @@
 import { C as Client, b as getImageUrls, d as deleteImage } from './db.D1KCNAzE.js';
-import './edit.DLHOFmK1.js';
+import './edit.BqAYy8Ik.js';
 import './content-manager.DWZ6a-nb.js';
 
 const pb = new Client("https://pb.szarvaspongrac.hu");

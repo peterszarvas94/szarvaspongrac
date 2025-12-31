@@ -66,49 +66,45 @@
   outline: none;
 }
 
-/* Image styling */
-.tiptap-content .tiptap img {
+/* Resizable image */
+.tiptap-resizable-image {
+  display: block;
   max-width: 100%;
   height: auto;
 }
 
-/* Text align styles for images - wrap image in paragraph to align */
-.tiptap-content .tiptap p[style*="text-align: center"] img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+.tiptap-resizable-image.ProseMirror-selectednode {
+  outline: 2px solid #68cef8;
 }
 
-.tiptap-content .tiptap p[style*="text-align: right"] img {
-  display: block;
-  margin-left: auto;
+.tiptap-resizable-image.resizing {
+  outline: 2px solid #68cef8;
 }
 
-.tiptap-content .tiptap p[style*="text-align: left"] img {
-  display: block;
-  margin-right: auto;
+.tiptap-resizable-image::after {
+  content: "";
+  position: absolute;
+  right: -6px;
+  bottom: -6px;
+  width: 12px;
+  height: 12px;
+  background: #68cef8;
+  border-radius: 2px;
+  cursor: se-resize;
+  opacity: 0;
+  transition: opacity 0.15s;
+  pointer-events: none;
 }
 
-/* Figure with caption */
-.tiptap-content .tiptap .tiptap-figure {
-  display: table;
-  margin: 1rem auto;
-  max-width: 100%;
+.tiptap-resizable-image:hover::after,
+.tiptap-resizable-image.resizing::after {
+  opacity: 1;
 }
 
-.tiptap-content .tiptap .tiptap-figure img {
-  display: block;
-  max-width: 100%;
-  resize: both;
-  overflow: hidden;
+.tiptap-resizable-image.ProseMirror-selectednode {
+  outline: 2px solid #68cef8;
 }
 
-.tiptap-content .tiptap .tiptap-figure figcaption {
-  display: table-caption;
-  caption-side: bottom;
-  text-align: center;
-  padding: 0.5rem;
-  font-size: 0.875rem;
-  color: #666;
-  font-style: italic;
+.tiptap-resizable-image.resizing {
+  outline: 2px solid #68cef8;
 }

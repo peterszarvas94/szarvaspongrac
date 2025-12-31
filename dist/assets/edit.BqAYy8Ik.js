@@ -31,24 +31,26 @@ function updateEditUI() {
     }
   });
 }
+function parseDataAttr(value) {
+  const [collection, key] = value.split(":");
+  if (!collection || !key) return null;
+  return { collection, key };
+}
 function initSaveButtons() {
-  const saveButtons = document.querySelectorAll(
-    "[data-save-content]"
-  );
+  const saveButtons = document.querySelectorAll("[data-save]");
   saveButtons.forEach((button) => {
     button.addEventListener("click", () => handleSave(button));
   });
 }
 async function handleSave(button) {
-  const key = button.dataset.saveContent;
-  if (!key) return;
-  const editor = document.querySelector(
-    `[data-pb="content:${key}"]`
+  const parsed = parseDataAttr(button.dataset.save || "");
+  if (!parsed || parsed.collection !== "content") return;
+  const input = document.querySelector(
+    `input[type='hidden'][name='${parsed.key}']`
   );
-  const input = editor?.querySelector("input[type='hidden']");
   if (!input) return;
   try {
-    await saveContent(key, input.value);
+    await saveContent(parsed.key, input.value);
     toggleEditMode();
     updateEditUI();
     await updateContentsOnPage();

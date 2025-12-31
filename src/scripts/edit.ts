@@ -58,10 +58,9 @@ async function handleSave(button: HTMLButtonElement) {
   const parsed = parseDataAttr(button.dataset.save || "");
   if (!parsed || parsed.collection !== "content") return;
 
-  const editor = document.querySelector<HTMLElement>(
-    `[data-pb="${button.dataset.save}"]`,
+  const input = document.querySelector<HTMLInputElement>(
+    `input[type='hidden'][name='${parsed.key}']`,
   );
-  const input = editor?.querySelector<HTMLInputElement>("input[type='hidden']");
   if (!input) return;
 
   try {

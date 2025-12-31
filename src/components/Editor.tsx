@@ -1,125 +1,21 @@
-import { createSignal, onMount, onCleanup, For, type JSX } from "solid-js";
+import { createSignal, onMount, onCleanup, For } from "solid-js";
 import { Editor as TipTap } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
-import {
-  Bold,
-  Italic,
-  Strikethrough,
-  Heading1,
-  Heading2,
-  Heading3,
-  Pilcrow,
-  List,
-  ListOrdered,
-  Quote,
-  Undo,
-  Redo,
-  TextAlignStart,
-  TextAlignCenter,
-  TextAlignEnd,
-  TextAlignJustify,
-  ImageIcon,
-  Camera,
-} from "lucide-solid";
-import { Figure } from "@lib/tiptap-figure";
+import ImageResize from "tiptap-extension-resize-image";
 import { getContent, pb, getURLFromRecord } from "@lib/db";
 import "@styles/tiptap.css";
-
-interface ToolbarAction {
-  action: string;
-  icon: () => JSX.Element;
-  title: string;
-}
-
-const iconProps = { size: 16 };
-
-const toolbarActions: ToolbarAction[] = [
-  { action: "bold", icon: () => <Bold {...iconProps} />, title: "Félkövér" },
-  { action: "italic", icon: () => <Italic {...iconProps} />, title: "Dőlt" },
-  {
-    action: "strike",
-    icon: () => <Strikethrough {...iconProps} />,
-    title: "Áthúzott",
-  },
-  { action: "divider1", icon: () => <></>, title: "" },
-  {
-    action: "heading1",
-    icon: () => <Heading1 {...iconProps} />,
-    title: "Címsor 1",
-  },
-  {
-    action: "heading2",
-    icon: () => <Heading2 {...iconProps} />,
-    title: "Címsor 2",
-  },
-  {
-    action: "heading3",
-    icon: () => <Heading3 {...iconProps} />,
-    title: "Címsor 3",
-  },
-  {
-    action: "paragraph",
-    icon: () => <Pilcrow {...iconProps} />,
-    title: "Bekezdés",
-  },
-  { action: "divider2", icon: () => <></>, title: "" },
-  {
-    action: "bulletList",
-    icon: () => <List {...iconProps} />,
-    title: "Felsorolás",
-  },
-  {
-    action: "orderedList",
-    icon: () => <ListOrdered {...iconProps} />,
-    title: "Számozott lista",
-  },
-  {
-    action: "blockquote",
-    icon: () => <Quote {...iconProps} />,
-    title: "Idézet",
-  },
-  { action: "divider3", icon: () => <></>, title: "" },
-  {
-    action: "alignLeft",
-    icon: () => <TextAlignStart {...iconProps} />,
-    title: "Balra igazítás",
-  },
-  {
-    action: "alignCenter",
-    icon: () => <TextAlignCenter {...iconProps} />,
-    title: "Középre igazítás",
-  },
-  {
-    action: "alignRight",
-    icon: () => <TextAlignEnd {...iconProps} />,
-    title: "Jobbra igazítás",
-  },
-  {
-    action: "alignJustify",
-    icon: () => <TextAlignJustify {...iconProps} />,
-    title: "Sorkizárt",
-  },
-  { action: "divider4", icon: () => <></>, title: "" },
-  {
-    action: "figure",
-    icon: () => <ImageIcon {...iconProps} />,
-    title: "Kép felirattal",
-  },
-  { action: "divider5", icon: () => <></>, title: "" },
-  { action: "undo", icon: () => <Undo {...iconProps} />, title: "Visszavonás" },
-  { action: "redo", icon: () => <Redo {...iconProps} />, title: "Újra" },
-];
+import { toolbarActions } from "@lib/tiptap-setup";
 
 interface Props {
-  key: string;
+  contentKey: string;
 }
 
+// TODO: make own resizable image component, which puts the image in a p, so align on p works. or make custom align if necessary. or if nothing works, forget image resize i guess...
 export default function Editor(props: Props) {
   let editorElement: HTMLDivElement | undefined;
-  let fileInputRef: HTMLInputElement | undefined;
-  let figureInputRef: HTMLInputElement | undefined;
+  let imageInputRef: HTMLInputElement | undefined;
   const [editor, setEditor] = createSignal<TipTap | null>(null);
 
   const [activeStates, setActiveStates] = createSignal<Record<string, boolean>>(
@@ -195,10 +91,7 @@ export default function Editor(props: Props) {
         e.chain().focus().setTextAlign("justify").run();
         break;
       case "image":
-        fileInputRef?.click();
-        break;
-      case "figure":
-        figureInputRef?.click();
+        imageInputRef?.click();
         break;
       case "undo":
         e.chain().focus().undo().run();
@@ -210,24 +103,19 @@ export default function Editor(props: Props) {
     updateActiveStates();
   };
 
-  const handleFigureUpload = async (e: Event) => {
+  const handleImageUpload = async (e: Event) => {
     const input = e.target as HTMLInputElement;
     const file = input.files?.[0];
     if (!file || file.name === "") return;
 
     try {
       const record = await pb.collection("image").create({
-        key: props.key,
+        key: props.contentKey,
         file,
       });
       const url = getURLFromRecord(record);
-      const filename = file.name;
 
-      editor()
-        ?.chain()
-        .focus()
-        .setFigure({ src: url, caption: filename })
-        .run();
+      editor()?.chain().focus().setImage({ src: url }).run();
     } catch (err) {
       console.error("Image upload failed:", err);
       alert("Nem sikerült feltölteni a képet");
@@ -238,7 +126,7 @@ export default function Editor(props: Props) {
 
   onMount(async () => {
     if (!editorElement) return;
-    const initialContent = await getContent(props.key);
+    const initialContent = await getContent(props.contentKey);
 
     const newEditor = new TipTap({
       element: editorElement,
@@ -248,9 +136,11 @@ export default function Editor(props: Props) {
           placeholder: "Kezdj el írni...",
         }),
         TextAlign.configure({
-          types: ["heading", "paragraph", "image"],
+          types: ["heading", "paragraph", "resizableImage"],
         }),
-        Figure,
+        // Image,
+        ImageResize,
+        // ResizableImage,
       ],
       content: initialContent,
       onUpdate: ({ editor }) => {
@@ -296,15 +186,15 @@ export default function Editor(props: Props) {
       />
       <input
         type="hidden"
-        name={props.key}
+        name={props.contentKey}
         value={htmlContent()}
       />
       <input
-        ref={figureInputRef}
+        ref={imageInputRef}
         type="file"
         accept="image/*"
         class="hidden"
-        onChange={handleFigureUpload}
+        onChange={handleImageUpload}
       />
     </div>
   );
