@@ -1,22 +1,18 @@
-import { saveContent } from "@lib/db";
-import { updateContentsOnPage } from "./content-manager";
+import { s as saveContent } from './db.D1KCNAzE.js';
+import { u as updateContentsOnPage } from './content-manager.DWZ6a-nb.js';
 
-function getEditMode(): boolean {
+function getEditMode() {
   const stored = localStorage.getItem("editMode");
   return stored === "true";
 }
-
-function setEditMode(value: boolean) {
+function setEditMode(value) {
   localStorage.setItem("editMode", String(value));
 }
-
 function toggleEditMode() {
   setEditMode(!getEditMode());
 }
-
 function initEditButtons() {
-  const editButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-edit-toggle]");
+  const editButtons = document.querySelectorAll("[data-edit-toggle]");
   editButtons.forEach((button) => {
     button.addEventListener("click", () => {
       toggleEditMode();
@@ -24,10 +20,8 @@ function initEditButtons() {
     });
   });
 }
-
 function updateEditUI() {
-  const editElements = document.querySelectorAll<HTMLElement>("[data-edit]");
-
+  const editElements = document.querySelectorAll("[data-edit]");
   editElements.forEach((element) => {
     const showInEdit = element.dataset.edit === "true";
     if (showInEdit === getEditMode()) {
@@ -37,36 +31,24 @@ function updateEditUI() {
     }
   });
 }
-
-function parseDataAttr(
-  value: string,
-): { collection: string; key: string } | null {
-  const [collection, key] = value.split(":");
-  if (!collection || !key) return null;
-  return { collection, key };
-}
-
 function initSaveButtons() {
-  const saveButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-save]");
+  const saveButtons = document.querySelectorAll(
+    "[data-save-content]"
+  );
   saveButtons.forEach((button) => {
     button.addEventListener("click", () => handleSave(button));
   });
 }
-
-async function handleSave(button: HTMLButtonElement) {
-  const parsed = parseDataAttr(button.dataset.save || "");
-  if (!parsed || parsed.collection !== "content") return;
-
-  const editor = document.querySelector<HTMLElement>(
-    `[data-pb="${button.dataset.save}"]`,
+async function handleSave(button) {
+  const key = button.dataset.saveContent;
+  if (!key) return;
+  const editor = document.querySelector(
+    `[data-pb="content:${key}"]`
   );
-  const input = editor?.querySelector<HTMLInputElement>("input[type='hidden']");
+  const input = editor?.querySelector("input[type='hidden']");
   if (!input) return;
-
   try {
-    await saveContent(parsed.key, input.value);
-
+    await saveContent(key, input.value);
     toggleEditMode();
     updateEditUI();
     await updateContentsOnPage();
@@ -75,12 +57,10 @@ async function handleSave(button: HTMLButtonElement) {
     alert("Mentés sikertelen");
   }
 }
-
 function initEdit() {
   initEditButtons();
   initSaveButtons();
   updateEditUI();
 }
-
 initEdit();
 document.addEventListener("astro:page-load", initEdit);

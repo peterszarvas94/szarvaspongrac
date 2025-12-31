@@ -697,11 +697,32 @@ function splitProps(props, ...keys) {
   }
   return objects;
 }
+
+const narrowedError = name => `Stale read from <${name}>.`;
 function For(props) {
   const fallback = "fallback" in props && {
     fallback: () => props.fallback
   };
   return createMemo(mapArray(() => props.each, props.children, fallback || undefined));
+}
+function Show(props) {
+  const keyed = props.keyed;
+  const conditionValue = createMemo(() => props.when, undefined, undefined);
+  const condition = keyed ? conditionValue : createMemo(conditionValue, undefined, {
+    equals: (a, b) => !a === !b
+  });
+  return createMemo(() => {
+    const c = condition();
+    if (c) {
+      const child = props.children;
+      const fn = typeof child === "function" && child.length > 0;
+      return fn ? untrack(() => child(keyed ? c : () => {
+        if (!untrack(condition)) throw narrowedError("Show");
+        return conditionValue();
+      })) : child;
+    }
+    return props.fallback;
+  }, undefined, undefined);
 }
 const SuspenseListContext = /* #__PURE__ */createContext();
 function Suspense(props) {
@@ -1441,4 +1462,4 @@ function Dynamic(props) {
   return createDynamic(() => props.component, others);
 }
 
-export { $PROXY as $, Dynamic as D, For as F, Suspense as S, spread as a, memo as b, createComponent as c, delegateEvents as d, createSignal as e, createRenderEffect as f, getNextElement as g, onCleanup as h, insert as i, setAttribute as j, setProperty as k, className as l, mergeProps as m, batch as n, onMount as o, $TRACK as p, getListener as q, runHydrationEvents as r, splitProps as s, template as t, use as u, hydrate as v, render as w };
+export { $PROXY as $, Dynamic as D, For as F, Show as S, spread as a, memo as b, createComponent as c, delegateEvents as d, createSignal as e, createRenderEffect as f, getNextElement as g, onCleanup as h, insert as i, setAttribute as j, setProperty as k, className as l, mergeProps as m, batch as n, onMount as o, $TRACK as p, getListener as q, runHydrationEvents as r, splitProps as s, template as t, use as u, hydrate as v, render as w, Suspense as x };

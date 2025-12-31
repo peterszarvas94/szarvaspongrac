@@ -1,5 +1,11 @@
 ---
 import { Pencil, Save, X } from "lucide-astro";
+
+interface Props {
+  contentKey: string;
+}
+
+const { contentKey } = Astro.props;
 ---
 
 <div
@@ -25,6 +31,7 @@ import { Pencil, Save, X } from "lucide-astro";
       Mégsem
     </button>
     <button
+      data-save={`content:${contentKey}`}
       data-edit="true"
       class="join-item btn btn-primary hidden"
     >

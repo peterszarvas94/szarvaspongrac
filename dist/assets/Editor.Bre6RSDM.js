@@ -1,4 +1,6 @@
-import { s as splitProps, g as getNextElement, t as template, a as spread, m as mergeProps, b as memo, i as insert, c as createComponent, D as Dynamic, F as For, r as runHydrationEvents, d as delegateEvents, e as createSignal, o as onMount, f as createRenderEffect, h as onCleanup, u as use, j as setAttribute, k as setProperty, l as className } from './web.DvoXsGsi.js';
+import { s as splitProps, g as getNextElement, t as template, a as spread, m as mergeProps, b as memo, i as insert, c as createComponent, D as Dynamic, F as For, r as runHydrationEvents, d as delegateEvents, e as createSignal, o as onMount, f as createRenderEffect, h as onCleanup, u as use, j as setAttribute, k as setProperty, S as Show, l as className } from './web.D_mfR7QF.js';
+import { p as pb, g as getURLFromRecord, a as getContent } from './db.D1KCNAzE.js';
+/* empty css                           */
 
 // ::- Persistent data structure representing an ordered mapping from
 // strings to values, with some convenient update methods.
@@ -17728,7 +17730,7 @@ function createStyleTag(style2, nonce, suffix) {
 }
 
 // src/Editor.ts
-var Editor = class extends EventEmitter {
+var Editor$1 = class Editor extends EventEmitter {
   constructor(options = {}) {
     super();
     this.css = null;
@@ -25469,6 +25471,391 @@ var Image$1 = Node3.create({
 // src/index.ts
 var index_default = Image$1;
 
+const CONSTANTS = {
+    MOBILE_BREAKPOINT: 768,
+    ICON_SIZE: '24px',
+    CONTROLLER_HEIGHT: '25px',
+    DOT_SIZE: {
+        MOBILE: 16,
+        DESKTOP: 9,
+    },
+    DOT_POSITION: {
+        MOBILE: '-8px',
+        DESKTOP: '-4px',
+    },
+    COLORS: {
+        BORDER: '#6C6C6C',
+        BACKGROUND: 'rgba(255, 255, 255, 1)',
+    },
+    ICONS: {
+        LEFT: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/format_align_left/default/20px.svg',
+        CENTER: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/format_align_center/default/20px.svg',
+        RIGHT: 'https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/format_align_right/default/20px.svg',
+    },
+};
+
+const utils = {
+    isMobile() {
+        return document.documentElement.clientWidth < CONSTANTS.MOBILE_BREAKPOINT;
+    },
+    getDotPosition() {
+        return utils.isMobile() ? CONSTANTS.DOT_POSITION.MOBILE : CONSTANTS.DOT_POSITION.DESKTOP;
+    },
+    getDotSize() {
+        return utils.isMobile() ? CONSTANTS.DOT_SIZE.MOBILE : CONSTANTS.DOT_SIZE.DESKTOP;
+    },
+    clearContainerBorder(container) {
+        const containerStyle = container.getAttribute('style');
+        const newStyle = containerStyle === null || containerStyle === void 0 ? void 0 : containerStyle.replace('border: 1px dashed #6C6C6C;', '').replace('border: 1px dashed rgb(108, 108, 108)', '');
+        container.setAttribute('style', newStyle);
+    },
+    removeResizeElements(container) {
+        if (container.childElementCount > 3) {
+            for (let i = 0; i < 5; i++) {
+                container.removeChild(container.lastChild);
+            }
+        }
+    },
+};
+
+class StyleManager {
+    static getContainerStyle(inline, width) {
+        const baseStyle = `width: ${width || '100%'}; height: auto; cursor: pointer;`;
+        const inlineStyle = inline ? 'display: inline-block;' : '';
+        return `${baseStyle} ${inlineStyle}`;
+    }
+    static getWrapperStyle(inline) {
+        return inline ? 'display: inline-block; float: left; padding-right: 8px;' : 'display: flex';
+    }
+    static getPositionControllerStyle(inline) {
+        const width = inline ? '66px' : '100px';
+        return `
+      position: absolute; 
+      top: 0%; 
+      left: 50%; 
+      width: ${width}; 
+      height: ${CONSTANTS.CONTROLLER_HEIGHT}; 
+      z-index: 999; 
+      background-color: ${CONSTANTS.COLORS.BACKGROUND}; 
+      border-radius: 3px; 
+      border: 1px solid ${CONSTANTS.COLORS.BORDER}; 
+      cursor: pointer; 
+      transform: translate(-50%, -50%); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 0 6px;
+    `
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+    static getDotStyle(index) {
+        const dotPosition = utils.getDotPosition();
+        const dotSize = utils.getDotSize();
+        const positions = [
+            `top: ${dotPosition}; left: ${dotPosition}; cursor: nwse-resize;`,
+            `top: ${dotPosition}; right: ${dotPosition}; cursor: nesw-resize;`,
+            `bottom: ${dotPosition}; left: ${dotPosition}; cursor: nesw-resize;`,
+            `bottom: ${dotPosition}; right: ${dotPosition}; cursor: nwse-resize;`,
+        ];
+        return `
+      position: absolute; 
+      width: ${dotSize}px; 
+      height: ${dotSize}px; 
+      border: 1.5px solid ${CONSTANTS.COLORS.BORDER}; 
+      border-radius: 50%; 
+      ${positions[index]}
+    `
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+}
+
+class AttributeParser {
+    static parseImageAttributes(nodeAttrs, imgElement) {
+        Object.entries(nodeAttrs).forEach(([key, value]) => {
+            if (value === undefined || value === null || key === 'wrapperStyle')
+                return;
+            if (key === 'containerStyle') {
+                const width = value.match(/width:\s*([0-9.]+)px/);
+                if (width) {
+                    imgElement.setAttribute('width', width[1]);
+                }
+                return;
+            }
+            imgElement.setAttribute(key, value);
+        });
+    }
+    static extractWidthFromStyle(style) {
+        const width = style.match(/width:\s*([0-9.]+)px/);
+        return width ? width[1] : null;
+    }
+}
+
+class PositionController {
+    constructor(elements, inline, dispatchNodeView) {
+        this.elements = elements;
+        this.inline = inline;
+        this.dispatchNodeView = dispatchNodeView;
+    }
+    createControllerIcon(src) {
+        const controller = document.createElement('img');
+        controller.setAttribute('src', src);
+        controller.setAttribute('style', `width: ${CONSTANTS.ICON_SIZE}; height: ${CONSTANTS.ICON_SIZE}; cursor: pointer;`);
+        controller.addEventListener('mouseover', (e) => {
+            e.target.style.opacity = '0.6';
+        });
+        controller.addEventListener('mouseout', (e) => {
+            e.target.style.opacity = '1';
+        });
+        return controller;
+    }
+    handleLeftClick() {
+        if (!this.inline) {
+            this.elements.container.setAttribute('style', `${this.elements.container.style.cssText} margin: 0 auto 0 0;`);
+        }
+        else {
+            const style = 'display: inline-block; float: left; padding-right: 8px;';
+            this.elements.wrapper.setAttribute('style', style);
+            this.elements.container.setAttribute('style', style);
+        }
+        this.dispatchNodeView();
+    }
+    handleCenterClick() {
+        this.elements.container.setAttribute('style', `${this.elements.container.style.cssText} margin: 0 auto;`);
+        this.dispatchNodeView();
+    }
+    handleRightClick() {
+        if (!this.inline) {
+            this.elements.container.setAttribute('style', `${this.elements.container.style.cssText} margin: 0 0 0 auto;`);
+        }
+        else {
+            const style = 'display: inline-block; float: right; padding-left: 8px;';
+            this.elements.wrapper.setAttribute('style', style);
+            this.elements.container.setAttribute('style', style);
+        }
+        this.dispatchNodeView();
+    }
+    createPositionControls() {
+        const controller = document.createElement('div');
+        controller.setAttribute('style', StyleManager.getPositionControllerStyle(this.inline));
+        const leftController = this.createControllerIcon(CONSTANTS.ICONS.LEFT);
+        leftController.addEventListener('click', () => this.handleLeftClick());
+        controller.appendChild(leftController);
+        if (!this.inline) {
+            const centerController = this.createControllerIcon(CONSTANTS.ICONS.CENTER);
+            centerController.addEventListener('click', () => this.handleCenterClick());
+            controller.appendChild(centerController);
+        }
+        const rightController = this.createControllerIcon(CONSTANTS.ICONS.RIGHT);
+        rightController.addEventListener('click', () => this.handleRightClick());
+        controller.appendChild(rightController);
+        this.elements.container.appendChild(controller);
+        return this;
+    }
+}
+
+class ResizeController {
+    constructor(elements, dispatchNodeView) {
+        this.state = {
+            isResizing: false,
+            startX: 0,
+            startWidth: 0,
+        };
+        this.handleMouseMove = (e, index) => {
+            if (!this.state.isResizing)
+                return;
+            const deltaX = index % 2 === 0 ? -(e.clientX - this.state.startX) : e.clientX - this.state.startX;
+            const newWidth = this.state.startWidth + deltaX;
+            this.elements.container.style.width = newWidth + 'px';
+            this.elements.img.style.width = newWidth + 'px';
+        };
+        this.handleMouseUp = () => {
+            if (this.state.isResizing) {
+                this.state.isResizing = false;
+            }
+            this.dispatchNodeView();
+        };
+        this.handleTouchMove = (e, index) => {
+            if (!this.state.isResizing)
+                return;
+            const deltaX = index % 2 === 0
+                ? -(e.touches[0].clientX - this.state.startX)
+                : e.touches[0].clientX - this.state.startX;
+            const newWidth = this.state.startWidth + deltaX;
+            this.elements.container.style.width = newWidth + 'px';
+            this.elements.img.style.width = newWidth + 'px';
+        };
+        this.handleTouchEnd = () => {
+            if (this.state.isResizing) {
+                this.state.isResizing = false;
+            }
+            this.dispatchNodeView();
+        };
+        this.elements = elements;
+        this.dispatchNodeView = dispatchNodeView;
+    }
+    createResizeHandle(index) {
+        const dot = document.createElement('div');
+        dot.setAttribute('style', StyleManager.getDotStyle(index));
+        dot.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            this.state.isResizing = true;
+            this.state.startX = e.clientX;
+            this.state.startWidth = this.elements.container.offsetWidth;
+            const onMouseMove = (e) => this.handleMouseMove(e, index);
+            const onMouseUp = () => {
+                this.handleMouseUp();
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        dot.addEventListener('touchstart', (e) => {
+            e.cancelable && e.preventDefault();
+            this.state.isResizing = true;
+            this.state.startX = e.touches[0].clientX;
+            this.state.startWidth = this.elements.container.offsetWidth;
+            const onTouchMove = (e) => this.handleTouchMove(e, index);
+            const onTouchEnd = () => {
+                this.handleTouchEnd();
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+            };
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        }, { passive: false });
+        return dot;
+    }
+}
+
+class ImageNodeView {
+    constructor(context, inline) {
+        this.clearContainerBorder = () => {
+            utils.clearContainerBorder(this.elements.container);
+        };
+        this.dispatchNodeView = () => {
+            var _a;
+            const { view, getPos } = this.context;
+            if (typeof getPos === 'function') {
+                this.clearContainerBorder();
+                const newAttrs = Object.assign(Object.assign({}, this.context.node.attrs), { width: (_a = AttributeParser.extractWidthFromStyle(this.elements.container.style.cssText)) !== null && _a !== void 0 ? _a : this.context.node.attrs.width, containerStyle: `${this.elements.container.style.cssText}`, wrapperStyle: `${this.elements.wrapper.style.cssText}` });
+                view.dispatch(view.state.tr.setNodeMarkup(getPos(), null, newAttrs));
+            }
+        };
+        this.removeResizeElements = () => {
+            utils.removeResizeElements(this.elements.container);
+        };
+        this.context = context;
+        this.inline = inline;
+        this.elements = this.createElements();
+    }
+    createElements() {
+        return {
+            wrapper: document.createElement('div'),
+            container: document.createElement('div'),
+            img: document.createElement('img'),
+        };
+    }
+    setupImageAttributes() {
+        AttributeParser.parseImageAttributes(this.context.node.attrs, this.elements.img);
+    }
+    setupDOMStructure() {
+        const { wrapperStyle, containerStyle } = this.context.node.attrs;
+        this.elements.wrapper.setAttribute('style', wrapperStyle);
+        this.elements.wrapper.appendChild(this.elements.container);
+        this.elements.container.setAttribute('style', containerStyle);
+        this.elements.container.appendChild(this.elements.img);
+    }
+    createPositionController() {
+        const positionController = new PositionController(this.elements, this.inline, this.dispatchNodeView);
+        positionController.createPositionControls();
+    }
+    createResizeHandler() {
+        const resizeHandler = new ResizeController(this.elements, this.dispatchNodeView);
+        Array.from({ length: 4 }, (_, index) => {
+            const dot = resizeHandler.createResizeHandle(index);
+            this.elements.container.appendChild(dot);
+        });
+    }
+    setupContainerClick() {
+        this.elements.container.addEventListener('click', () => {
+            var _a;
+            const isMobile = utils.isMobile();
+            isMobile && ((_a = document.querySelector('.ProseMirror-focused')) === null || _a === void 0 ? void 0 : _a.blur());
+            this.removeResizeElements();
+            this.createPositionController();
+            this.elements.container.setAttribute('style', `position: relative; border: 1px dashed ${CONSTANTS.COLORS.BORDER}; ${this.context.node.attrs.containerStyle}`);
+            this.createResizeHandler();
+        });
+    }
+    setupContentClick() {
+        document.addEventListener('click', (e) => {
+            const target = e.target;
+            const isClickInside = this.elements.container.contains(target) ||
+                target.style.cssText ===
+                    `width: ${CONSTANTS.ICON_SIZE}; height: ${CONSTANTS.ICON_SIZE}; cursor: pointer;`;
+            if (!isClickInside) {
+                this.clearContainerBorder();
+                this.removeResizeElements();
+            }
+        });
+    }
+    initialize() {
+        this.setupDOMStructure();
+        this.setupImageAttributes();
+        const { editable } = this.context.editor.options;
+        if (!editable)
+            return { dom: this.elements.container };
+        this.setupContainerClick();
+        this.setupContentClick();
+        return {
+            dom: this.elements.wrapper,
+        };
+    }
+}
+
+const ImageResize = index_default.extend({
+    name: 'imageResize',
+    addOptions() {
+        var _a;
+        return Object.assign(Object.assign({}, (_a = this.parent) === null || _a === void 0 ? void 0 : _a.call(this)), { inline: false });
+    },
+    addAttributes() {
+        var _a;
+        const inline = this.options.inline;
+        return Object.assign(Object.assign({}, (_a = this.parent) === null || _a === void 0 ? void 0 : _a.call(this)), { containerStyle: {
+                default: null,
+                parseHTML: (element) => {
+                    const containerStyle = element.getAttribute('containerstyle');
+                    if (containerStyle) {
+                        return containerStyle;
+                    }
+                    const width = element.getAttribute('width');
+                    return width
+                        ? StyleManager.getContainerStyle(inline, `${width}px`)
+                        : `${element.style.cssText}`;
+                },
+            }, wrapperStyle: {
+                default: StyleManager.getWrapperStyle(inline),
+            } });
+    },
+    addNodeView() {
+        return ({ node, editor, getPos }) => {
+            const inline = this.options.inline;
+            const context = {
+                node,
+                editor,
+                view: editor.view,
+                getPos: typeof getPos === 'function' ? getPos : undefined,
+            };
+            const nodeView = new ImageNodeView(context, inline);
+            return nodeView.initialize();
+        };
+    },
+});
+
 /**
 * @license lucide-solid v0.562.0 - ISC
 *
@@ -25841,22 +26228,21 @@ var Undo = (props) => createComponent(Icon_default, mergeProps(props, {
 }));
 var undo_default = Undo;
 
-var _tmpl$ = /* @__PURE__ */ template(`<div class=tiptap-editor><div class=tiptap-actionbar></div><div class="prose tiptap-content"></div><input type=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<div class=tiptap-divider>`), _tmpl$3 = /* @__PURE__ */ template(`<button type=button>`);
 const iconProps = {
   size: 16
 };
 const toolbarActions = [{
   action: "bold",
   icon: () => createComponent(bold_default, iconProps),
-  title: "Bold"
+  title: "Félkövér"
 }, {
   action: "italic",
   icon: () => createComponent(italic_default, iconProps),
-  title: "Italic"
+  title: "Dőlt"
 }, {
   action: "strike",
   icon: () => createComponent(strikethrough_default, iconProps),
-  title: "Strikethrough"
+  title: "Áthúzott"
 }, {
   action: "divider1",
   icon: () => [],
@@ -25864,19 +26250,19 @@ const toolbarActions = [{
 }, {
   action: "heading1",
   icon: () => createComponent(heading_1_default, iconProps),
-  title: "Heading 1"
+  title: "Címsor 1"
 }, {
   action: "heading2",
   icon: () => createComponent(heading_2_default, iconProps),
-  title: "Heading 2"
+  title: "Címsor 2"
 }, {
   action: "heading3",
   icon: () => createComponent(heading_3_default, iconProps),
-  title: "Heading 3"
+  title: "Címsor 3"
 }, {
   action: "paragraph",
   icon: () => createComponent(pilcrow_default, iconProps),
-  title: "Paragraph"
+  title: "Bekezdés"
 }, {
   action: "divider2",
   icon: () => [],
@@ -25884,15 +26270,15 @@ const toolbarActions = [{
 }, {
   action: "bulletList",
   icon: () => createComponent(list_default, iconProps),
-  title: "Bullet List"
+  title: "Felsorolás"
 }, {
   action: "orderedList",
   icon: () => createComponent(list_ordered_default, iconProps),
-  title: "Numbered List"
+  title: "Számozott lista"
 }, {
   action: "blockquote",
   icon: () => createComponent(quote_default, iconProps),
-  title: "Blockquote"
+  title: "Idézet"
 }, {
   action: "divider3",
   icon: () => [],
@@ -25900,19 +26286,19 @@ const toolbarActions = [{
 }, {
   action: "alignLeft",
   icon: () => createComponent(text_align_start_default, iconProps),
-  title: "Align Left"
+  title: "Balra igazítás"
 }, {
   action: "alignCenter",
   icon: () => createComponent(text_align_center_default, iconProps),
-  title: "Align Center"
+  title: "Középre igazítás"
 }, {
   action: "alignRight",
   icon: () => createComponent(text_align_end_default, iconProps),
-  title: "Align Right"
+  title: "Jobbra igazítás"
 }, {
   action: "alignJustify",
   icon: () => createComponent(text_align_justify_default, iconProps),
-  title: "Justify"
+  title: "Sorkizárt"
 }, {
   action: "divider4",
   icon: () => [],
@@ -25920,7 +26306,7 @@ const toolbarActions = [{
 }, {
   action: "image",
   icon: () => createComponent(image_default, iconProps),
-  title: "Insert Image"
+  title: "Kép"
 }, {
   action: "divider5",
   icon: () => [],
@@ -25928,14 +26314,17 @@ const toolbarActions = [{
 }, {
   action: "undo",
   icon: () => createComponent(undo_default, iconProps),
-  title: "Undo"
+  title: "Visszavonás"
 }, {
   action: "redo",
   icon: () => createComponent(redo_default, iconProps),
-  title: "Redo"
+  title: "Újra"
 }];
-function TiptapEditor(props) {
+
+var _tmpl$ = /* @__PURE__ */ template(`<div class=tiptap-editor><div class=tiptap-actionbar></div><div class="prose tiptap-content"></div><input type=hidden><input type=file accept=image/* class=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<button type=button>`), _tmpl$3 = /* @__PURE__ */ template(`<div class=tiptap-divider>`);
+function Editor(props) {
   let editorElement;
+  let imageInputRef;
   const [editor, setEditor] = createSignal(null);
   const [activeStates, setActiveStates] = createSignal({});
   const [htmlContent, setHtmlContent] = createSignal("");
@@ -26026,12 +26415,7 @@ function TiptapEditor(props) {
         e.chain().focus().setTextAlign("justify").run();
         break;
       case "image":
-        const url = prompt("Enter image URL:");
-        if (url) {
-          e.chain().focus().setImage({
-            src: url
-          }).run();
-        }
+        imageInputRef?.click();
         break;
       case "undo":
         e.chain().focus().undo().run();
@@ -26042,19 +26426,36 @@ function TiptapEditor(props) {
     }
     updateActiveStates();
   };
-  onMount(() => {
+  const handleImageUpload = async (e) => {
+    const input = e.target;
+    const file = input.files?.[0];
+    if (!file || file.name === "") return;
+    try {
+      const record = await pb.collection("image").create({
+        key: props.contentKey,
+        file
+      });
+      const url = getURLFromRecord(record);
+      editor()?.chain().focus().setImage({
+        src: url
+      }).run();
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      alert("Nem sikerült feltölteni a képet");
+    }
+    input.value = "";
+  };
+  onMount(async () => {
     if (!editorElement) return;
-    const newEditor = new Editor({
+    const initialContent = await getContent(props.contentKey);
+    const newEditor = new Editor$1({
       element: editorElement,
       extensions: [index_default$3, index_default$2.configure({
-        placeholder: "Start writing..."
+        placeholder: "Kezdj el írni..."
       }), index_default$1.configure({
-        types: ["heading", "paragraph"]
-      }), index_default.configure({
-        inline: false,
-        allowBase64: true
-      })],
-      content: "",
+        types: ["heading", "paragraph", "image"]
+      }), ImageResize],
+      content: initialContent,
       onUpdate: ({
         editor: editor2
       }) => {
@@ -26072,33 +26473,44 @@ function TiptapEditor(props) {
     editor()?.destroy();
   });
   return (() => {
-    var _el$ = getNextElement(_tmpl$), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling;
+    var _el$ = getNextElement(_tmpl$), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling, _el$4 = _el$3.nextSibling, _el$5 = _el$4.nextSibling;
     insert(_el$2, createComponent(For, {
       each: toolbarActions,
-      children: (item) => item.action.startsWith("divider") ? getNextElement(_tmpl$2) : (() => {
-        var _el$6 = getNextElement(_tmpl$3);
-        _el$6.$$click = () => executeAction(item.action);
-        insert(_el$6, () => item.icon());
-        createRenderEffect((_p$) => {
-          var _v$ = `tiptap-button ${activeStates()[item.action] ? "tiptap-button-selected" : ""}`, _v$2 = item.title;
-          _v$ !== _p$.e && className(_el$6, _p$.e = _v$);
-          _v$2 !== _p$.t && setAttribute(_el$6, "title", _p$.t = _v$2);
-          return _p$;
-        }, {
-          e: void 0,
-          t: void 0
-        });
-        runHydrationEvents();
-        return _el$6;
-      })()
+      children: (item) => createComponent(Show, {
+        get when() {
+          return !item.action.startsWith("divider");
+        },
+        get fallback() {
+          return getNextElement(_tmpl$3);
+        },
+        get children() {
+          var _el$6 = getNextElement(_tmpl$2);
+          _el$6.$$click = () => executeAction(item.action);
+          insert(_el$6, () => item.icon());
+          createRenderEffect((_p$) => {
+            var _v$ = `tiptap-button ${activeStates()[item.action] ? "tiptap-button-selected" : ""}`, _v$2 = item.title;
+            _v$ !== _p$.e && className(_el$6, _p$.e = _v$);
+            _v$2 !== _p$.t && setAttribute(_el$6, "title", _p$.t = _v$2);
+            return _p$;
+          }, {
+            e: void 0,
+            t: void 0
+          });
+          runHydrationEvents();
+          return _el$6;
+        }
+      })
     }));
     var _ref$ = editorElement;
     typeof _ref$ === "function" ? use(_ref$, _el$3) : editorElement = _el$3;
-    createRenderEffect(() => setAttribute(_el$4, "name", props.key));
+    _el$5.addEventListener("change", handleImageUpload);
+    var _ref$2 = imageInputRef;
+    typeof _ref$2 === "function" ? use(_ref$2, _el$5) : imageInputRef = _el$5;
+    createRenderEffect(() => setAttribute(_el$, "data-pb", `content:${props.contentKey}`));
     createRenderEffect(() => setProperty(_el$4, "value", htmlContent()));
     return _el$;
   })();
 }
 delegateEvents(["click"]);
 
-export { TiptapEditor as default };
+export { Editor as default };

@@ -90,3 +90,15 @@ export async function getContent(key: string): Promise<string> {
     return "";
   }
 }
+
+export async function saveContent(key: string, value: string): Promise<void> {
+  const records = await pb
+    .collection("content")
+    .getFullList({ filter: `key="${key}"` });
+
+  if (records.length > 0) {
+    await pb.collection("content").update(records[0].id, { value });
+  } else {
+    await pb.collection("content").create({ key, value });
+  }
+}

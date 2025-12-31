@@ -16,7 +16,7 @@ const { dataLink, title, icon: Icon } = Astro.props;
     <Icon class="size-4 text-base-content/70" />
     <a
       class="text-base-content/70 hover:link hover:text-base-content"
-      data-link={dataLink}
+      data-pb={`link:${dataLink}`}
     >
       <span>{dataLink}</span>
     </a>

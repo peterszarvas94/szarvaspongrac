@@ -23,11 +23,11 @@ const { key, title, description, pageTitle } = Astro.props;
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <EditButton />
+    <EditButton contentKey={key} />
     <div data-edit="true">
       <Editor
-        key={key}
-        client:load
+        contentKey={key}
+        client:only="solid-js"
       />
     </div>
 
@@ -39,7 +39,7 @@ const { key, title, description, pageTitle } = Astro.props;
       <slot />
     </article>
 
-    <EditButton />
+    <EditButton contentKey={key} />
   </div>
 
   <Footer slot="footer" />
