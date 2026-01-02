@@ -22,77 +22,64 @@ declare module "@tiptap/core" {
 const inputRegex = /(?:^|\s)(!\[(.+|:?)]\((\S+)(?:(?:\s+)["'](\S+)["'])?\))$/;
 
 const resizePlugin = new Plugin({
-  view(editorView) {
-    let activeImg: HTMLImageElement | null = null;
-    let startX = 0;
-    let startWidth = 0;
-    let figureNode: HTMLElement | null = null;
+  props: {
+    handleDOMEvents: {
+      mousedown(view, event) {
+        if (event.button !== 2) return false;
 
-    const onMouseDown = (e: MouseEvent) => {
-      if (e.button !== 2) return;
+        const target = event.target as HTMLElement;
+        const figureNode = target.closest("figure");
+        if (!figureNode || target.tagName !== "IMG") return false;
 
-      const target = e.target as HTMLElement;
-      if (target.tagName !== "IMG") return;
+        // Check if we're in edit mode
+        const isEditMode = localStorage.getItem("editMode") === "true";
+        if (!isEditMode) return false;
 
-      e.preventDefault();
-      activeImg = target as HTMLImageElement;
-      figureNode = target.closest("figure");
-      startX = e.clientX;
-      startWidth = activeImg.offsetWidth;
+        event.preventDefault();
 
-      document.addEventListener("mousemove", onMouseMove);
-      document.addEventListener("mouseup", onMouseUp);
-      document.addEventListener("contextmenu", preventContextMenu);
-    };
+        const img = target as HTMLImageElement;
+        const startX = event.clientX;
+        const startWidth = img.offsetWidth;
 
-    const onMouseMove = (e: MouseEvent) => {
-      if (!activeImg) return;
-      const delta = e.clientX - startX;
-      const newWidth = Math.max(50, startWidth + delta);
-      activeImg.setAttribute("width", String(newWidth));
-      activeImg.classList.add("resizing");
-    };
+        const onMouseMove = (e: MouseEvent) => {
+          const delta = e.clientX - startX;
+          const newWidth = Math.max(50, startWidth + delta);
+          img.setAttribute("width", String(newWidth));
+          img.classList.add("resizing");
+        };
 
-    const onMouseUp = () => {
-      if (activeImg && figureNode) {
-        activeImg.classList.remove("resizing");
-        const pos = editorView.posAtDOM(figureNode, 0);
-        if (pos !== null) {
-          const newWidth = parseInt(activeImg.getAttribute("width") || "0", 10);
-          const node = editorView.state.doc.nodeAt(pos);
-          if (node) {
-            editorView.dispatch(
-              editorView.state.tr.setNodeMarkup(pos, null, {
-                ...node.attrs,
-                width: newWidth,
-              }),
-            );
+        const preventContextMenu = (e: MouseEvent) => {
+          e.preventDefault();
+        };
+
+        const onMouseUp = () => {
+          img.classList.remove("resizing");
+          const pos = view.posAtDOM(figureNode, 0);
+          if (pos !== null) {
+            const newWidth = parseInt(img.getAttribute("width") || "0", 10);
+            const node = view.state.doc.nodeAt(pos);
+            if (node) {
+              view.dispatch(
+                view.state.tr.setNodeMarkup(pos, null, {
+                  ...node.attrs,
+                  width: newWidth,
+                }),
+              );
+            }
           }
-        }
-      }
-      activeImg = null;
-      figureNode = null;
-      document.removeEventListener("mousemove", onMouseMove);
-      document.removeEventListener("mouseup", onMouseUp);
-      setTimeout(() => {
-        document.removeEventListener("contextmenu", preventContextMenu);
-      }, 100);
-    };
+          figureNode.removeEventListener("mousemove", onMouseMove);
+          figureNode.removeEventListener("mouseup", onMouseUp);
+          figureNode.removeEventListener("contextmenu", preventContextMenu);
+        };
 
-    const preventContextMenu = (e: MouseEvent) => {
-      e.preventDefault();
-    };
+        // Attach event listeners to the figure element, not document
+        figureNode.addEventListener("mousemove", onMouseMove);
+        figureNode.addEventListener("mouseup", onMouseUp);
+        figureNode.addEventListener("contextmenu", preventContextMenu);
 
-    document.addEventListener("mousedown", onMouseDown);
-
-    return {
-      destroy() {
-        document.removeEventListener("mousedown", onMouseDown);
-        document.removeEventListener("mousemove", onMouseMove);
-        document.removeEventListener("mouseup", onMouseUp);
-        document.removeEventListener("contextmenu", preventContextMenu);
+        return true;
       },
-    };
+    },
   },
 });
 

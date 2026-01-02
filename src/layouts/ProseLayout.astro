@@ -24,12 +24,10 @@ const { key, title, description, pageTitle } = Astro.props;
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
     <EditButton contentKey={key} />
-    <div data-edit="true">
-      <Editor
-        contentKey={key}
-        client:only="solid-js"
-      />
-    </div>
+    <Editor
+      contentKey={key}
+      client:only="solid-js"
+    />
 
     <!-- Prose Content -->
     <article

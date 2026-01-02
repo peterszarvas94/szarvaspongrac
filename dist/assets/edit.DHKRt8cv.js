@@ -1,31 +1,48 @@
-import { s as saveContent } from './db.D1KCNAzE.js';
-import { u as updateContentsOnPage } from './content-manager.DWZ6a-nb.js';
+import { s as saveContent, u as updateContentsOnPage } from './content-manager.nW4rlnpy.js';
 
-function getEditMode() {
+class TypedEvent extends CustomEvent {
+  constructor(eventName, detail) {
+    super(eventName, {
+      detail,
+      bubbles: true,
+      // optional: allows event to bubble
+      composed: true
+      // optional: allows crossing shadow DOM
+    });
+  }
+}
+
+class EditModeEvent extends TypedEvent {
+  static eventName = "editModeChanged";
+  constructor(editMode) {
+    super(EditModeEvent.eventName, { editMode });
+  }
+  get editMode() {
+    return this.detail.editMode;
+  }
+}
+function getEditModeLS() {
   const stored = localStorage.getItem("editMode");
   return stored === "true";
 }
 function setEditMode(value) {
   localStorage.setItem("editMode", String(value));
+  window.dispatchEvent(new EditModeEvent(value));
 }
 function toggleEditMode() {
-  setEditMode(!getEditMode());
-  window.dispatchEvent(new CustomEvent("editModeChanged"));
+  setEditMode(!getEditModeLS());
 }
 function initEditButtons() {
   const editButtons = document.querySelectorAll("[data-edit-toggle]");
   editButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      toggleEditMode();
-      updateEditUI();
-    });
+    button.addEventListener("click", toggleEditMode);
   });
 }
 function updateEditUI() {
   const editElements = document.querySelectorAll("[data-edit]");
   editElements.forEach((element) => {
     const showInEdit = element.dataset.edit === "true";
-    if (showInEdit === getEditMode()) {
+    if (showInEdit === getEditModeLS()) {
       element.classList.remove("hidden");
     } else {
       element.classList.add("hidden");
@@ -53,8 +70,8 @@ async function handleSave(button) {
   try {
     await saveContent(parsed.key, input.value);
     toggleEditMode();
-    updateEditUI();
     await updateContentsOnPage();
+    alert("Mentés sikeres");
   } catch (error) {
     console.error("Save failed:", error);
     alert("Mentés sikertelen");
@@ -66,4 +83,7 @@ function initEdit() {
   updateEditUI();
 }
 initEdit();
-document.addEventListener("astro:page-load", initEdit);
+window.addEventListener("astro:page-load", initEdit);
+window.addEventListener(EditModeEvent.eventName, updateEditUI);
+
+export { EditModeEvent as E, getEditModeLS as g };

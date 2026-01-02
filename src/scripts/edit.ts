@@ -1,28 +1,38 @@
 import { saveContent } from "@lib/db";
 import { updateContentsOnPage } from "./content-manager";
+import { TypedEvent } from "./event";
 
-function getEditMode(): boolean {
+export class EditModeEvent extends TypedEvent<{ editMode: boolean }> {
+  static eventName = "editModeChanged";
+
+  constructor(editMode: boolean) {
+    super(EditModeEvent.eventName, { editMode });
+  }
+
+  get editMode() {
+    return this.detail.editMode;
+  }
+}
+
+export function getEditModeLS(): boolean {
   const stored = localStorage.getItem("editMode");
   return stored === "true";
 }
 
 function setEditMode(value: boolean) {
   localStorage.setItem("editMode", String(value));
+  window.dispatchEvent(new EditModeEvent(value));
 }
 
 function toggleEditMode() {
-  setEditMode(!getEditMode());
-  window.dispatchEvent(new CustomEvent("editModeChanged"));
+  setEditMode(!getEditModeLS());
 }
 
 function initEditButtons() {
   const editButtons =
     document.querySelectorAll<HTMLButtonElement>("[data-edit-toggle]");
   editButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      toggleEditMode();
-      updateEditUI();
-    });
+    button.addEventListener("click", toggleEditMode);
   });
 }
 
@@ -31,7 +41,7 @@ function updateEditUI() {
 
   editElements.forEach((element) => {
     const showInEdit = element.dataset.edit === "true";
-    if (showInEdit === getEditMode()) {
+    if (showInEdit === getEditModeLS()) {
       element.classList.remove("hidden");
     } else {
       element.classList.add("hidden");
@@ -68,8 +78,8 @@ async function handleSave(button: HTMLButtonElement) {
     await saveContent(parsed.key, input.value);
 
     toggleEditMode();
-    updateEditUI();
     await updateContentsOnPage();
+    alert("Mentés sikeres");
   } catch (error) {
     console.error("Save failed:", error);
     alert("Mentés sikertelen");
@@ -83,4 +93,5 @@ function initEdit() {
 }
 
 initEdit();
-document.addEventListener("astro:page-load", initEdit);
+window.addEventListener("astro:page-load", initEdit);
+window.addEventListener(EditModeEvent.eventName, updateEditUI);

@@ -1,6 +1,5 @@
-import { b as getImageUrls } from './db.D1KCNAzE.js';
-import './edit.CNqENZyl.js';
-import './content-manager.DWZ6a-nb.js';
+import { b as getImageUrls } from './content-manager.nW4rlnpy.js';
+import './edit.DHKRt8cv.js';
 
 async function init() {
   const img = document.querySelector("[data-image]");

@@ -4,11 +4,13 @@
 
 Always use bun over npm.
 
-- `bun run dev` - Start development server
+- `bun run dev` - Start development server -> never run it
 - `bun run build` - Build for production
 - `bun run preview` - Preview built site
 - `bun run format` - Format code with Prettier
 - `bun run format:check` - Check formatting
+
+Never start or stop server or database.
 
 ## Tech Stack
 

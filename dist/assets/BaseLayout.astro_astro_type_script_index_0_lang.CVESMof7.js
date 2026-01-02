@@ -1,5 +1,4 @@
-import { l as login, c as logout, i as isAuthenticated, e as getCurrentUser } from './db.D1KCNAzE.js';
-import './content-manager.DWZ6a-nb.js';
+import { l as login, c as logout, i as isAuthenticated, e as getCurrentUser } from './content-manager.nW4rlnpy.js';
 
 function updateAuthForm() {
   const form = document.getElementById("login-form");

@@ -1,19 +1,47 @@
-import { createSignal, onMount, onCleanup, For } from "solid-js";
+import { createSignal, onMount, onCleanup, For, Show } from "solid-js";
 import { Editor as TipTap } from "@tiptap/core";
 import { getContent, pb, getURLFromRecord } from "@lib/db";
 import "@styles/tiptap.css";
 import { toolbarActions, extensions } from "@lib/tiptap-setup";
+import { EditModeEvent, getEditModeLS } from "@scripts/edit";
 
 interface Props {
   contentKey: string;
 }
 
 export default function Editor(props: Props) {
+  const [isEditMode, setIsEditMode] = createSignal(getEditModeLS());
+
+  const handleEditModeChange = (event: EditModeEvent) => {
+    setIsEditMode(event.detail.editMode);
+  };
+
+  onMount(() => {
+    window.addEventListener(
+      EditModeEvent.eventName,
+      handleEditModeChange as EventListener,
+    );
+
+    onCleanup(() => {
+      window.removeEventListener(
+        EditModeEvent.eventName,
+        handleEditModeChange as EventListener,
+      );
+    });
+  });
+
+  return (
+    <Show when={isEditMode()}>
+      <EditorInner {...props} />
+    </Show>
+  );
+}
+
+function EditorInner(props: Props) {
   let editorElement: HTMLDivElement | undefined;
   let imageInputRef: HTMLInputElement | undefined;
   const [editor, setEditor] = createSignal<TipTap | null>(null);
   const [htmlContent, setHtmlContent] = createSignal("");
-  const [, forceUpdate] = createSignal(0);
 
   const handleImageUpload = async (e: Event) => {
     const input = e.target as HTMLInputElement;
@@ -39,6 +67,7 @@ export default function Editor(props: Props) {
   onMount(async () => {
     if (!editorElement) return;
     const initialContent = await getContent(props.contentKey);
+    setHtmlContent(initialContent);
 
     const newEditor = new TipTap({
       element: editorElement,
@@ -47,27 +76,9 @@ export default function Editor(props: Props) {
       onUpdate: ({ editor }) => {
         setHtmlContent(editor.getHTML());
       },
-      onSelectionUpdate: () => {
-        forceUpdate((n) => n + 1);
-      },
     });
 
     setEditor(newEditor);
-  });
-
-  const handleEditModeChange = async () => {
-    const isEditMode = localStorage.getItem("editMode") === "true";
-    const freshContent = await getContent(props.contentKey);
-    editor()?.commands.setContent(freshContent);
-    setHtmlContent(freshContent);
-  };
-
-  onMount(() => {
-    window.addEventListener("editModeChanged", handleEditModeChange);
-
-    onCleanup(() => {
-      window.removeEventListener("editModeChanged", handleEditModeChange);
-    });
   });
 
   onCleanup(() => {
@@ -97,7 +108,6 @@ export default function Editor(props: Props) {
                   } else {
                     item.run(ed);
                   }
-                  forceUpdate((n) => n + 1);
                 }}
               >
                 {item.icon()}
