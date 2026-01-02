@@ -19,13 +19,6 @@ export function showAlert(message: string, level: ToastLevel = "info") {
   window.dispatchEvent(new ToastEvent(message, level));
 }
 
-export function testToaster() {
-  showAlert("Info message", "info");
-  showAlert("Success message", "success");
-  showAlert("Warning message", "warning");
-  showAlert("Error message", "error");
-}
-
 const TOAST_DURATION = 3000;
 const levelClasses: Record<ToastLevel, string> = {
   info: "alert-info",

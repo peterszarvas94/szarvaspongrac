@@ -3,6 +3,8 @@ import { updateContentsOnPage } from "./content-manager";
 import { TypedEvent } from "./event";
 import { showAlert } from "./toaster";
 
+let editMode = false;
+
 export class EditModeEvent extends TypedEvent<{ editMode: boolean }> {
   static eventName = "editModeChanged";
 
@@ -15,18 +17,17 @@ export class EditModeEvent extends TypedEvent<{ editMode: boolean }> {
   }
 }
 
-export function getEditModeLS(): boolean {
-  const stored = localStorage.getItem("editMode");
-  return stored === "true";
+export function getEditMode() {
+  return editMode;
 }
 
 function setEditMode(value: boolean) {
-  localStorage.setItem("editMode", String(value));
+  editMode = value;
   window.dispatchEvent(new EditModeEvent(value));
 }
 
 function toggleEditMode() {
-  setEditMode(!getEditModeLS());
+  setEditMode(!editMode);
 }
 
 function initEditButtons() {
@@ -42,7 +43,7 @@ function updateEditUI() {
 
   editElements.forEach((element) => {
     const showInEdit = element.dataset.edit === "true";
-    if (showInEdit === getEditModeLS()) {
+    if (showInEdit === editMode) {
       element.classList.remove("hidden");
     } else {
       element.classList.add("hidden");
@@ -94,5 +95,4 @@ function initEdit() {
 }
 
 initEdit();
-window.addEventListener("astro:page-load", initEdit);
 window.addEventListener(EditModeEvent.eventName, updateEditUI);

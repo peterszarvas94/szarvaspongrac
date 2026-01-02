@@ -1,6 +1,7 @@
-import { C as Client, b as getImageUrls, d as deleteImage } from './content-manager.nW4rlnpy.js';
-import { s as showAlert } from './toaster.D4F-73sH.js';
-import './edit.D55w0Sua.js';
+import { Client } from './pocketbase.BNTe72gt.js';
+import { showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.FYDWtDCv.js';
+import { getImageUrls, deleteImage } from './db.C-ak8QhB.js';
+import './content-manager.CAHtmHGO.js';
 
 const pb = new Client("https://pb.szarvaspongrac.hu");
 let dt = new DataTransfer();
@@ -146,7 +147,6 @@ function init$1() {
   });
 }
 init$1();
-document.addEventListener("astro:page-load", init$1);
 
 async function initGallery() {
   const gallery = document.querySelector("[data-images]");
@@ -221,4 +221,3 @@ async function init() {
   initPopover();
 }
 init();
-document.addEventListener("astro:page-load", init);

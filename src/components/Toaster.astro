@@ -29,17 +29,3 @@ import { CircleCheck, CircleX, Info, TriangleAlert } from "@lucide/astro";
     <span></span>
   </div>
 </template>
-
-<button
-  id="testToaster"
-  class="cursor-pointer"
->
-  TEST
-</button>
-
-<script>
-  import { testToaster } from "@scripts/toaster";
-  document.getElementById("testToaster")?.addEventListener("click", () => {
-    testToaster();
-  });
-</script>

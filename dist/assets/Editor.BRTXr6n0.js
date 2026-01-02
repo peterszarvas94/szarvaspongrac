@@ -1,7 +1,8 @@
-import { s as splitProps, g as getNextElement, t as template, a as spread, m as mergeProps, b as memo, i as insert, c as createComponent, D as Dynamic, F as For, r as runHydrationEvents, d as delegateEvents, e as createSignal, o as onMount, f as onCleanup, S as Show, h as className, j as createRenderEffect, k as setAttribute, l as setProperty, u as use } from './web.D4Bkns7i.js';
-import { p as pb, g as getURLFromRecord, a as getContent } from './content-manager.nW4rlnpy.js';
-import { g as getEditModeLS, E as EditModeEvent } from './edit.D55w0Sua.js';
-import { s as showAlert } from './toaster.D4F-73sH.js';
+import { splitProps, getNextElement, template, spread, mergeProps, memo, insert, createComponent, Dynamic, For, runHydrationEvents, delegateEvents, createSignal, createResource, onMount, onCleanup, Show, className, createRenderEffect, setAttribute, use, setProperty } from './web.2YISEKWe.js';
+import { getContent, pb, getURLFromRecord } from './db.C-ak8QhB.js';
+import { getEditMode, EditModeEvent, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.FYDWtDCv.js';
+import './pocketbase.BNTe72gt.js';
+import './content-manager.CAHtmHGO.js';
 
 // ::- Persistent data structure representing an ordered mapping from
 // strings to values, with some convenient update methods.
@@ -25126,8 +25127,6 @@ const resizePlugin = new Plugin({
         const target = event.target;
         const figureNode = target.closest("figure");
         if (!figureNode || target.tagName !== "IMG") return false;
-        const isEditMode = localStorage.getItem("editMode") === "true";
-        if (!isEditMode) return false;
         event.preventDefault();
         const img = target;
         const startX = event.clientX;
@@ -25419,7 +25418,8 @@ const toolbarActions = [{
 
 var _tmpl$ = /* @__PURE__ */ template(`<div class=tiptap-editor><div class=tiptap-actionbar></div><div class="prose tiptap-content"></div><input type=hidden><input type=file accept=image/* class=hidden>`), _tmpl$2 = /* @__PURE__ */ template(`<div class=tiptap-divider>`), _tmpl$3 = /* @__PURE__ */ template(`<button type=button>`);
 function Editor(props) {
-  const [isEditMode, setIsEditMode] = createSignal(getEditModeLS());
+  const [isEditMode, setIsEditMode] = createSignal(getEditMode());
+  const [content] = createResource(() => props.contentKey, getContent);
   const handleEditModeChange = (event) => {
     setIsEditMode(event.detail.editMode);
   };
@@ -25434,7 +25434,14 @@ function Editor(props) {
       return isEditMode();
     },
     get children() {
-      return createComponent(EditorInner, props);
+      return createComponent(EditorInner, {
+        get contentKey() {
+          return props.contentKey;
+        },
+        get initialContent() {
+          return content();
+        }
+      });
     }
   });
 }
@@ -25442,11 +25449,11 @@ function EditorInner(props) {
   let editorElement;
   let imageInputRef;
   const [editor, setEditor] = createSignal(null);
-  const [htmlContent, setHtmlContent] = createSignal("");
+  const [htmlContent, setHtmlContent] = createSignal(props.initialContent);
   const handleImageUpload = async (e) => {
     const input = e.target;
     const file = input.files?.[0];
-    if (!file || file.name === "") return;
+    if (!file) return;
     try {
       const record = await pb.collection("image").create({
         key: props.contentKey,
@@ -25456,27 +25463,23 @@ function EditorInner(props) {
       editor()?.chain().focus().setImage({
         src: url
       }).run();
-    } catch (err) {
-      console.error("Image upload failed:", err);
+    } catch {
       showAlert("Nem sikerült feltölteni a képet", "error");
     }
     input.value = "";
   };
-  onMount(async () => {
-    if (!editorElement) return;
-    const initialContent = await getContent(props.contentKey);
-    setHtmlContent(initialContent);
-    const newEditor = new Editor$1({
+  onMount(() => {
+    const ed = new Editor$1({
       element: editorElement,
       extensions,
-      content: initialContent,
+      content: props.initialContent,
       onUpdate: ({
         editor: editor2
       }) => {
         setHtmlContent(editor2.getHTML());
       }
     });
-    setEditor(newEditor);
+    setEditor(ed);
   });
   onCleanup(() => {
     editor()?.destroy();

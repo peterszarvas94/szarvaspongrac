@@ -1,17 +1,26 @@
-import { createSignal, onMount, onCleanup, For, Show } from "solid-js";
+import {
+  createSignal,
+  createResource,
+  onMount,
+  onCleanup,
+  For,
+  Show,
+} from "solid-js";
 import { Editor as TipTap } from "@tiptap/core";
 import { getContent, pb, getURLFromRecord } from "@scripts/db";
 import "@styles/tiptap.css";
 import { toolbarActions, extensions } from "@scripts/tiptap-setup";
-import { EditModeEvent, getEditModeLS } from "@scripts/edit";
+import { getEditMode, EditModeEvent } from "@scripts/edit";
 import { showAlert } from "@scripts/toaster";
 
-interface Props {
+interface EditorProps {
   contentKey: string;
 }
 
-export default function Editor(props: Props) {
-  const [isEditMode, setIsEditMode] = createSignal(getEditModeLS());
+export default function Editor(props: EditorProps) {
+  const [isEditMode, setIsEditMode] = createSignal(getEditMode());
+
+  const [content] = createResource(() => props.contentKey, getContent);
 
   const handleEditModeChange = (event: EditModeEvent) => {
     setIsEditMode(event.detail.editMode);
@@ -33,21 +42,25 @@ export default function Editor(props: Props) {
 
   return (
     <Show when={isEditMode()}>
-      <EditorInner {...props} />
+      <EditorInner
+        contentKey={props.contentKey}
+        initialContent={content()!}
+      />
     </Show>
   );
 }
 
-function EditorInner(props: Props) {
+function EditorInner(props: EditorProps & { initialContent: string }) {
   let editorElement: HTMLDivElement | undefined;
   let imageInputRef: HTMLInputElement | undefined;
+
   const [editor, setEditor] = createSignal<TipTap | null>(null);
-  const [htmlContent, setHtmlContent] = createSignal("");
+  const [htmlContent, setHtmlContent] = createSignal(props.initialContent);
 
   const handleImageUpload = async (e: Event) => {
     const input = e.target as HTMLInputElement;
     const file = input.files?.[0];
-    if (!file || file.name === "") return;
+    if (!file) return;
 
     try {
       const record = await pb.collection("image").create({
@@ -55,31 +68,25 @@ function EditorInner(props: Props) {
         file,
       });
       const url = getURLFromRecord(record);
-
       editor()?.chain().focus().setImage({ src: url }).run();
-    } catch (err) {
-      console.error("Image upload failed:", err);
+    } catch {
       showAlert("Nem sikerült feltölteni a képet", "error");
     }
 
     input.value = "";
   };
 
-  onMount(async () => {
-    if (!editorElement) return;
-    const initialContent = await getContent(props.contentKey);
-    setHtmlContent(initialContent);
-
-    const newEditor = new TipTap({
-      element: editorElement,
+  onMount(() => {
+    const ed = new TipTap({
+      element: editorElement!,
       extensions,
-      content: initialContent,
+      content: props.initialContent,
       onUpdate: ({ editor }) => {
         setHtmlContent(editor.getHTML());
       },
     });
 
-    setEditor(newEditor);
+    setEditor(ed);
   });
 
   onCleanup(() => {
@@ -94,8 +101,10 @@ function EditorInner(props: Props) {
             if (item.type === "divider") {
               return <div class="tiptap-divider" />;
             }
+
             const e = editor();
             const isActive = e && item.isActive?.(e);
+
             return (
               <button
                 type="button"
@@ -117,15 +126,18 @@ function EditorInner(props: Props) {
           }}
         </For>
       </div>
+
       <div
         ref={editorElement}
         class="prose tiptap-content"
       />
+
       <input
         type="hidden"
         name={props.contentKey}
         value={htmlContent()}
       />
+
       <input
         ref={imageInputRef}
         type="file"

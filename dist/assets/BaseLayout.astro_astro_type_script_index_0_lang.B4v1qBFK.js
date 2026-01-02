@@ -1,4 +1,6 @@
-import { l as login, c as logout, i as isAuthenticated, e as getCurrentUser } from './content-manager.nW4rlnpy.js';
+import { login, logout, isAuthenticated, getCurrentUser } from './db.C-ak8QhB.js';
+import './content-manager.CAHtmHGO.js';
+import './pocketbase.BNTe72gt.js';
 
 function updateAuthForm() {
   const form = document.getElementById("login-form");
@@ -58,7 +60,6 @@ function init() {
   initLogoutButtons();
 }
 init();
-document.addEventListener("astro:page-load", init);
 
 function initFooter() {
   const currentYear = (/* @__PURE__ */ new Date()).getFullYear();

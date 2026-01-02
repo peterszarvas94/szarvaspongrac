@@ -43,6 +43,7 @@ const UNOWNED = {
   context: null,
   owner: null
 };
+const NO_INIT = {};
 var Owner = null;
 let Transition = null;
 let ExternalSourceConfig = null;
@@ -87,6 +88,10 @@ function createSignal(value, options) {
   };
   return [readSignal.bind(s), setter];
 }
+function createComputed(fn, value, options) {
+  const c = createComputation(fn, value, true, STALE);
+  updateComputation(c);
+}
 function createRenderEffect(fn, value, options) {
   const c = createComputation(fn, value, false, STALE);
   updateComputation(c);
@@ -107,6 +112,146 @@ function createMemo(fn, value, options) {
   c.comparator = options.equals || undefined;
   updateComputation(c);
   return readSignal.bind(c);
+}
+function isPromise(v) {
+  return v && typeof v === "object" && "then" in v;
+}
+function createResource(pSource, pFetcher, pOptions) {
+  let source;
+  let fetcher;
+  let options;
+  if (typeof pFetcher === "function") {
+    source = pSource;
+    fetcher = pFetcher;
+    options = {};
+  } else {
+    source = true;
+    fetcher = pSource;
+    options = pFetcher || {};
+  }
+  let pr = null,
+    initP = NO_INIT,
+    id = null,
+    scheduled = false,
+    resolved = "initialValue" in options,
+    dynamic = typeof source === "function" && createMemo(source);
+  const contexts = new Set(),
+    [value, setValue] = (options.storage || createSignal)(options.initialValue),
+    [error, setError] = createSignal(undefined),
+    [track, trigger] = createSignal(undefined, {
+      equals: false
+    }),
+    [state, setState] = createSignal(resolved ? "ready" : "unresolved");
+  if (sharedConfig.context) {
+    id = sharedConfig.getNextContextId();
+    if (options.ssrLoadFrom === "initial") initP = options.initialValue;else if (sharedConfig.load && sharedConfig.has(id)) initP = sharedConfig.load(id);
+  }
+  function loadEnd(p, v, error, key) {
+    if (pr === p) {
+      pr = null;
+      key !== undefined && (resolved = true);
+      if ((p === initP || v === initP) && options.onHydrated) queueMicrotask(() => options.onHydrated(key, {
+        value: v
+      }));
+      initP = NO_INIT;
+      completeLoad(v, error);
+    }
+    return v;
+  }
+  function completeLoad(v, err) {
+    runUpdates(() => {
+      if (err === undefined) setValue(() => v);
+      setState(err !== undefined ? "errored" : resolved ? "ready" : "unresolved");
+      setError(err);
+      for (const c of contexts.keys()) c.decrement();
+      contexts.clear();
+    }, false);
+  }
+  function read() {
+    const c = SuspenseContext && useContext(SuspenseContext),
+      v = value(),
+      err = error();
+    if (err !== undefined && !pr) throw err;
+    if (Listener && !Listener.user && c) {
+      createComputed(() => {
+        track();
+        if (pr) {
+          if (c.resolved && Transition) ;else if (!contexts.has(c)) {
+            c.increment();
+            contexts.add(c);
+          }
+        }
+      });
+    }
+    return v;
+  }
+  function load(refetching = true) {
+    if (refetching !== false && scheduled) return;
+    scheduled = false;
+    const lookup = dynamic ? dynamic() : source;
+    if (lookup == null || lookup === false) {
+      loadEnd(pr, untrack(value));
+      return;
+    }
+    let error;
+    const p = initP !== NO_INIT ? initP : untrack(() => {
+      try {
+        return fetcher(lookup, {
+          value: value(),
+          refetching
+        });
+      } catch (fetcherError) {
+        error = fetcherError;
+      }
+    });
+    if (error !== undefined) {
+      loadEnd(pr, undefined, castError(error), lookup);
+      return;
+    } else if (!isPromise(p)) {
+      loadEnd(pr, p, undefined, lookup);
+      return p;
+    }
+    pr = p;
+    if ("v" in p) {
+      if (p.s === 1) loadEnd(pr, p.v, undefined, lookup);else loadEnd(pr, undefined, castError(p.v), lookup);
+      return p;
+    }
+    scheduled = true;
+    queueMicrotask(() => scheduled = false);
+    runUpdates(() => {
+      setState(resolved ? "refreshing" : "pending");
+      trigger();
+    }, false);
+    return p.then(v => loadEnd(p, v, undefined, lookup), e => loadEnd(p, undefined, castError(e), lookup));
+  }
+  Object.defineProperties(read, {
+    state: {
+      get: () => state()
+    },
+    error: {
+      get: () => error()
+    },
+    loading: {
+      get() {
+        const s = state();
+        return s === "pending" || s === "refreshing";
+      }
+    },
+    latest: {
+      get() {
+        if (!resolved) return read();
+        const err = error();
+        if (err && !pr) throw err;
+        return value();
+      }
+    }
+  });
+  let owner = Owner;
+  if (dynamic) createComputed(() => (owner = Owner, load(false)));else load(false);
+  return [read, {
+    refetch: info => runWithOwner(owner, () => load(info)),
+    mutate: setValue
+  }];
 }
 function batch(fn) {
   return runUpdates(fn, false);
@@ -135,6 +280,21 @@ function getListener() {
 function getOwner() {
   return Owner;
 }
+function runWithOwner(o, fn) {
+  const prev = Owner;
+  const prevListener = Listener;
+  Owner = o;
+  Listener = null;
+  try {
+    return runUpdates(fn, true);
+  } catch (err) {
+    handleError(err);
+  } finally {
+    Owner = prev;
+    Listener = prevListener;
+  }
+}
+const [transPending, setTransPending] = /*@__PURE__*/createSignal(false);
 function resumeEffects(e) {
   Effects.push.apply(Effects, e);
   e.length = 0;
@@ -1462,4 +1622,4 @@ function Dynamic(props) {
   return createDynamic(() => props.component, others);
 }
 
-export { $PROXY as $, Dynamic as D, For as F, Show as S, spread as a, memo as b, createComponent as c, delegateEvents as d, createSignal as e, onCleanup as f, getNextElement as g, className as h, insert as i, createRenderEffect as j, setAttribute as k, setProperty as l, mergeProps as m, batch as n, onMount as o, $TRACK as p, getListener as q, runHydrationEvents as r, splitProps as s, template as t, use as u, hydrate as v, render as w, Suspense as x };
+export { $PROXY, $TRACK, Dynamic, For, Show, Suspense, batch, className, createComponent, createRenderEffect, createResource, createSignal, delegateEvents, getListener, getNextElement, hydrate, insert, memo, mergeProps, onCleanup, onMount, render, runHydrationEvents, setAttribute, setProperty, splitProps, spread, template, use };

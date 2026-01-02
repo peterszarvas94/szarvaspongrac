@@ -24,6 +24,26 @@ export default defineConfig({
   vite: {
     build: {
       minify: false,
+      cssMinify: false,
+      rollupOptions: {
+        output: {
+          minifyInternalExports: false,
+          manualChunks(id) {
+            if (id.includes("pocketbase")) {
+              return "pocketbase";
+            }
+            if (id.includes("src/scripts/db.ts")) {
+              return "db";
+            }
+          },
+        },
+      },
+    },
+    esbuild: {
+      minifyIdentifiers: false,
+      minifySyntax: false,
+      minifyWhitespace: false,
+      keepNames: true,
     },
     plugins: [tailwindcss()],
     server: {

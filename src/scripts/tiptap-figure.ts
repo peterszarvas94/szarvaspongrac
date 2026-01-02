@@ -31,10 +31,6 @@ const resizePlugin = new Plugin({
         const figureNode = target.closest("figure");
         if (!figureNode || target.tagName !== "IMG") return false;
 
-        // Check if we're in edit mode
-        const isEditMode = localStorage.getItem("editMode") === "true";
-        if (!isEditMode) return false;
-
         event.preventDefault();
 
         const img = target as HTMLImageElement;
