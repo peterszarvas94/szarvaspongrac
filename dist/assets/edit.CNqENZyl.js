@@ -10,6 +10,7 @@ function setEditMode(value) {
 }
 function toggleEditMode() {
   setEditMode(!getEditMode());
+  window.dispatchEvent(new CustomEvent("editModeChanged"));
 }
 function initEditButtons() {
   const editButtons = document.querySelectorAll("[data-edit-toggle]");

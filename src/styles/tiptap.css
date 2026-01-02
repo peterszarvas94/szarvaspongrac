@@ -30,11 +30,11 @@
 }
 
 .tiptap-button:hover {
-  background-color: #f5f5f5;
+  background-color: var(--color-base-100);
 }
 
 .tiptap-button-selected {
-  background-color: #f0f0f0;
+  background-color: var(--color-base-200);
 }
 
 .tiptap-divider {
@@ -66,45 +66,24 @@
   outline: none;
 }
 
-/* Resizable image */
-.tiptap-resizable-image {
-  display: block;
+/* Figure - image wrapper */
+.prose figure,
+.tiptap-content figure {
+  margin: 1em 0;
+}
+
+.tiptap-content figure.ProseMirror-selectednode img {
+  /* box-shadow: inset 0 0 0 2px var(--color-info); */
+  box-shadow: 0 0 0 1px var(--color-info);
+}
+
+.tiptap-content figure img.resizing {
+  cursor: col-resize;
+}
+
+.prose figure img,
+.tiptap-content figure img {
+  display: inline;
   max-width: 100%;
   height: auto;
-}
-
-.tiptap-resizable-image.ProseMirror-selectednode {
-  outline: 2px solid #68cef8;
-}
-
-.tiptap-resizable-image.resizing {
-  outline: 2px solid #68cef8;
-}
-
-.tiptap-resizable-image::after {
-  content: "";
-  position: absolute;
-  right: -6px;
-  bottom: -6px;
-  width: 12px;
-  height: 12px;
-  background: #68cef8;
-  border-radius: 2px;
-  cursor: se-resize;
-  opacity: 0;
-  transition: opacity 0.15s;
-  pointer-events: none;
-}
-
-.tiptap-resizable-image:hover::after,
-.tiptap-resizable-image.resizing::after {
-  opacity: 1;
-}
-
-.tiptap-resizable-image.ProseMirror-selectednode {
-  outline: 2px solid #68cef8;
-}
-
-.tiptap-resizable-image.resizing {
-  outline: 2px solid #68cef8;
 }

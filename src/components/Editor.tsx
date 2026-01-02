@@ -1,107 +1,19 @@
 import { createSignal, onMount, onCleanup, For } from "solid-js";
 import { Editor as TipTap } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import TextAlign from "@tiptap/extension-text-align";
-import ImageResize from "tiptap-extension-resize-image";
 import { getContent, pb, getURLFromRecord } from "@lib/db";
 import "@styles/tiptap.css";
-import { toolbarActions } from "@lib/tiptap-setup";
+import { toolbarActions, extensions } from "@lib/tiptap-setup";
 
 interface Props {
   contentKey: string;
 }
 
-// TODO: make own resizable image component, which puts the image in a p, so align on p works. or make custom align if necessary. or if nothing works, forget image resize i guess...
 export default function Editor(props: Props) {
   let editorElement: HTMLDivElement | undefined;
   let imageInputRef: HTMLInputElement | undefined;
   const [editor, setEditor] = createSignal<TipTap | null>(null);
-
-  const [activeStates, setActiveStates] = createSignal<Record<string, boolean>>(
-    {},
-  );
   const [htmlContent, setHtmlContent] = createSignal("");
-
-  const updateActiveStates = () => {
-    const e = editor();
-    if (!e) return;
-    setActiveStates({
-      bold: e.isActive("bold"),
-      italic: e.isActive("italic"),
-      strike: e.isActive("strike"),
-      heading1: e.isActive("heading", { level: 1 }),
-      heading2: e.isActive("heading", { level: 2 }),
-      heading3: e.isActive("heading", { level: 3 }),
-      paragraph: e.isActive("paragraph"),
-      bulletList: e.isActive("bulletList"),
-      orderedList: e.isActive("orderedList"),
-      blockquote: e.isActive("blockquote"),
-      alignLeft: e.isActive({ textAlign: "left" }),
-      alignCenter: e.isActive({ textAlign: "center" }),
-      alignRight: e.isActive({ textAlign: "right" }),
-      alignJustify: e.isActive({ textAlign: "justify" }),
-    });
-  };
-
-  const executeAction = (action: string) => {
-    const e = editor();
-    if (!e) return;
-    switch (action) {
-      case "bold":
-        e.chain().focus().toggleBold().run();
-        break;
-      case "italic":
-        e.chain().focus().toggleItalic().run();
-        break;
-      case "strike":
-        e.chain().focus().toggleStrike().run();
-        break;
-      case "heading1":
-        e.chain().focus().toggleHeading({ level: 1 }).run();
-        break;
-      case "heading2":
-        e.chain().focus().toggleHeading({ level: 2 }).run();
-        break;
-      case "heading3":
-        e.chain().focus().toggleHeading({ level: 3 }).run();
-        break;
-      case "paragraph":
-        e.chain().focus().setParagraph().run();
-        break;
-      case "bulletList":
-        e.chain().focus().toggleBulletList().run();
-        break;
-      case "orderedList":
-        e.chain().focus().toggleOrderedList().run();
-        break;
-      case "blockquote":
-        e.chain().focus().toggleBlockquote().run();
-        break;
-      case "alignLeft":
-        e.chain().focus().setTextAlign("left").run();
-        break;
-      case "alignCenter":
-        e.chain().focus().setTextAlign("center").run();
-        break;
-      case "alignRight":
-        e.chain().focus().setTextAlign("right").run();
-        break;
-      case "alignJustify":
-        e.chain().focus().setTextAlign("justify").run();
-        break;
-      case "image":
-        imageInputRef?.click();
-        break;
-      case "undo":
-        e.chain().focus().undo().run();
-        break;
-      case "redo":
-        e.chain().focus().redo().run();
-        break;
-    }
-    updateActiveStates();
-  };
+  const [, forceUpdate] = createSignal(0);
 
   const handleImageUpload = async (e: Event) => {
     const input = e.target as HTMLInputElement;
@@ -130,30 +42,32 @@ export default function Editor(props: Props) {
 
     const newEditor = new TipTap({
       element: editorElement,
-      extensions: [
-        StarterKit,
-        Placeholder.configure({
-          placeholder: "Kezdj el írni...",
-        }),
-        TextAlign.configure({
-          types: ["heading", "paragraph", "resizableImage"],
-        }),
-        // Image,
-        ImageResize,
-        // ResizableImage,
-      ],
+      extensions,
       content: initialContent,
       onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
-        setHtmlContent(html);
+        setHtmlContent(editor.getHTML());
       },
       onSelectionUpdate: () => {
-        updateActiveStates();
+        forceUpdate((n) => n + 1);
       },
     });
 
     setEditor(newEditor);
-    updateActiveStates();
+  });
+
+  const handleEditModeChange = async () => {
+    const isEditMode = localStorage.getItem("editMode") === "true";
+    const freshContent = await getContent(props.contentKey);
+    editor()?.commands.setContent(freshContent);
+    setHtmlContent(freshContent);
+  };
+
+  onMount(() => {
+    window.addEventListener("editModeChanged", handleEditModeChange);
+
+    onCleanup(() => {
+      window.removeEventListener("editModeChanged", handleEditModeChange);
+    });
   });
 
   onCleanup(() => {
@@ -164,20 +78,32 @@ export default function Editor(props: Props) {
     <div class="tiptap-editor">
       <div class="tiptap-actionbar">
         <For each={toolbarActions}>
-          {(item) =>
-            item.action.startsWith("divider") ? (
-              <div class="tiptap-divider" />
-            ) : (
+          {(item) => {
+            if (item.type === "divider") {
+              return <div class="tiptap-divider" />;
+            }
+            const e = editor();
+            const isActive = e && item.isActive?.(e);
+            return (
               <button
                 type="button"
-                class={`tiptap-button ${activeStates()[item.action] ? "tiptap-button-selected" : ""}`}
+                class={`tiptap-button ${isActive ? "tiptap-button-selected" : ""}`}
                 title={item.title}
-                onClick={() => executeAction(item.action)}
+                onClick={() => {
+                  const ed = editor();
+                  if (!ed) return;
+                  if (item.key === "image") {
+                    imageInputRef?.click();
+                  } else {
+                    item.run(ed);
+                  }
+                  forceUpdate((n) => n + 1);
+                }}
               >
                 {item.icon()}
               </button>
-            )
-          }
+            );
+          }}
         </For>
       </div>
       <div

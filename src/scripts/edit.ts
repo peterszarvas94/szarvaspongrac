@@ -12,6 +12,7 @@ function setEditMode(value: boolean) {
 
 function toggleEditMode() {
   setEditMode(!getEditMode());
+  window.dispatchEvent(new CustomEvent("editModeChanged"));
 }
 
 function initEditButtons() {
