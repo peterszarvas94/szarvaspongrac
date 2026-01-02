@@ -1,5 +1,6 @@
 /// <reference types="astro/client" />
 import PocketBase from "pocketbase";
+import { showAlert } from "./toaster";
 
 const pb = new PocketBase(import.meta.env.PUBLIC_PB_URL);
 let dt = new DataTransfer();
@@ -86,7 +87,7 @@ export async function uploadImage({ key, file }: { key: string; file: File }) {
     .collection("image")
     .create({ key, file })
     .catch((e) => {
-      alert("Nem sikerült a feltöltés");
+      showAlert("Nem sikerült a feltöltés", "error");
       console.error("Upload error:", e);
     });
 }
@@ -109,7 +110,7 @@ async function replaceSingleItem(key: string, file: File) {
 
     await uploadImage({ key, file });
 
-    alert("Sikeres feltöltés");
+    showAlert("Sikeres feltöltés", "success");
     window.location.reload();
   } catch (e) {
     console.error("Unexpected error:", e);
@@ -122,10 +123,10 @@ async function batchUpload(key: string, files: File[]) {
 
   try {
     await batch.send();
-    alert("Sikeres feltöltés");
+    showAlert("Sikeres feltöltés", "success");
     window.location.reload();
   } catch (e) {
-    alert("Nem sikerült a feltöltés");
+    showAlert("Nem sikerült a feltöltés", "error");
     console.error("Upload error:", e);
   }
 }
@@ -172,7 +173,7 @@ function init() {
     const files = formData.getAll("files") as File[];
 
     if (files.length === 0 || files[0].name === "") {
-      alert("Nincs kép kiválasztva");
+      showAlert("Nincs kép kiválasztva", "warning");
       return;
     }
 

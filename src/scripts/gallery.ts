@@ -1,4 +1,5 @@
-import { deleteImage, getImageUrls } from "@lib/db";
+import { deleteImage, getImageUrls } from "@scripts/db";
+import { showAlert } from "./toaster";
 
 async function initGallery() {
   const gallery = document.querySelector<HTMLDivElement>("[data-images]");
@@ -42,10 +43,10 @@ export function initDeleteButtons() {
 
       try {
         await deleteImage(id);
-        window.alert("Törölve");
+        showAlert("Törölve", "success");
         window.location.reload();
       } catch (error) {
-        window.alert("Nem sikerült törölni a képet");
+        showAlert("Nem sikerült törölni a képet", "error");
         console.error({ msg: "Error deleting the image", id, error });
       }
     });

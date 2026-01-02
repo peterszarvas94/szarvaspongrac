@@ -1,6 +1,7 @@
 import { s as splitProps, g as getNextElement, t as template, a as spread, m as mergeProps, b as memo, i as insert, c as createComponent, D as Dynamic, F as For, r as runHydrationEvents, d as delegateEvents, e as createSignal, o as onMount, f as onCleanup, S as Show, h as className, j as createRenderEffect, k as setAttribute, l as setProperty, u as use } from './web.D4Bkns7i.js';
 import { p as pb, g as getURLFromRecord, a as getContent } from './content-manager.nW4rlnpy.js';
-import { g as getEditModeLS, E as EditModeEvent } from './edit.DHKRt8cv.js';
+import { g as getEditModeLS, E as EditModeEvent } from './edit.D55w0Sua.js';
+import { s as showAlert } from './toaster.D4F-73sH.js';
 
 // ::- Persistent data structure representing an ordered mapping from
 // strings to values, with some convenient update methods.
@@ -25457,7 +25458,7 @@ function EditorInner(props) {
       }).run();
     } catch (err) {
       console.error("Image upload failed:", err);
-      alert("Nem sikerült feltölteni a képet");
+      showAlert("Nem sikerült feltölteni a képet", "error");
     }
     input.value = "";
   };

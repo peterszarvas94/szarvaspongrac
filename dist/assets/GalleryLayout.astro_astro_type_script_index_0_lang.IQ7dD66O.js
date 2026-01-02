@@ -1,5 +1,6 @@
 import { C as Client, b as getImageUrls, d as deleteImage } from './content-manager.nW4rlnpy.js';
-import './edit.DHKRt8cv.js';
+import { s as showAlert } from './toaster.D4F-73sH.js';
+import './edit.D55w0Sua.js';
 
 const pb = new Client("https://pb.szarvaspongrac.hu");
 let dt = new DataTransfer();
@@ -67,7 +68,7 @@ function updateFiles(input, files) {
 }
 async function uploadImage({ key, file }) {
   return await pb.collection("image").create({ key, file }).catch((e) => {
-    alert("Nem sikerült a feltöltés");
+    showAlert("Nem sikerült a feltöltés", "error");
     console.error("Upload error:", e);
   });
 }
@@ -80,7 +81,7 @@ async function replaceSingleItem(key, file) {
       });
     }
     await uploadImage({ key, file });
-    alert("Sikeres feltöltés");
+    showAlert("Sikeres feltöltés", "success");
     window.location.reload();
   } catch (e) {
     console.error("Unexpected error:", e);
@@ -91,10 +92,10 @@ async function batchUpload(key, files) {
   files.forEach((file) => batch.collection("image").create({ key, file }));
   try {
     await batch.send();
-    alert("Sikeres feltöltés");
+    showAlert("Sikeres feltöltés", "success");
     window.location.reload();
   } catch (e) {
-    alert("Nem sikerült a feltöltés");
+    showAlert("Nem sikerült a feltöltés", "error");
     console.error("Upload error:", e);
   }
 }
@@ -132,7 +133,7 @@ function init$1() {
     const formData = new FormData(uploadForm);
     const files = formData.getAll("files");
     if (files.length === 0 || files[0].name === "") {
-      alert("Nincs kép kiválasztva");
+      showAlert("Nincs kép kiválasztva", "warning");
       return;
     }
     const key = uploadForm.dataset.upload;
@@ -181,10 +182,10 @@ function initDeleteButtons() {
       if (!confirmed) return;
       try {
         await deleteImage(id);
-        window.alert("Törölve");
+        showAlert("Törölve", "success");
         window.location.reload();
       } catch (error) {
-        window.alert("Nem sikerült törölni a képet");
+        showAlert("Nem sikerült törölni a képet", "error");
         console.error({ msg: "Error deleting the image", id, error });
       }
     });

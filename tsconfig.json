@@ -9,10 +9,9 @@
     "allowImportingTsExtensions": true,
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["src/lib/*"],
+      "@scripts/*": ["src/scripts/*"],
       "@components/*": ["src/components/*"],
-      "@styles/*": ["src/styles/*"],
-      "@scripts/*": ["src/scripts/*"]
+      "@styles/*": ["src/styles/*"]
     }
   },
   "include": ["src/**/*"],

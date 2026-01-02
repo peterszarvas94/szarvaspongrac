@@ -1,16 +1,5 @@
 import { s as saveContent, u as updateContentsOnPage } from './content-manager.nW4rlnpy.js';
-
-class TypedEvent extends CustomEvent {
-  constructor(eventName, detail) {
-    super(eventName, {
-      detail,
-      bubbles: true,
-      // optional: allows event to bubble
-      composed: true
-      // optional: allows crossing shadow DOM
-    });
-  }
-}
+import { T as TypedEvent, s as showAlert } from './toaster.D4F-73sH.js';
 
 class EditModeEvent extends TypedEvent {
   static eventName = "editModeChanged";
@@ -71,10 +60,10 @@ async function handleSave(button) {
     await saveContent(parsed.key, input.value);
     toggleEditMode();
     await updateContentsOnPage();
-    alert("Mentés sikeres");
+    showAlert("Mentés sikeres", "success");
   } catch (error) {
     console.error("Save failed:", error);
-    alert("Mentés sikertelen");
+    showAlert("Mentés sikertelen", "error");
   }
 }
 function initEdit() {

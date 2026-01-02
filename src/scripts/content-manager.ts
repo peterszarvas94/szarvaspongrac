@@ -1,4 +1,4 @@
-import { combineFilters, createFilter, getCollection } from "@lib/db";
+import { combineFilters, createFilter, getCollection } from "@scripts/db";
 
 interface CollectionItem {
   key: string;

@@ -1,9 +1,10 @@
 import { createSignal, onMount, onCleanup, For, Show } from "solid-js";
 import { Editor as TipTap } from "@tiptap/core";
-import { getContent, pb, getURLFromRecord } from "@lib/db";
+import { getContent, pb, getURLFromRecord } from "@scripts/db";
 import "@styles/tiptap.css";
-import { toolbarActions, extensions } from "@lib/tiptap-setup";
+import { toolbarActions, extensions } from "@scripts/tiptap-setup";
 import { EditModeEvent, getEditModeLS } from "@scripts/edit";
+import { showAlert } from "@scripts/toaster";
 
 interface Props {
   contentKey: string;
@@ -58,7 +59,7 @@ function EditorInner(props: Props) {
       editor()?.chain().focus().setImage({ src: url }).run();
     } catch (err) {
       console.error("Image upload failed:", err);
-      alert("Nem sikerült feltölteni a képet");
+      showAlert("Nem sikerült feltölteni a képet", "error");
     }
 
     input.value = "";

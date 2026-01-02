@@ -1,4 +1,4 @@
-import { getImageUrls } from "@lib/db";
+import { getImageUrls } from "@scripts/db";
 
 async function init() {
   const img = document.querySelector<HTMLImageElement>("[data-image]");

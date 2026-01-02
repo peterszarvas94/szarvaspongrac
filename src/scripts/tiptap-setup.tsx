@@ -22,7 +22,7 @@ import type { Editor } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import Placeholder from "@tiptap/extension-placeholder";
 import TextAlign from "@tiptap/extension-text-align";
-import { Figure } from "@lib/tiptap-figure";
+import { Figure } from "@scripts/tiptap-figure";
 
 type ToolbarAction =
   | {

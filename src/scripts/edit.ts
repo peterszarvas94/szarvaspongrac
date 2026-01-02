@@ -1,6 +1,7 @@
-import { saveContent } from "@lib/db";
+import { saveContent } from "@scripts/db";
 import { updateContentsOnPage } from "./content-manager";
 import { TypedEvent } from "./event";
+import { showAlert } from "./toaster";
 
 export class EditModeEvent extends TypedEvent<{ editMode: boolean }> {
   static eventName = "editModeChanged";
@@ -79,10 +80,10 @@ async function handleSave(button: HTMLButtonElement) {
 
     toggleEditMode();
     await updateContentsOnPage();
-    alert("Mentés sikeres");
+    showAlert("Mentés sikeres", "success");
   } catch (error) {
     console.error("Save failed:", error);
-    alert("Mentés sikertelen");
+    showAlert("Mentés sikertelen", "error");
   }
 }
 

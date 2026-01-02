@@ -1,4 +1,4 @@
-import { getCurrentUser, isAuthenticated, login, logout } from "@lib/db";
+import { getCurrentUser, isAuthenticated, login, logout } from "@scripts/db";
 
 export function updateAuthForm() {
   const form = document.getElementById("login-form") as HTMLFormElement | null;
@@ -68,4 +68,3 @@ function init() {
 }
 
 init();
-document.addEventListener("astro:page-load", init);

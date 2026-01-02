@@ -1,0 +1,45 @@
+---
+import { CircleCheck, CircleX, Info, TriangleAlert } from "@lucide/astro";
+---
+
+<div
+  data-toaster
+  class="toast toast-end toast-bottom z-50"
+>
+</div>
+
+<template id="toast-template">
+  <div class="cursor-pointer alert shadow-lg">
+    <Info
+      data-icon="info"
+      class="hidden"
+    />
+    <CircleCheck
+      data-icon="success"
+      class="hidden"
+    />
+    <TriangleAlert
+      data-icon="warning"
+      class="hidden"
+    />
+    <CircleX
+      data-icon="error"
+      class="hidden"
+    />
+    <span></span>
+  </div>
+</template>
+
+<button
+  id="testToaster"
+  class="cursor-pointer"
+>
+  TEST
+</button>
+
+<script>
+  import { testToaster } from "@scripts/toaster";
+  document.getElementById("testToaster")?.addEventListener("click", () => {
+    testToaster();
+  });
+</script>

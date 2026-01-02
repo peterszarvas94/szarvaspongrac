@@ -1,5 +1,6 @@
 ---
 import Header from "@components/Header.astro";
+import Toaster from "@components/Toaster.astro";
 import "@styles/global.css";
 import "@styles/prose-fix.css";
 
@@ -59,11 +60,12 @@ const {
       </main>
       <slot name="footer" />
     </div>
+    <Toaster />
   </body>
 </html>
 
 <script>
-  import "@lib/auth";
+  import "@scripts/auth";
   import "@scripts/content-manager";
   import "@scripts/footer";
 </script>
