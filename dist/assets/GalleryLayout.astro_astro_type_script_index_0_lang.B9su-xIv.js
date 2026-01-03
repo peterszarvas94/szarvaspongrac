@@ -148,6 +148,57 @@ function init$1() {
 }
 init$1();
 
+function confirm(options) {
+  return new Promise((resolve) => {
+    const dialog = document.getElementById("confirm-dialog");
+    const title = document.getElementById("confirm-dialog-title");
+    const message = document.getElementById("confirm-dialog-message");
+    const confirmBtn = document.getElementById("confirm-dialog-confirm");
+    const cancelBtn = document.getElementById("confirm-dialog-cancel");
+    if (!dialog || !title || !message || !confirmBtn || !cancelBtn) {
+      console.error("Confirm dialog elements not found");
+      resolve(false);
+      return;
+    }
+    if (options.title) {
+      title.textContent = options.title;
+    }
+    message.textContent = options.message;
+    if (options.confirmText) {
+      confirmBtn.textContent = options.confirmText;
+    }
+    if (options.cancelText) {
+      cancelBtn.textContent = options.cancelText;
+    }
+    const handleConfirm = () => {
+      dialog.hidePopover();
+      cleanup();
+      resolve(true);
+    };
+    const handleCancel = () => {
+      dialog.hidePopover();
+      cleanup();
+      resolve(false);
+    };
+    const handleToggle = (e) => {
+      const toggleEvent = e;
+      if (toggleEvent.newState === "closed") {
+        cleanup();
+        resolve(false);
+      }
+    };
+    const cleanup = () => {
+      confirmBtn.removeEventListener("click", handleConfirm);
+      cancelBtn.removeEventListener("click", handleCancel);
+      dialog.removeEventListener("toggle", handleToggle);
+    };
+    confirmBtn.addEventListener("click", handleConfirm);
+    cancelBtn.addEventListener("click", handleCancel);
+    dialog.addEventListener("toggle", handleToggle);
+    dialog.showPopover();
+  });
+}
+
 async function initGallery() {
   const gallery = document.querySelector("[data-images]");
   const imageTemplate = document.querySelector(
@@ -196,9 +247,12 @@ function initDeleteButtons() {
       return;
     }
     button.addEventListener("click", async () => {
-      const confirmed = window.confirm(
-        "Törlöd ezt a képet? Nem vonható vissza!"
-      );
+      const confirmed = await confirm({
+        title: "Kép törlése",
+        message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
+        confirmText: "Törlés",
+        cancelText: "Mégse"
+      });
       if (!confirmed) return;
       try {
         await deleteImage(id);
@@ -225,7 +279,12 @@ function initCoverButtons() {
     button.addEventListener("click", async (e) => {
       e.stopPropagation();
       e.preventDefault();
-      const confirmed = window.confirm("Ezt a képet állítod be borítóképnek?");
+      const confirmed = await confirm({
+        title: "Borítókép beállítása",
+        message: "Ezt a képet állítod be borítóképnek?",
+        confirmText: "Beállítás",
+        cancelText: "Mégse"
+      });
       if (!confirmed) return;
       try {
         await setCoverImage(id, key);

@@ -1,6 +1,7 @@
 ---
 import Header from "@components/Header.astro";
 import Toaster from "@components/Toaster.astro";
+import ConfirmDialog from "@components/ConfirmDialog.astro";
 import "@styles/global.css";
 import "@styles/prose-fix.css";
 
@@ -61,6 +62,7 @@ const {
       <slot name="footer" />
     </div>
     <Toaster />
+    <ConfirmDialog />
   </body>
 </html>
 

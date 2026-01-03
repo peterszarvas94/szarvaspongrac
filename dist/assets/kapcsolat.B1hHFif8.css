@@ -1,4 +1,4 @@
-/*! tailwindcss v4.1.18 | MIT License | https://tailwindcss.com */
+#confirm-dialog[data-astro-cid-u3kripq6]{margin:auto}#confirm-dialog[data-astro-cid-u3kripq6]::backdrop{background-color:rgba(0,0,0,0.5);backdrop-filter:blur(2px)}/*! tailwindcss v4.1.18 | MIT License | https://tailwindcss.com */
 @layer properties {
   @supports (((-webkit-hyphens: none)) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color: rgb(from red r g b)))) {
     *, :before, :after, ::backdrop {

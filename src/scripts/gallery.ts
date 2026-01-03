@@ -1,6 +1,7 @@
 import { deleteImage, getImageUrls, setCoverImage } from "@scripts/db";
 import { showAlert } from "./toaster";
 import { EditModeEvent, getEditMode } from "./edit";
+import { confirm } from "./confirm-dialog";
 
 async function initGallery() {
   const gallery = document.querySelector<HTMLDivElement>("[data-images]");
@@ -63,9 +64,12 @@ export function initDeleteButtons() {
       return;
     }
     button.addEventListener("click", async () => {
-      const confirmed = window.confirm(
-        "Törlöd ezt a képet? Nem vonható vissza!",
-      );
+      const confirmed = await confirm({
+        title: "Kép törlése",
+        message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
+        confirmText: "Törlés",
+        cancelText: "Mégse",
+      });
       if (!confirmed) return;
 
       try {
@@ -98,7 +102,12 @@ export function initCoverButtons() {
       e.stopPropagation();
       e.preventDefault();
 
-      const confirmed = window.confirm("Ezt a képet állítod be borítóképnek?");
+      const confirmed = await confirm({
+        title: "Borítókép beállítása",
+        message: "Ezt a képet állítod be borítóképnek?",
+        confirmText: "Beállítás",
+        cancelText: "Mégse",
+      });
       if (!confirmed) return;
 
       try {
