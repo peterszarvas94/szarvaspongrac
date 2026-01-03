@@ -6,6 +6,7 @@ import PageTitle from "@components/PageTitle.astro";
 import ImageUpload from "@components/ImageUpload.astro";
 import ImagePopover from "@components/ImagePopover.astro";
 import EditButton from "@components/EditButton.astro";
+import CancelButton from "@components/CancelButton.astro";
 
 export interface Props {
   title: string;
@@ -37,7 +38,13 @@ const {
   <div
     class="flex flex-col items-center gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
   >
-    <EditButton />
+    <div
+      data-auth="true"
+      class="w-full flex justify-center gap-2"
+    >
+      <EditButton />
+      <CancelButton cancelText="Kilépés" />
+    </div>
 
     <ImageUpload
       key={key}

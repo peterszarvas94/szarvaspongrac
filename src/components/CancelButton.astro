@@ -1,0 +1,18 @@
+---
+import { X } from "lucide-astro";
+
+interface Props {
+  cancelText?: string;
+}
+
+const { cancelText } = Astro.props;
+---
+
+<button
+  data-edit="true"
+  data-edit-toggle
+  class="btn"
+>
+  <X class="size-4" />
+  {cancelText ?? "Mégsem"}
+</button>

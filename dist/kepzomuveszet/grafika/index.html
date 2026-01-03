@@ -69,39 +69,26 @@
 
   
   <div class="flex flex-col items-center gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div data-auth="true" class="w-full p-4 flex justify-center">
-  <button data-edit-toggle data-edit="false" class="btn">
-    <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-pencil size-4">
+    <div data-auth="true" class="w-full flex justify-center gap-2">
+      <button data-edit-toggle data-edit="false" class="btn">
+  <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-pencil size-4">
 	
 	<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path>
 	<path d="m15 5 4 4"></path>
 
 </svg>
-    Szerkesztés
-  </button>
-
-  <div class="join">
-    <button data-edit-toggle data-edit="true" class="join-item btn hidden">
-      <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-x size-4">
+  Szerkesztés
+</button>
+      <button data-auth="true" data-edit="true" data-edit-toggle class="btn">
+  <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-x size-4">
 	
 	<path d="M18 6 6 18"></path>
 	<path d="m6 6 12 12"></path>
 
 </svg>
-      Mégsem
-    </button>
-    <button data-save="content:undefined" data-edit="true" class="join-item btn btn-primary hidden">
-      <svg xmlns="http://www.w3.org/2000/svg" stroke-width="2" width="24" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" fill="none" viewBox="0 0 24 24" class="lucide lucide-save size-4">
-	
-	<path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"></path>
-	<path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7"></path>
-	<path d="M7 3v4a1 1 0 0 0 1 1h7"></path>
-
-</svg>
-      Mentés
-    </button>
-  </div>
-</div>
+  Mégsem
+</button>
+    </div>
 
     <form data-edit="true" class="hidden max-w-xl mx-auto w-full" data-upload="gallery.graphics">
   <div data-auth="true" class="w-full flex gap-2 flex-wrap">

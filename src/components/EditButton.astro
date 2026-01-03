@@ -1,42 +1,18 @@
 ---
-import { Pencil, Save, X } from "lucide-astro";
+import { Pencil } from "lucide-astro";
 
 interface Props {
-  contentKey: string;
+  editText?: string;
 }
 
-const { contentKey } = Astro.props;
+const { editText } = Astro.props;
 ---
 
-<div
-  data-auth="true"
-  class="w-full p-4 flex justify-center"
+<button
+  data-edit-toggle
+  data-edit="false"
+  class="btn"
 >
-  <button
-    data-edit-toggle
-    data-edit="false"
-    class="btn"
-  >
-    <Pencil class="size-4" />
-    Szerkesztés
-  </button>
-
-  <div class="join">
-    <button
-      data-edit-toggle
-      data-edit="true"
-      class="join-item btn hidden"
-    >
-      <X class="size-4" />
-      Mégsem
-    </button>
-    <button
-      data-save={`content:${contentKey}`}
-      data-edit="true"
-      class="join-item btn btn-primary hidden"
-    >
-      <Save class="size-4" />
-      Mentés
-    </button>
-  </div>
-</div>
+  <Pencil class="size-4" />
+  {editText ?? "Szerkesztés"}
+</button>

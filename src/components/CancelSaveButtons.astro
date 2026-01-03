@@ -1,0 +1,31 @@
+---
+import { Save, X } from "lucide-astro";
+
+interface Props {
+  contentKey: string;
+  cancelText?: string;
+  saveText?: string;
+}
+
+const { contentKey, cancelText, saveText } = Astro.props;
+---
+
+<div
+  class="join"
+  data-edit="true"
+>
+  <button
+    data-edit-toggle
+    class="join-item btn"
+  >
+    <X class="size-4" />
+    {cancelText ?? "Mégsem"}
+  </button>
+  <button
+    data-save={`content:${contentKey}`}
+    class="join-item btn btn-primary"
+  >
+    <Save class="size-4" />
+    {saveText ?? "Mentés"}
+  </button>
+</div>
