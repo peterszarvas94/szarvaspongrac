@@ -8,9 +8,9 @@ async function initArtCardCovers() {
       const key = img.dataset.cover;
       if (!key) return;
       const coverUrl = await getCoverImageUrl(key);
-      if (coverUrl) {
-        img.src = coverUrl;
-      }
+      if (!coverUrl) return;
+      img.src = coverUrl;
+      img.onload = () => img.classList.replace("opacity-0", "opacity-100");
     })
   );
 }

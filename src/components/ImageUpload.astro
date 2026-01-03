@@ -3,10 +3,9 @@ import { ImagePlus, Upload, X } from "lucide-astro";
 
 interface Props {
   key: string;
-  multiple?: boolean;
 }
 
-const { key, multiple }: Props = Astro.props;
+const { key }: Props = Astro.props;
 ---
 
 <form
@@ -27,9 +26,7 @@ const { key, multiple }: Props = Astro.props;
         class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full"
       >
         <ImagePlus class="w-10 h-10 text-base-content opacity-60" />
-        <span class="text-base-content font-medium">
-          {multiple ? "Képek kiválasztása" : "Kép kiválasztása"}
-        </span>
+        <span class="text-base-content font-medium">Képek kiválasztása</span>
       </div>
     </label>
 
@@ -47,7 +44,7 @@ const { key, multiple }: Props = Astro.props;
     <input
       id="file-upload"
       type="file"
-      multiple={multiple}
+      multiple
       class="hidden"
       accept="image/*"
       name="files"
@@ -66,3 +63,7 @@ const { key, multiple }: Props = Astro.props;
     <span></span>
   </li>
 </template>
+
+<script>
+  import "@scripts/image-upload";
+</script>

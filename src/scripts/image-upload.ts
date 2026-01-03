@@ -2,43 +2,24 @@
 import { pb, getURLFromRecord } from "@scripts/db";
 import { showAlert } from "./toaster";
 import { getEditMode } from "./edit";
+
 let dt = new DataTransfer();
+
+function getInput() {
+  return document.querySelector<HTMLInputElement>("#file-upload");
+}
 
 function appendFilesToDt(newFiles: File[]) {
   newFiles.forEach((f) => {
-    if (
-      ![...dt.files].some(
-        (existing) => existing.name === f.name && existing.size === f.size,
-      )
-    ) {
-      dt.items.add(f);
-    }
+    const isDuplicate = [...dt.files].some(
+      (existing) => existing.name === f.name && existing.size === f.size,
+    );
+    if (!isDuplicate) dt.items.add(f);
   });
 }
 
-function replaceDtFiles(newFiles: File[]) {
-  dt.items.clear();
-  appendFilesToDt(newFiles);
-}
-
-function updateInputFiles(input: HTMLInputElement) {
-  input.files = dt.files;
-}
-
-function updateLabelClasses(label: HTMLLabelElement, active: boolean) {
-  const div = label.querySelector("div");
-  if (!div) return;
-  if (active) {
-    div.classList.remove("border-base-300");
-    div.classList.add("border-base-content");
-  } else {
-    div.classList.remove("border-base-content");
-    div.classList.add("border-base-300");
-  }
-}
-
 function removeFile(file: File) {
-  const input = document.querySelector<HTMLInputElement>("#file-upload");
+  const input = getInput();
   if (!input) return;
 
   const newDt = new DataTransfer();
@@ -53,11 +34,10 @@ function removeFile(file: File) {
 
 function updateFileList() {
   const fileList = document.querySelector<HTMLUListElement>("[data-files]");
-  if (!fileList) return;
-  fileList.innerHTML = "";
-
   const template = document.querySelector<HTMLTemplateElement>("#file-row");
-  if (!template) return;
+  if (!fileList || !template) return;
+
+  fileList.innerHTML = "";
 
   [...dt.files].forEach((file) => {
     const row = template.content.cloneNode(true) as DocumentFragment;
@@ -70,58 +50,21 @@ function updateFileList() {
   });
 }
 
-function updateFiles(input: HTMLInputElement, files: File[]) {
-  if (input.hasAttribute("multiple")) {
-    appendFilesToDt(files);
-  } else {
-    replaceDtFiles([files[0]]);
-  }
+function updateFiles(files: File[]) {
+  const input = getInput();
+  if (!input) return;
 
-  updateInputFiles(input);
+  appendFilesToDt(files);
+  input.files = dt.files;
   updateFileList();
 }
 
-export async function uploadImage({
-  key,
-  file,
-  sorting,
-}: {
-  key: string;
-  file: File;
-  sorting: number;
-}) {
-  return await pb
-    .collection("image")
-    .create({ key, file, sorting })
-    .catch((e) => {
-      showAlert("Nem sikerült a feltöltés", "error");
-      console.error("Upload error:", e);
-    });
-}
+function updateLabelClasses(label: HTMLLabelElement, active: boolean) {
+  const div = label.querySelector("div");
+  if (!div) return;
 
-async function replaceSingleItem(key: string, file: File) {
-  try {
-    const existing = await pb
-      .collection("image")
-      .getFirstListItem(`key='${key}'`)
-      .catch(() => null);
-
-    if (existing) {
-      await pb
-        .collection("image")
-        .delete(existing.id)
-        .catch((e) => {
-          console.error("Delete error:", e);
-        });
-    }
-
-    await uploadImage({ key, file, sorting: 1 });
-
-    showAlert("Sikeres feltöltés", "success");
-    window.location.reload();
-  } catch (e) {
-    console.error("Unexpected error:", e);
-  }
+  div.classList.toggle("border-base-300", !active);
+  div.classList.toggle("border-base-content", active);
 }
 
 function getMaxSortingFromGallery(): number {
@@ -129,14 +72,11 @@ function getMaxSortingFromGallery(): number {
   if (!gallery) return 0;
 
   const items = gallery.querySelectorAll<HTMLDivElement>("div[data-sorting]");
-  if (items.length === 0) return 0;
-
   let maxSorting = 0;
+
   items.forEach((item) => {
     const sorting = parseInt(item.dataset.sorting ?? "0", 10);
-    if (sorting > maxSorting) {
-      maxSorting = sorting;
-    }
+    if (sorting > maxSorting) maxSorting = sorting;
   });
 
   return maxSorting;
@@ -144,24 +84,22 @@ function getMaxSortingFromGallery(): number {
 
 function appendImageToGallery(id: string, url: string, sorting: number) {
   const gallery = document.querySelector<HTMLDivElement>("[data-images]");
-  const imageTemplate = document.querySelector<HTMLTemplateElement>(
+  const template = document.querySelector<HTMLTemplateElement>(
     "template#image-gallery-item",
   );
-  if (!gallery || !imageTemplate) return;
+  if (!gallery || !template) return;
 
-  const element = imageTemplate.content.cloneNode(true) as DocumentFragment;
-  const wrapper = element.querySelector<HTMLDivElement>("div");
-  if (wrapper) {
-    wrapper.dataset.sorting = String(sorting);
-    wrapper.dataset.id = id;
-  }
+  const element = template.content.cloneNode(true) as DocumentFragment;
+  const wrapper = element.firstElementChild as HTMLDivElement | null;
+  if (!wrapper) return;
 
-  const img = element.querySelector("img");
-  if (img) {
-    img.setAttribute("src", url);
-  }
+  wrapper.dataset.sorting = String(sorting);
+  wrapper.dataset.id = id;
 
-  const deleteButton = element.querySelector<HTMLButtonElement>(
+  const img = wrapper.querySelector("img");
+  img?.setAttribute("src", url);
+
+  const deleteButton = wrapper.querySelector<HTMLButtonElement>(
     "button[data-delete]",
   );
   if (deleteButton) {
@@ -181,7 +119,7 @@ function appendImageToGallery(id: string, url: string, sorting: number) {
       try {
         await deleteImage(id);
         showAlert("Törölve", "success");
-        deleteButton.closest("div")?.remove();
+        wrapper.remove();
       } catch (error) {
         showAlert("Nem sikerült törölni a képet", "error");
         console.error({ msg: "Error deleting the image", id, error });
@@ -190,7 +128,7 @@ function appendImageToGallery(id: string, url: string, sorting: number) {
   }
 
   const coverButton =
-    element.querySelector<HTMLButtonElement>("button[data-cover]");
+    wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
   if (coverButton) {
     coverButton.setAttribute("data-cover", id);
     coverButton.addEventListener("click", async (e) => {
@@ -220,16 +158,23 @@ function appendImageToGallery(id: string, url: string, sorting: number) {
     });
   }
 
-  // Show edit buttons if in edit mode
   if (getEditMode()) {
-    const editElements = element.querySelectorAll<HTMLElement>("[data-edit]");
-    editElements.forEach((el) => el.classList.remove("hidden"));
+    wrapper
+      .querySelectorAll<HTMLElement>("[data-edit]")
+      .forEach((el) => el.classList.remove("hidden"));
   }
 
-  gallery.appendChild(element);
+  gallery.appendChild(wrapper);
 }
 
-async function batchUpload(key: string, files: File[]) {
+function clearFileInput() {
+  dt = new DataTransfer();
+  const input = getInput();
+  if (input) input.files = dt.files;
+  updateFileList();
+}
+
+async function uploadFiles(key: string, files: File[]) {
   const maxSorting = getMaxSortingFromGallery();
 
   const results = await Promise.allSettled(
@@ -247,19 +192,18 @@ async function batchUpload(key: string, files: File[]) {
   results.forEach((result, index) => {
     if (result.status === "fulfilled") {
       const record = result.value;
-      const url = getURLFromRecord(record);
-      appendImageToGallery(record.id, url, maxSorting + index + 1);
+      appendImageToGallery(
+        record.id,
+        getURLFromRecord(record),
+        maxSorting + index + 1,
+      );
       successCount++;
     } else {
       console.error("Upload error:", result.reason);
     }
   });
 
-  // Clear the file input
-  dt = new DataTransfer();
-  const input = document.querySelector<HTMLInputElement>("#file-upload");
-  if (input) input.files = dt.files;
-  updateFileList();
+  clearFileInput();
 
   if (successCount === files.length) {
     showAlert("Sikeres feltöltés", "success");
@@ -271,12 +215,12 @@ async function batchUpload(key: string, files: File[]) {
 }
 
 function init() {
-  const uploadForm = document.querySelector<HTMLFormElement>("[data-upload]");
-  const input = document.querySelector<HTMLInputElement>("#file-upload");
+  const form = document.querySelector<HTMLFormElement>("[data-upload]");
+  const input = getInput();
   const label = document.querySelector<HTMLLabelElement>(
     "label[for='file-upload']",
   );
-  if (!uploadForm || !input || !label) return;
+  if (!form || !input || !label) return;
 
   label.addEventListener("dragenter", (e) => {
     e.preventDefault();
@@ -296,34 +240,24 @@ function init() {
   label.addEventListener("drop", (e) => {
     e.preventDefault();
     updateLabelClasses(label, false);
-    const newFiles = Array.from(e.dataTransfer?.files ?? []);
-    updateFiles(input, newFiles);
+    updateFiles(Array.from(e.dataTransfer?.files ?? []));
   });
 
   input.addEventListener("change", () => {
-    const newFiles = input.files ? Array.from(input.files) : [];
-    updateFiles(input, newFiles);
+    updateFiles(input.files ? Array.from(input.files) : []);
   });
 
-  uploadForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-    const formData = new FormData(uploadForm);
-    const files = formData.getAll("files") as File[];
-
+    const files = new FormData(form).getAll("files") as File[];
     if (files.length === 0 || files[0].name === "") {
       showAlert("Nincs kép kiválasztva", "warning");
       return;
     }
 
-    const key = uploadForm.dataset.upload;
-    if (!key) return;
-
-    if (input.hasAttribute("multiple")) {
-      await batchUpload(key, files);
-    } else {
-      await replaceSingleItem(key, files[0]);
-    }
+    const key = form.dataset.upload;
+    if (key) await uploadFiles(key, files);
   });
 }
 

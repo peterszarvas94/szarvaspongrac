@@ -21,7 +21,7 @@ const { href, coverKey, imageAlt, title, className } = Astro.props;
       <img
         src=""
         alt={imageAlt}
-        class="w-full h-64 object-cover"
+        class="w-full h-64 object-cover opacity-0 transition-opacity duration-300"
         data-cover={coverKey}
       />
       <div class="p-6 text-center bg-gray-900 text-white">
