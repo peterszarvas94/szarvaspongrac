@@ -37,7 +37,7 @@ export async function getImageUrls(key: string) {
   try {
     const images = await pb
       .collection("image")
-      .getFullList({ filter: `key="${key}"` });
+      .getFullList({ filter: `key="${key}"`, sort: "sorting" });
 
     return images.map((record) => ({
       id: record.id,
@@ -80,9 +80,10 @@ export async function setCoverImage(id: string, key: string) {
 
 export async function getCoverImageUrl(key: string): Promise<string | null> {
   try {
-    const images = await pb
-      .collection("image")
-      .getFullList({ filter: `(key="${key}" && cover=true)` });
+    const images = await pb.collection("image").getFullList({
+      filter: `(key="${key}" && cover=true)`,
+      requestKey: null,
+    });
 
     if (images.length > 0) {
       return getURLFromRecord(images[0]);

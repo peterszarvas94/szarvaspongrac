@@ -1,3 +1,3 @@
-- set an image to "cover" of album
 - 'illusztraciok | grafikak'
 - reorder images (drag & drop)
+- better partial updates

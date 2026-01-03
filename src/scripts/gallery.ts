@@ -23,7 +23,7 @@ async function initGallery() {
         img.setAttribute("data-cover-image", "true");
         // Only add ring if in edit mode
         if (getEditMode()) {
-          img.classList.add("ring-2", "ring-offset-1", "ring-warning");
+          img.classList.add("ring-2", "ring-warning");
         }
       }
     }

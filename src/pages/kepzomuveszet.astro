@@ -1,13 +1,6 @@
 ---
 import PageLayout from "../layouts/PageLayout.astro";
 import ArtCard from "@components/ArtCard.astro";
-import { getCoverImageUrl } from "../scripts/db";
-
-// Get cover images for each gallery
-const oilCover = await getCoverImageUrl("gallery.oil");
-const akvarellCover = await getCoverImageUrl("gallery.aquarelle");
-const pastellCover = await getCoverImageUrl("gallery.pastel");
-const graphicsCover = await getCoverImageUrl("gallery.graphics");
 ---
 
 <PageLayout
@@ -20,28 +13,28 @@ const graphicsCover = await getCoverImageUrl("gallery.graphics");
   >
     <ArtCard
       href="/kepzomuveszet/olaj"
-      imageSrc={oilCover || "/images/olaj.jpg"}
+      coverKey="gallery.oil"
       imageAlt="Olajfestmények"
       title="Olajfestmények"
     />
 
     <ArtCard
       href="/kepzomuveszet/akvarell"
-      imageSrc={akvarellCover || "/images/akva.jpg"}
+      coverKey="gallery.watercolor"
       imageAlt="Akvarellek"
       title="Akvarellek"
     />
 
     <ArtCard
       href="/kepzomuveszet/pasztell"
-      imageSrc={pastellCover || "/images/pasztell.jpg"}
+      coverKey="gallery.pastel"
       imageAlt="Pasztellek"
       title="Pasztellek"
     />
 
     <ArtCard
       href="/kepzomuveszet/grafika"
-      imageSrc={graphicsCover || "/images/grafika.jpg"}
+      coverKey="gallery.graphics"
       imageAlt="Grafikák"
       title="Grafikák"
     />

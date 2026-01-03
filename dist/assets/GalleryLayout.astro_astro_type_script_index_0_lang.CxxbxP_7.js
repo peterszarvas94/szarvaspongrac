@@ -1,7 +1,7 @@
 import { Client } from './pocketbase.BNTe72gt.js';
-import { showAlert, EditModeEvent, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.Jn7U3Qia.js';
-import { getImageUrls, deleteImage, setCoverImage } from './db.DrL1ixOv.js';
-import './content-manager.BEphGhwb.js';
+import { showAlert, EditModeEvent, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.C-qj_Nst.js';
+import { getImageUrls, deleteImage, setCoverImage } from './db.is84uKZZ.js';
+import './content-manager.COWOLfL4.js';
 
 const pb = new Client("https://pb.szarvaspongrac.hu");
 let dt = new DataTransfer();
@@ -215,7 +215,7 @@ async function initGallery() {
       if (image.cover) {
         img.setAttribute("data-cover-image", "true");
         if (getEditMode()) {
-          img.classList.add("ring-2", "ring-offset-1", "ring-warning");
+          img.classList.add("ring-2", "ring-offset-2", "ring-warning");
         }
       }
     }

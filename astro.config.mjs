@@ -3,6 +3,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { defineConfig } from "astro/config";
 import mdx from "@astrojs/mdx";
 import solidJs from "@astrojs/solid-js";
+import { fileURLToPath, URL } from "node:url";
 
 // https://astro.build/config
 export default defineConfig({
@@ -22,6 +23,16 @@ export default defineConfig({
   },
   compressHTML: false,
   vite: {
+    resolve: {
+      alias: {
+        "@scripts": fileURLToPath(new URL("./src/scripts", import.meta.url)),
+        "@components": fileURLToPath(
+          new URL("./src/components", import.meta.url),
+        ),
+        "@layouts": fileURLToPath(new URL("./src/layouts", import.meta.url)),
+        "@styles": fileURLToPath(new URL("./src/styles", import.meta.url)),
+      },
+    },
     build: {
       minify: false,
       cssMinify: false,

@@ -28,7 +28,7 @@ function getURLFromRecord(record) {
 }
 async function getImageUrls(key) {
   try {
-    const images = await pb.collection("image").getFullList({ filter: `key="${key}"` });
+    const images = await pb.collection("image").getFullList({ filter: `key="${key}"`, sort: "sorting" });
     return images.map((record) => ({
       id: record.id,
       url: getURLFromRecord(record),
@@ -59,6 +59,18 @@ async function setCoverImage(id, key) {
     throw error;
   }
 }
+async function getCoverImageUrl(key) {
+  try {
+    const images = await pb.collection("image").getFullList({ filter: `(key="${key}" && cover=true)` });
+    if (images.length > 0) {
+      return getURLFromRecord(images[0]);
+    }
+    return null;
+  } catch (error) {
+    console.error("Get cover image error:", error);
+    return null;
+  }
+}
 function createFilter(key) {
   return `key="${key}"`;
 }
@@ -86,4 +98,4 @@ async function saveContent(key, value) {
   }
 }
 
-export { combineFilters, createFilter, deleteImage, getCollection, getCurrentUser, getImageUrls, getURLFromRecord, isAuthenticated, login, logout, pb, saveContent, setCoverImage };
+export { combineFilters, createFilter, deleteImage, getCollection, getCoverImageUrl, getCurrentUser, getImageUrls, getURLFromRecord, isAuthenticated, login, logout, pb, saveContent, setCoverImage };
