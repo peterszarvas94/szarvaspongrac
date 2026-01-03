@@ -9,7 +9,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <meta name="pb-url" content="https://pb.szarvaspongrac.hu">
     <title>Akvarellek - Szarvas Pongrác</title>
-  <link rel="stylesheet" href="/assets/kapcsolat.egCdxtTc.css"></head>
+  <link rel="stylesheet" href="/assets/kapcsolat.gVY9DxrZ.css"></head>
   <body class="bg-base-200 min-h-screen relative font-inter">
     <header class="sticky top-0 z-2 bg-base-100 shadow-sm border-b border-base-300 h-16">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16">
@@ -103,7 +103,7 @@
   </div>
 </div>
 
-    <form data-edit="true" class="hidden max-w-xl mx-auto w-full" data-upload="watercolor">
+    <form data-edit="true" class="hidden max-w-xl mx-auto w-full" data-upload="gallery.watercolor">
   <div data-auth="true" class="w-full flex gap-2 flex-wrap">
     <label for="file-upload" class="cursor-pointer w-full block" tabindex="0">
       <div class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full">
@@ -170,7 +170,7 @@
 </div>
 
     
-<div id="image-gallery" data-images="watercolor" class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4">
+<div id="image-gallery" data-images="gallery.watercolor" class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4">
 </div>
 
 
@@ -180,8 +180,14 @@
       <button commandfor="image-popover" command="show-popover" class="w-full block cursor-pointer border-0 bg-transparent p-0" type="button" aria-label="Kép megnyitása" title="Kép megnyitása">
         <img src="" alt="" width="200" height="250" class="w-full block rounded-lg shadow-lg hover:shadow-xl" loading="lazy">
 
-        <div data-auth="true">
-          </div></button><button data-delete="" data-edit="true" class="hidden absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square">
+        <div data-auth="true" class="flex gap-2">
+          </div></button><button data-cover="" data-edit="true" class="hidden absolute left-4 top-4 border border-base-100 btn btn-warning btn-sm btn-square" title="Borítóképnek jelölés">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-book-image size-4">
+  <path d="m20 13.7-2.1-2.1a2 2 0 0 0-2.8 0L9.7 17"></path><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"></path><circle cx="10" cy="8" r="2"></circle>
+  
+</svg>
+          </button>
+          <button data-delete="" data-edit="true" class="hidden absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square" title="Törlés">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash size-4">
   <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
   
@@ -264,6 +270,6 @@
     <span></span>
   </div>
 </template>
-  <script type="module" src="/assets/BaseLayout.astro_astro_type_script_index_0_lang.B4v1qBFK.js"></script></body></html>
+  <script type="module" src="/assets/BaseLayout.astro_astro_type_script_index_0_lang.CsCAU3xP.js"></script></body></html>
 
-<script type="module" src="/assets/GalleryLayout.astro_astro_type_script_index_0_lang.B91TI3lV.js"></script>
+<script type="module" src="/assets/GalleryLayout.astro_astro_type_script_index_0_lang.CHc5Q1o9.js"></script>

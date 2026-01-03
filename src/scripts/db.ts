@@ -43,6 +43,7 @@ export async function getImageUrls(key: string) {
       id: record.id,
       url: getURLFromRecord(record),
       filename: record.file,
+      cover: record.cover ?? false,
     }));
   } catch (error) {
     console.error("Fetch error:", error);
@@ -55,6 +56,41 @@ export async function deleteImage(id: string) {
     await pb.collection("image").delete(id);
   } catch (error) {
     console.error("Delete error:", error);
+  }
+}
+
+export async function setCoverImage(id: string, key: string) {
+  try {
+    // First, unset any existing cover images for this key
+    const existingCovers = await pb
+      .collection("image")
+      .getFullList({ filter: `key="${key}" && cover=true` });
+
+    for (const cover of existingCovers) {
+      await pb.collection("image").update(cover.id, { cover: false });
+    }
+
+    // Then set the new cover image
+    await pb.collection("image").update(id, { cover: true });
+  } catch (error) {
+    console.error("Set cover error:", error);
+    throw error;
+  }
+}
+
+export async function getCoverImageUrl(key: string): Promise<string | null> {
+  try {
+    const images = await pb
+      .collection("image")
+      .getFullList({ filter: `(key="${key}" && cover=true)` });
+
+    if (images.length > 0) {
+      return getURLFromRecord(images[0]);
+    }
+    return null;
+  } catch (error) {
+    console.error("Get cover image error:", error);
+    return null;
   }
 }
 
@@ -71,7 +107,9 @@ export function combineFilters(filters: string[]) {
 
 export async function getCollection(collection: string, filter: string) {
   try {
-    const items = await pb.collection(collection).getFullList({ filter });
+    const items = await pb
+      .collection(collection)
+      .getFullList({ filter, requestKey: null });
     return items;
   } catch (error) {
     console.error("Fetch error:", error);
@@ -83,7 +121,7 @@ export async function getContent(key: string): Promise<string> {
   try {
     const records = await pb
       .collection("content")
-      .getFullList({ filter: `key="${key}"` });
+      .getFullList({ filter: `key="${key}"`, requestKey: null });
     return records.length > 0 ? records[0].value : "";
   } catch (error) {
     console.error("Failed to load content:", error);

@@ -1,5 +1,5 @@
 ---
-import { Trash, X } from "@lucide/astro";
+import { Trash, BookImage } from "@lucide/astro";
 
 export interface Props {
   key: string;
@@ -37,11 +37,20 @@ const { key } = Astro.props;
           loading="lazy"
         />
 
-        <div data-auth="true">
+        <div data-auth="true" class="flex gap-2">
+          <button
+            data-cover=""
+            data-edit="true"
+            class="hidden absolute left-4 top-4 border border-base-100 btn btn-warning btn-sm btn-square"
+            title="Borítóképnek jelölés"
+          >
+            <BookImage class="size-4" />
+          </button>
           <button
             data-delete=""
             data-edit="true"
             class="hidden absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square"
+            title="Törlés"
           >
             <Trash class="size-4" />
           </button>

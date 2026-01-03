@@ -1,6 +1,7 @@
 ---
 import HomeLayout from "../layouts/HomeLayout.astro";
 import NavigationCard from "@components/NavigationCard.astro";
+import ConfirmDialog from "@components/ConfirmDialog.astro";
 import { BookUser, Palette, Mail } from "@lucide/astro";
 ---
 
@@ -8,6 +9,13 @@ import { BookUser, Palette, Mail } from "@lucide/astro";
   title="Szarvas Pongrác - Grafikus, Illusztrátor, Festő"
   description="Szarvas Pongrác grafikus, festő, illusztrátor honlapja"
 >
+  <!-- Test button for confirm dialog -->
+  <div class="mb-4 text-center">
+    <button id="test-confirm-btn" class="btn btn-primary btn-sm">
+      Tesztelés: Megerősítő párbeszédpanel
+    </button>
+  </div>
+
   <div class="flex gap-4 flex-col sm:flex-row items-center justify-center">
     <NavigationCard
       href="/eletrajz"
@@ -30,4 +38,28 @@ import { BookUser, Palette, Mail } from "@lucide/astro";
       hoverColor="accent"
     />
   </div>
+
+  <ConfirmDialog />
 </HomeLayout>
+
+<script>
+  import { confirm } from "@scripts/confirm-dialog";
+
+  const testBtn = document.getElementById("test-confirm-btn");
+  if (testBtn) {
+    testBtn.addEventListener("click", async () => {
+      const result = await confirm({
+        title: "Teszt párbeszédpanel",
+        message: "Ez egy natív HTML Popover API-t használó megerősítő párbeszédpanel. Szeretnéd folytatni?",
+        confirmText: "Igen, folytatom",
+        cancelText: "Nem, mégsem"
+      });
+
+      if (result) {
+        alert("Megerősítve! ✅");
+      } else {
+        alert("Megszakítva! ❌");
+      }
+    });
+  }
+</script>
