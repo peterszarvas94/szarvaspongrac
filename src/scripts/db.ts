@@ -44,6 +44,7 @@ export async function getImageUrls(key: string) {
       url: getURLFromRecord(record),
       filename: record.file,
       cover: record.cover ?? false,
+      sorting: (record.sorting as number) ?? 0,
     }));
   } catch (error) {
     console.error("Fetch error:", error);

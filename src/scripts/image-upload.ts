@@ -1,8 +1,7 @@
 /// <reference types="astro/client" />
-import PocketBase from "pocketbase";
+import { pb, getURLFromRecord } from "@scripts/db";
 import { showAlert } from "./toaster";
-
-const pb = new PocketBase(import.meta.env.PUBLIC_PB_URL);
+import { getEditMode } from "./edit";
 let dt = new DataTransfer();
 
 function appendFilesToDt(newFiles: File[]) {
@@ -82,10 +81,18 @@ function updateFiles(input: HTMLInputElement, files: File[]) {
   updateFileList();
 }
 
-export async function uploadImage({ key, file }: { key: string; file: File }) {
+export async function uploadImage({
+  key,
+  file,
+  sorting,
+}: {
+  key: string;
+  file: File;
+  sorting: number;
+}) {
   return await pb
     .collection("image")
-    .create({ key, file })
+    .create({ key, file, sorting })
     .catch((e) => {
       showAlert("Nem sikerült a feltöltés", "error");
       console.error("Upload error:", e);
@@ -108,7 +115,7 @@ async function replaceSingleItem(key: string, file: File) {
         });
     }
 
-    await uploadImage({ key, file });
+    await uploadImage({ key, file, sorting: 1 });
 
     showAlert("Sikeres feltöltés", "success");
     window.location.reload();
@@ -117,17 +124,148 @@ async function replaceSingleItem(key: string, file: File) {
   }
 }
 
-async function batchUpload(key: string, files: File[]) {
-  const batch = pb.createBatch();
-  files.forEach((file) => batch.collection("image").create({ key, file }));
+function getMaxSortingFromGallery(): number {
+  const gallery = document.querySelector<HTMLDivElement>("[data-images]");
+  if (!gallery) return 0;
 
-  try {
-    await batch.send();
+  const items = gallery.querySelectorAll<HTMLDivElement>("div[data-sorting]");
+  if (items.length === 0) return 0;
+
+  let maxSorting = 0;
+  items.forEach((item) => {
+    const sorting = parseInt(item.dataset.sorting ?? "0", 10);
+    if (sorting > maxSorting) {
+      maxSorting = sorting;
+    }
+  });
+
+  return maxSorting;
+}
+
+function appendImageToGallery(id: string, url: string, sorting: number) {
+  const gallery = document.querySelector<HTMLDivElement>("[data-images]");
+  const imageTemplate = document.querySelector<HTMLTemplateElement>(
+    "template#image-gallery-item",
+  );
+  if (!gallery || !imageTemplate) return;
+
+  const element = imageTemplate.content.cloneNode(true) as DocumentFragment;
+  const wrapper = element.querySelector<HTMLDivElement>("div");
+  if (wrapper) {
+    wrapper.dataset.sorting = String(sorting);
+  }
+
+  const img = element.querySelector("img");
+  if (img) {
+    img.setAttribute("src", url);
+  }
+
+  const deleteButton = element.querySelector<HTMLButtonElement>(
+    "button[data-delete]",
+  );
+  if (deleteButton) {
+    deleteButton.setAttribute("data-delete", id);
+    deleteButton.addEventListener("click", async () => {
+      const { confirm } = await import("./confirm-dialog");
+      const { deleteImage } = await import("@scripts/db");
+
+      const confirmed = await confirm({
+        title: "Kép törlése",
+        message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
+        confirmText: "Törlés",
+        cancelText: "Mégse",
+      });
+      if (!confirmed) return;
+
+      try {
+        await deleteImage(id);
+        showAlert("Törölve", "success");
+        deleteButton.closest("div")?.remove();
+      } catch (error) {
+        showAlert("Nem sikerült törölni a képet", "error");
+        console.error({ msg: "Error deleting the image", id, error });
+      }
+    });
+  }
+
+  const coverButton =
+    element.querySelector<HTMLButtonElement>("button[data-cover]");
+  if (coverButton) {
+    coverButton.setAttribute("data-cover", id);
+    coverButton.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+
+      const { confirm } = await import("./confirm-dialog");
+      const { setCoverImage } = await import("@scripts/db");
+
+      const confirmed = await confirm({
+        title: "Borítókép beállítása",
+        message: "Ezt a képet állítod be borítóképnek?",
+        confirmText: "Beállítás",
+        cancelText: "Mégse",
+      });
+      if (!confirmed) return;
+
+      const key = gallery.dataset.images ?? "";
+      try {
+        await setCoverImage(id, key);
+        showAlert("Borítókép beállítva", "success");
+        window.location.reload();
+      } catch (error) {
+        showAlert("Nem sikerült beállítani a borítóképet", "error");
+        console.error({ msg: "Error setting cover image", id, error });
+      }
+    });
+  }
+
+  // Show edit buttons if in edit mode
+  if (getEditMode()) {
+    const editElements = element.querySelectorAll<HTMLElement>("[data-edit]");
+    editElements.forEach((el) => el.classList.remove("hidden"));
+  }
+
+  gallery.appendChild(element);
+}
+
+async function batchUpload(key: string, files: File[]) {
+  const maxSorting = getMaxSortingFromGallery();
+
+  const results = await Promise.allSettled(
+    files.map((file, index) =>
+      pb
+        .collection("image")
+        .create(
+          { key, file, sorting: maxSorting + index + 1 },
+          { requestKey: null },
+        ),
+    ),
+  );
+
+  let successCount = 0;
+  results.forEach((result, index) => {
+    if (result.status === "fulfilled") {
+      const record = result.value;
+      const url = getURLFromRecord(record);
+      appendImageToGallery(record.id, url, maxSorting + index + 1);
+      successCount++;
+    } else {
+      console.error("Upload error:", result.reason);
+    }
+  });
+
+  // Clear the file input
+  dt = new DataTransfer();
+  const input = document.querySelector<HTMLInputElement>("#file-upload");
+  if (input) input.files = dt.files;
+  updateFileList();
+
+  if (successCount === files.length) {
     showAlert("Sikeres feltöltés", "success");
-    window.location.reload();
-  } catch (e) {
+  } else if (successCount > 0) {
+    showAlert(`${successCount}/${files.length} kép feltöltve`, "warning");
+  } else {
     showAlert("Nem sikerült a feltöltés", "error");
-    console.error("Upload error:", e);
   }
 }
 

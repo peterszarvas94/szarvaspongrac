@@ -15,6 +15,11 @@ async function initGallery() {
 
   images.forEach((image) => {
     const element = imageTemplate.content.cloneNode(true) as DocumentFragment;
+    const wrapper = element.querySelector<HTMLDivElement>("div");
+    if (wrapper) {
+      wrapper.dataset.sorting = String(image.sorting);
+    }
+
     const img = element.querySelector("img");
     if (img) {
       img.setAttribute("src", image.url);

@@ -33,7 +33,8 @@ async function getImageUrls(key) {
       id: record.id,
       url: getURLFromRecord(record),
       filename: record.file,
-      cover: record.cover ?? false
+      cover: record.cover ?? false,
+      sorting: record.sorting ?? 0
     }));
   } catch (error) {
     console.error("Fetch error:", error);

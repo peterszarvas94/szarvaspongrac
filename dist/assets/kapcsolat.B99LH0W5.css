@@ -5868,10 +5868,6 @@
     columns: 1;
   }
 
-  .break-inside-avoid {
-    break-inside: avoid;
-  }
-
   .grid-cols-1 {
     grid-template-columns: repeat(1, minmax(0, 1fr));
   }
