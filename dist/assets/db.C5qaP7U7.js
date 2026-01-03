@@ -61,7 +61,10 @@ async function setCoverImage(id, key) {
 }
 async function getCoverImageUrl(key) {
   try {
-    const images = await pb.collection("image").getFullList({ filter: `(key="${key}" && cover=true)` });
+    const images = await pb.collection("image").getFullList({
+      filter: `(key="${key}" && cover=true)`,
+      requestKey: null
+    });
     if (images.length > 0) {
       return getURLFromRecord(images[0]);
     }

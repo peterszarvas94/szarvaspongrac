@@ -75,7 +75,7 @@ export function initDeleteButtons() {
       try {
         await deleteImage(id);
         showAlert("Törölve", "success");
-        window.location.reload();
+        button.closest("div")?.remove();
       } catch (error) {
         showAlert("Nem sikerült törölni a képet", "error");
         console.error({ msg: "Error deleting the image", id, error });

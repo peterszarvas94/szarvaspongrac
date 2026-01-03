@@ -1,7 +1,7 @@
 import { Client } from './pocketbase.BNTe72gt.js';
-import { showAlert, EditModeEvent, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.C-qj_Nst.js';
-import { getImageUrls, deleteImage, setCoverImage } from './db.is84uKZZ.js';
-import './content-manager.COWOLfL4.js';
+import { showAlert, EditModeEvent, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.DScCh2na.js';
+import { getImageUrls, deleteImage, setCoverImage } from './db.C5qaP7U7.js';
+import './content-manager.CYLXbdb_.js';
 
 const pb = new Client("https://pb.szarvaspongrac.hu");
 let dt = new DataTransfer();
@@ -215,7 +215,7 @@ async function initGallery() {
       if (image.cover) {
         img.setAttribute("data-cover-image", "true");
         if (getEditMode()) {
-          img.classList.add("ring-2", "ring-offset-2", "ring-warning");
+          img.classList.add("ring-2", "ring-warning");
         }
       }
     }
@@ -257,7 +257,7 @@ function initDeleteButtons() {
       try {
         await deleteImage(id);
         showAlert("Törölve", "success");
-        window.location.reload();
+        button.closest(".break-inside-avoid")?.remove();
       } catch (error) {
         showAlert("Nem sikerült törölni a képet", "error");
         console.error({ msg: "Error deleting the image", id, error });

@@ -18,44 +18,45 @@ const { key } = Astro.props;
 
 {/* image template */}
 <template id="image-gallery-item">
-  <div class="break-inside-avoid mb-4 block">
-    <div class="relative">
-      <button
-        commandfor="image-popover"
-        command="show-popover"
-        class="w-full block cursor-pointer border-0 bg-transparent p-0"
-        type="button"
-        aria-label="Kép megnyitása"
-        title="Kép megnyitása"
-      >
-        <img
-          src=""
-          alt=""
-          width={200}
-          height={250}
-          class="w-full block rounded-lg shadow-lg hover:shadow-xl"
-          loading="lazy"
-        />
+  <div class="relative mb-4 block">
+    <button
+      commandfor="image-popover"
+      command="show-popover"
+      class="w-full block cursor-pointer border-0 bg-transparent p-0"
+      type="button"
+      aria-label="Kép megnyitása"
+      title="Kép megnyitása"
+    >
+      <img
+        src=""
+        alt=""
+        width={200}
+        height={250}
+        class="w-full block rounded-lg shadow-lg hover:shadow-xl"
+        loading="lazy"
+      />
 
-        <div data-auth="true" class="flex gap-2">
-          <button
-            data-cover=""
-            data-edit="true"
-            class="hidden absolute left-4 top-4 border border-base-100 btn btn-warning btn-sm btn-square"
-            title="Borítóképnek jelölés"
-          >
-            <BookImage class="size-4" />
-          </button>
-          <button
-            data-delete=""
-            data-edit="true"
-            class="hidden absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square"
-            title="Törlés"
-          >
-            <Trash class="size-4" />
-          </button>
-        </div>
-      </button>
-    </div>
+      <div
+        data-auth="true"
+        class="flex gap-2"
+      >
+        <button
+          data-cover=""
+          data-edit="true"
+          class="hidden absolute left-4 top-4 border border-base-100 btn btn-warning btn-sm btn-square"
+          title="Borítóképnek jelölés"
+        >
+          <BookImage class="size-4" />
+        </button>
+        <button
+          data-delete=""
+          data-edit="true"
+          class="hidden absolute right-4 top-4 border border-base-100 btn btn-error btn-sm btn-square"
+          title="Törlés"
+        >
+          <Trash class="size-4" />
+        </button>
+      </div>
+    </button>
   </div>
 </template>
