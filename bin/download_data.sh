@@ -2,9 +2,8 @@
 set -e
 
 SERVER="peti@shared"
-REMOTE_PATH="/home/peti/projects/szarvaspongrac/bin"
-MIGRATIONS_PATH="./pb_migrations"
-DATA_PATH="./pb_data"
+REMOTE_PATH="/home/peti/projects/szarvaspongrac/pb"
+LOCAL_PATH="./pb"
 
-rsync -avz --delete --progress "$SERVER:$REMOTE_PATH/pb_migrations/" "$MIGRATIONS_PATH/"
-rsync -avz --delete --progress "$SERVER:$REMOTE_PATH/pb_data/" "$DATA_PATH/"
+rsync -avz --delete --progress "$SERVER:$REMOTE_PATH/pb_migrations/" "$LOCAL_PATH/pb_migrations/"
+rsync -avz --delete --progress "$SERVER:$REMOTE_PATH/pb_data/" "$LOCAL_PATH/pb_data/"

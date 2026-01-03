@@ -20,4 +20,4 @@ pnpm-debug.log*
 .idea/
 
 # data
-/bin/pb_data
+/pb/pb_data
