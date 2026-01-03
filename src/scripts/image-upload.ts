@@ -153,6 +153,7 @@ function appendImageToGallery(id: string, url: string, sorting: number) {
   const wrapper = element.querySelector<HTMLDivElement>("div");
   if (wrapper) {
     wrapper.dataset.sorting = String(sorting);
+    wrapper.dataset.id = id;
   }
 
   const img = element.querySelector("img");

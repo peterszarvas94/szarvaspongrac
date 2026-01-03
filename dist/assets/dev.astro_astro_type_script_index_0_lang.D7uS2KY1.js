@@ -1,4 +1,4 @@
-import { pb } from './db.ClnClG6Z.js';
+import { pb } from './db.CqHXNiAN.js';
 import './pocketbase.BNTe72gt.js';
 
 async function initializeSorting() {
@@ -14,10 +14,11 @@ async function initializeSorting() {
       filter: `key="${galleryKey}"`,
       sort: "created"
     });
-    const updates = images.map(
-      (image, index) => pb.collection("image").update(image.id, { sorting: index })
-    );
-    await Promise.all(updates);
+    console.log(images);
+    if (images.length === 0) continue;
+    for (let i = 0; i < images.length; i++) {
+      await pb.collection("image").update(images[i].id, { sorting: i });
+    }
     totalUpdated += images.length;
   }
   return totalUpdated;

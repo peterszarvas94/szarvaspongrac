@@ -1,145 +1,181 @@
 import { deleteImage, getImageUrls, setCoverImage } from "@scripts/db";
 import { showAlert } from "./toaster";
-import { EditModeEvent, getEditMode } from "./edit";
+import { getEditMode } from "./edit";
 import { confirm } from "./confirm-dialog";
 
-async function initGallery() {
-  const gallery = document.querySelector<HTMLDivElement>("[data-images]");
-  const imageTemplate = document.querySelector<HTMLTemplateElement>(
+function getGallery() {
+  return document.querySelector<HTMLDivElement>("[data-images]");
+}
+
+function getTemplate() {
+  return document.querySelector<HTMLTemplateElement>(
     "template#image-gallery-item",
   );
-  if (!gallery || !imageTemplate) return;
+}
+
+function getWrapper(id: string) {
+  return getGallery()?.querySelector<HTMLDivElement>(`div[data-id="${id}"]`);
+}
+
+function removeButtonsFromWrapper(wrapper: HTMLDivElement) {
+  wrapper.querySelector<HTMLButtonElement>("button[data-delete]")?.remove();
+  wrapper.querySelector<HTMLButtonElement>("button[data-cover]")?.remove();
+}
+
+function addButtonsToWrapper(wrapper: HTMLDivElement) {
+  const id = wrapper.dataset.id;
+  const template = getTemplate();
+  const authDiv = wrapper.querySelector("div[data-auth]");
+  if (!id || !template || !authDiv) return;
+
+  const templateContent = template.content.cloneNode(true) as DocumentFragment;
+
+  const deleteBtn = templateContent.querySelector<HTMLButtonElement>(
+    "button[data-delete]",
+  );
+  if (deleteBtn) {
+    deleteBtn.dataset.delete = id;
+    if (getEditMode()) deleteBtn.classList.remove("hidden");
+    authDiv.appendChild(deleteBtn);
+    initDeleteButton(deleteBtn);
+  }
+
+  const coverBtn =
+    templateContent.querySelector<HTMLButtonElement>("button[data-cover]");
+  if (coverBtn) {
+    coverBtn.dataset.cover = id;
+    if (getEditMode()) coverBtn.classList.remove("hidden");
+    authDiv.appendChild(coverBtn);
+    initCoverButton(coverBtn);
+  }
+}
+
+function updateCoverUI(oldCoverId: string | null, newCoverId: string) {
+  if (oldCoverId) {
+    const oldWrapper = getWrapper(oldCoverId);
+    if (oldWrapper) addButtonsToWrapper(oldWrapper);
+  }
+
+  const newWrapper = getWrapper(newCoverId);
+  if (newWrapper) removeButtonsFromWrapper(newWrapper);
+}
+
+function initDeleteButton(button: HTMLButtonElement) {
+  const id = button.dataset.delete;
+  if (!id) return;
+
+  button.addEventListener("click", async () => {
+    const confirmed = await confirm({
+      title: "Kép törlése",
+      message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
+      confirmText: "Törlés",
+      cancelText: "Mégse",
+    });
+    if (!confirmed) return;
+
+    try {
+      await deleteImage(id);
+      showAlert("Törölve", "success");
+      getWrapper(id)?.remove();
+    } catch (error) {
+      showAlert("Nem sikerült törölni a képet", "error");
+      console.error({ msg: "Error deleting the image", id, error });
+    }
+  });
+}
+
+function initCoverButton(button: HTMLButtonElement) {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const key = gallery.dataset.images ?? "";
+  const id = button.dataset.cover;
+  if (!id) return;
+
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const confirmed = await confirm({
+      title: "Borítókép beállítása",
+      message: "Ezt a képet állítod be borítóképnek?",
+      confirmText: "Beállítás",
+      cancelText: "Mégse",
+    });
+    if (!confirmed) return;
+
+    const oldCoverId =
+      gallery.querySelector<HTMLDivElement>(
+        "div[data-id]:has(button[data-delete]:not([data-delete]))",
+      )?.dataset.id ?? null;
+
+    // Find old cover by checking which wrapper has no buttons
+    const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
+    let foundOldCoverId: string | null = null;
+    for (const w of wrappers) {
+      const hasDeleteBtn = w.querySelector("button[data-delete]");
+      const hasCoverBtn = w.querySelector("button[data-cover]");
+      if (!hasDeleteBtn && !hasCoverBtn && w.dataset.id) {
+        foundOldCoverId = w.dataset.id;
+        break;
+      }
+    }
+
+    try {
+      await setCoverImage(id, key);
+      updateCoverUI(foundOldCoverId, id);
+      showAlert("Borítókép beállítva", "success");
+    } catch (error) {
+      showAlert("Nem sikerült beállítani a borítóképet", "error");
+      console.error({ msg: "Error setting cover image", id, error });
+    }
+  });
+}
+
+function initDeleteButtons() {
+  const deleteButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-delete]");
+  deleteButtons.forEach((button) => initDeleteButton(button));
+}
+
+function initCoverButtons() {
+  const coverButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-cover]");
+  coverButtons.forEach((button) => initCoverButton(button));
+}
+
+async function initGallery() {
+  const gallery = getGallery();
+  const template = getTemplate();
+  if (!gallery || !template) return;
 
   const key = gallery.dataset.images ?? "";
   const images = await getImageUrls(key);
 
-  images.forEach((image) => {
-    const element = imageTemplate.content.cloneNode(true) as DocumentFragment;
-    const wrapper = element.querySelector<HTMLDivElement>("div");
-    if (wrapper) {
-      wrapper.dataset.sorting = String(image.sorting);
-    }
+  for (const image of images) {
+    const element = template.content.cloneNode(true) as DocumentFragment;
+    const wrapper = element.firstElementChild as HTMLDivElement | null;
+    if (!wrapper) continue;
 
-    const img = element.querySelector("img");
-    if (img) {
-      img.setAttribute("src", image.url);
-      // Mark as cover image with data attribute for later reference
-      if (image.cover) {
-        img.setAttribute("data-cover-image", "true");
-        // Only add ring if in edit mode
-        if (getEditMode()) {
-          img.classList.add("ring-2", "ring-warning");
-        }
-      }
-    }
+    wrapper.dataset.sorting = String(image.sorting);
+    wrapper.dataset.id = image.id;
 
-    const deleteButton = element.querySelector<HTMLButtonElement>(
+    const img = wrapper.querySelector("img");
+    img?.setAttribute("src", image.url);
+
+    const deleteButton = wrapper.querySelector<HTMLButtonElement>(
       "button[data-delete]",
     );
-    if (deleteButton) {
-      deleteButton.setAttribute("data-delete", image.id);
-      // Hide delete button if this is the cover image
-      if (image.cover) {
-        deleteButton.remove();
-      }
-    }
+    deleteButton?.setAttribute("data-delete", image.id);
+    if (image.cover) deleteButton?.remove();
 
     const coverButton =
-      element.querySelector<HTMLButtonElement>("button[data-cover]");
-    if (coverButton) {
-      coverButton.setAttribute("data-cover", image.id);
-      // Hide cover button if this is already the cover image
-      if (image.cover) {
-        coverButton.remove();
-      }
-    }
+      wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
+    coverButton?.setAttribute("data-cover", image.id);
+    if (image.cover) coverButton?.remove();
 
-    gallery.appendChild(element);
-  });
-}
-
-export function initDeleteButtons() {
-  const deleteButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-delete]");
-
-  Array.from(deleteButtons).forEach((button) => {
-    const id = button.dataset.delete;
-    if (!id) {
-      console.error("No image id for button", button);
-      return;
-    }
-    button.addEventListener("click", async () => {
-      const confirmed = await confirm({
-        title: "Kép törlése",
-        message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
-        confirmText: "Törlés",
-        cancelText: "Mégse",
-      });
-      if (!confirmed) return;
-
-      try {
-        await deleteImage(id);
-        showAlert("Törölve", "success");
-        button.closest("div")?.remove();
-      } catch (error) {
-        showAlert("Nem sikerült törölni a képet", "error");
-        console.error({ msg: "Error deleting the image", id, error });
-      }
-    });
-  });
-}
-
-export function initCoverButtons() {
-  const gallery = document.querySelector<HTMLDivElement>("[data-images]");
-  if (!gallery) return;
-
-  const key = gallery.dataset.images ?? "";
-  const coverButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-cover]");
-
-  Array.from(coverButtons).forEach((button) => {
-    const id = button.dataset.cover;
-    if (!id) {
-      console.error("No image id for button", button);
-      return;
-    }
-    button.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      const confirmed = await confirm({
-        title: "Borítókép beállítása",
-        message: "Ezt a képet állítod be borítóképnek?",
-        confirmText: "Beállítás",
-        cancelText: "Mégse",
-      });
-      if (!confirmed) return;
-
-      try {
-        await setCoverImage(id, key);
-        showAlert("Borítókép beállítva", "success");
-        window.location.reload();
-      } catch (error) {
-        showAlert("Nem sikerült beállítani a borítóképet", "error");
-        console.error({ msg: "Error setting cover image", id, error });
-      }
-    });
-  });
-}
-
-function updateCoverRings() {
-  const coverImages = document.querySelectorAll<HTMLImageElement>(
-    "#image-gallery img[data-cover-image='true']",
-  );
-  const isEditMode = getEditMode();
-
-  coverImages.forEach((img) => {
-    if (isEditMode) {
-      img.classList.add("ring-2", "ring-warning");
-    } else {
-      img.classList.remove("ring-2", "ring-warning");
-    }
-  });
+    gallery.appendChild(wrapper);
+  }
 }
 
 function initPopover() {
@@ -175,9 +211,6 @@ async function init() {
   initDeleteButtons();
   initCoverButtons();
   initPopover();
-
-  // Listen for edit mode changes to update cover rings
-  window.addEventListener(EditModeEvent.eventName, updateCoverRings);
 }
 
 init();

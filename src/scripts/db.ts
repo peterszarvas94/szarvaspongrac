@@ -35,9 +35,10 @@ export function getURLFromRecord(record: RecordModel) {
 
 export async function getImageUrls(key: string) {
   try {
-    const images = await pb
-      .collection("image")
-      .getFullList({ filter: `key="${key}"`, sort: "sorting" });
+    const images = await pb.collection("image").getFullList({
+      filter: `key="${key}"`,
+      requestKey: null,
+    });
 
     return images.map((record) => ({
       id: record.id,

@@ -6388,11 +6388,6 @@
     box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
   }
 
-  .ring-2 {
-    --tw-ring-shadow: var(--tw-ring-inset, ) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color, currentcolor);
-    box-shadow: var(--tw-inset-shadow), var(--tw-inset-ring-shadow), var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
-  }
-
   .shadow-base-content\/50 {
     --tw-shadow-color: var(--color-base-content);
   }
@@ -6401,10 +6396,6 @@
     .shadow-base-content\/50 {
       --tw-shadow-color: color-mix(in oklab, color-mix(in oklab, var(--color-base-content) 50%, transparent) var(--tw-shadow-alpha), transparent);
     }
-  }
-
-  .ring-warning {
-    --tw-ring-color: var(--color-warning);
   }
 
   .outline {

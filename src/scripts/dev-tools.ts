@@ -14,13 +14,14 @@ async function initializeSorting() {
       filter: `key="${galleryKey}"`,
       sort: "created",
     });
+    console.log(images);
 
-    // Each gallery starts from 0, increments by 1: 0, 1, 2, 3...
-    const updates = images.map((image, index) =>
-      pb.collection("image").update(image.id, { sorting: index }),
-    );
+    if (images.length === 0) continue;
 
-    await Promise.all(updates);
+    for (let i = 0; i < images.length; i++) {
+      await pb.collection("image").update(images[i].id, { sorting: i });
+    }
+
     totalUpdated += images.length;
   }
 

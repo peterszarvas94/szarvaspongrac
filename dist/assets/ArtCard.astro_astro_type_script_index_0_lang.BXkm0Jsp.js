@@ -1,4 +1,4 @@
-import { getCoverImageUrl } from './db.ClnClG6Z.js';
+import { getCoverImageUrl } from './db.CqHXNiAN.js';
 import './pocketbase.BNTe72gt.js';
 
 async function initArtCardCovers() {
