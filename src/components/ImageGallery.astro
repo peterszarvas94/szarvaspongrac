@@ -1,5 +1,5 @@
 ---
-import { Trash, BookImage } from "@lucide/astro";
+import { Trash, BookImage, ChevronUp, ChevronDown } from "@lucide/astro";
 
 export interface Props {
   key: string;
@@ -18,7 +18,7 @@ const { key } = Astro.props;
 
 {/* image template */}
 <template id="image-gallery-item">
-  <div class="relative mb-4 block" draggable="false">
+  <div class="relative mb-4 block">
     <button
       commandfor="image-popover"
       command="show-popover"
@@ -55,6 +55,22 @@ const { key } = Astro.props;
           title="Törlés"
         >
           <Trash class="size-4" />
+        </button>
+        <button
+          data-move-up=""
+          data-edit="true"
+          class="hidden absolute left-4 bottom-4 border border-base-100 btn btn-primary btn-sm btn-square"
+          title="Mozgatás előre"
+        >
+          <ChevronUp class="size-4" />
+        </button>
+        <button
+          data-move-down=""
+          data-edit="true"
+          class="hidden absolute right-4 bottom-4 border border-base-100 btn btn-primary btn-sm btn-square"
+          title="Mozgatás hátra"
+        >
+          <ChevronDown class="size-4" />
         </button>
       </div>
     </button>

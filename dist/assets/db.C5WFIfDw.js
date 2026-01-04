@@ -104,31 +104,11 @@ async function saveContent(key, value) {
     await pb.collection("content").create({ key, value });
   }
 }
-async function reorderImages(draggedId, targetId, items) {
-  try {
-    const draggedIndex = items.findIndex((item) => item.id === draggedId);
-    const targetIndex = items.findIndex((item) => item.id === targetId);
-    if (draggedIndex === -1 || targetIndex === -1) {
-      throw new Error("Could not find dragged or target image");
-    }
-    const newOrder = [...items];
-    const draggedItem = newOrder.splice(draggedIndex, 1)[0];
-    const insertIndex = draggedIndex < targetIndex ? targetIndex : targetIndex + 1;
-    newOrder.splice(insertIndex, 0, draggedItem);
-    const batch = pb.createBatch();
-    for (let i = 0; i < newOrder.length; i++) {
-      const newSorting = i + 1;
-      if (newOrder[i].sorting !== newSorting) {
-        batch.collection("image").update(newOrder[i].id, { sorting: newSorting });
-      }
-    }
-    await batch.send({
-      requestKey: `reorder_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    });
-  } catch (error) {
-    console.error("Reorder error:", error);
-    throw error;
-  }
+async function swapImageOrder(id1, id2) {
+  const record1 = await pb.collection("image").getOne(id1);
+  const record2 = await pb.collection("image").getOne(id2);
+  await pb.collection("image").update(id1, { sorting: record2.sorting });
+  await pb.collection("image").update(id2, { sorting: record1.sorting });
 }
 
-export { combineFilters, createFilter, deleteImage, getCollection, getCoverImageUrl, getCurrentUser, getImageUrls, getURLFromRecord, isAuthenticated, login, logout, pb, reorderImages, saveContent, setCoverImage };
+export { combineFilters, createFilter, deleteImage, getCollection, getCoverImageUrl, getCurrentUser, getImageUrls, getURLFromRecord, isAuthenticated, login, logout, pb, saveContent, setCoverImage, swapImageOrder };

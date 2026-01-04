@@ -2,7 +2,7 @@ import {
   deleteImage,
   getImageUrls,
   setCoverImage,
-  reorderImages,
+  swapImageOrder,
 } from "@scripts/db";
 import { showAlert } from "./toaster";
 import { getEditMode } from "./edit";
@@ -69,7 +69,10 @@ function initDeleteButton(button: HTMLButtonElement) {
   const id = button.dataset.delete;
   if (!id) return;
 
-  button.addEventListener("click", async () => {
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
     const confirmed = await confirm({
       title: "Kép törlése",
       message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
@@ -109,11 +112,6 @@ function initCoverButton(button: HTMLButtonElement) {
     });
     if (!confirmed) return;
 
-    const oldCoverId =
-      gallery.querySelector<HTMLDivElement>(
-        "div[data-id]:has(button[data-delete]:not([data-delete]))",
-      )?.dataset.id ?? null;
-
     // Find old cover by checking which wrapper has no buttons
     const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
     let foundOldCoverId: string | null = null;
@@ -137,6 +135,90 @@ function initCoverButton(button: HTMLButtonElement) {
   });
 }
 
+function initMoveUpButton(button: HTMLButtonElement) {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const id = button.dataset.moveUp;
+  if (!id) return;
+
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
+
+    // Get all wrappers and find current position
+    const wrappers = Array.from(
+      gallery.querySelectorAll<HTMLDivElement>("div[data-id]"),
+    );
+    const currentIndex = wrappers.indexOf(wrapper);
+    if (currentIndex <= 0) return;
+
+    const prevWrapper = wrappers[currentIndex - 1];
+    const prevId = prevWrapper.dataset.id;
+    if (!prevId) return;
+
+    try {
+      await swapImageOrder(id, prevId);
+      prevWrapper.insertAdjacentElement("beforebegin", wrapper);
+      updateSortingAttributes();
+      showAlert("Áthelyezve", "success");
+    } catch (error) {
+      showAlert("Nem sikerült áthelyezni", "error");
+      console.error({ msg: "Error moving image up", id, error });
+    }
+  });
+}
+
+function initMoveDownButton(button: HTMLButtonElement) {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const id = button.dataset.moveDown;
+  if (!id) return;
+
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
+
+    // Get all wrappers and find current position
+    const wrappers = Array.from(
+      gallery.querySelectorAll<HTMLDivElement>("div[data-id]"),
+    );
+    const currentIndex = wrappers.indexOf(wrapper);
+    if (currentIndex >= wrappers.length - 1) return;
+
+    const nextWrapper = wrappers[currentIndex + 1];
+    const nextId = nextWrapper.dataset.id;
+    if (!nextId) return;
+
+    try {
+      await swapImageOrder(id, nextId);
+      nextWrapper.insertAdjacentElement("afterend", wrapper);
+      updateSortingAttributes();
+      showAlert("Áthelyezve", "success");
+    } catch (error) {
+      showAlert("Nem sikerült áthelyezni", "error");
+      console.error({ msg: "Error moving image down", id, error });
+    }
+  });
+}
+
+function updateSortingAttributes() {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
+  wrappers.forEach((w, index) => {
+    w.dataset.sorting = String(index + 1);
+  });
+}
+
 function initDeleteButtons() {
   const deleteButtons =
     document.querySelectorAll<HTMLButtonElement>("[data-delete]");
@@ -147,6 +229,16 @@ function initCoverButtons() {
   const coverButtons =
     document.querySelectorAll<HTMLButtonElement>("[data-cover]");
   coverButtons.forEach((button) => initCoverButton(button));
+}
+
+function initMoveButtons() {
+  const moveUpButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-move-up]");
+  moveUpButtons.forEach((button) => initMoveUpButton(button));
+
+  const moveDownButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-move-down]");
+  moveDownButtons.forEach((button) => initMoveDownButton(button));
 }
 
 async function initGallery() {
@@ -160,19 +252,17 @@ async function initGallery() {
   // Sort images by sorting field
   images.sort((a, b) => a.sorting - b.sorting);
 
-  for (const image of images) {
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    const isFirst = i === 0;
+    const isLast = i === images.length - 1;
+
     const element = template.content.cloneNode(true) as DocumentFragment;
     const wrapper = element.firstElementChild as HTMLDivElement | null;
     if (!wrapper) continue;
 
     wrapper.dataset.sorting = String(image.sorting);
     wrapper.dataset.id = image.id;
-
-    // Set draggable attribute based on edit mode
-    if (getEditMode()) {
-      wrapper.setAttribute("draggable", "true");
-      wrapper.style.cursor = "move";
-    }
 
     const img = wrapper.querySelector("img");
     img?.setAttribute("src", image.url);
@@ -187,6 +277,24 @@ async function initGallery() {
       wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
     coverButton?.setAttribute("data-cover", image.id);
     if (image.cover) coverButton?.remove();
+
+    const moveUpButton = wrapper.querySelector<HTMLButtonElement>(
+      "button[data-move-up]",
+    );
+    if (isFirst) {
+      moveUpButton?.remove();
+    } else {
+      moveUpButton?.setAttribute("data-move-up", image.id);
+    }
+
+    const moveDownButton = wrapper.querySelector<HTMLButtonElement>(
+      "button[data-move-down]",
+    );
+    if (isLast) {
+      moveDownButton?.remove();
+    } else {
+      moveDownButton?.setAttribute("data-move-down", image.id);
+    }
 
     gallery.appendChild(wrapper);
   }
@@ -220,121 +328,8 @@ function initPopover() {
   });
 }
 
-let draggedItemId: string | null = null;
-
-function addDragListeners(wrapper: HTMLDivElement) {
-  const gallery = getGallery();
-  const id = wrapper.dataset.id;
-  if (!id || !gallery) return;
-
-  // Prevent duplicate listeners
-  if (wrapper.dataset.dragListeners === "true") return;
-  wrapper.dataset.dragListeners = "true";
-
-  wrapper.addEventListener("dragstart", (e) => {
-    if (!getEditMode()) return;
-    draggedItemId = id;
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", id);
-    }
-    wrapper.style.opacity = "0.5";
-  });
-
-  wrapper.addEventListener("dragend", () => {
-    wrapper.style.opacity = "1";
-    draggedItemId = null;
-
-    // Clean up any remaining visual indicators
-    const allWrappers =
-      gallery?.querySelectorAll<HTMLDivElement>("div[data-id]");
-    allWrappers?.forEach((w) => {
-      w.style.boxShadow = "";
-    });
-  });
-
-  wrapper.addEventListener("dragover", (e) => {
-    if (!getEditMode() || !draggedItemId) return;
-    e.preventDefault();
-    e.dataTransfer!.dropEffect = "move";
-
-    // Add visual drop indicator
-    wrapper.style.boxShadow = "0 4px 0 0 #3b82f6";
-    wrapper.style.transition = "box-shadow 0.2s ease";
-  });
-
-  wrapper.addEventListener("dragleave", (e) => {
-    if (!getEditMode() || !draggedItemId) return;
-
-    // Remove visual drop indicator
-    wrapper.style.boxShadow = "";
-  });
-
-  wrapper.addEventListener("drop", async (e) => {
-    if (!getEditMode() || !draggedItemId || !gallery) return;
-    e.preventDefault();
-
-    // Clean up visual indicator
-    wrapper.style.boxShadow = "";
-
-    const targetId = wrapper.dataset.id;
-    if (!targetId || targetId === draggedItemId) return;
-
-    try {
-      // Get current items from DOM
-      const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
-      const items = Array.from(wrappers).map((w) => ({
-        id: w.dataset.id!,
-        sorting: parseInt(w.dataset.sorting!) || 0,
-      }));
-
-      // Find the dragged and target DOM elements
-      const draggedElement = gallery.querySelector<HTMLDivElement>(
-        `div[data-id="${draggedItemId}"]`,
-      );
-      const targetElement = wrapper;
-
-      if (!draggedElement || !targetElement) return;
-
-      // Move the DOM node immediately for smooth UX
-      // Insert dragged element after target element
-      targetElement.insertAdjacentElement("afterend", draggedElement);
-
-      // Update database in background
-      await reorderImages(draggedItemId, targetId, items);
-      showAlert("Sorrend frissítve", "success");
-
-      // Update the sorting data attributes to reflect new order
-      const updatedWrappers =
-        gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
-      updatedWrappers.forEach((w, index) => {
-        w.dataset.sorting = String(index + 1);
-      });
-    } catch (error) {
-      showAlert("Nem sikerült frissíteni a sorrendet", "error");
-      console.error("Error reordering images:", error);
-
-      // If database update failed, refresh to restore correct order
-      gallery.innerHTML = "";
-      await initGallery();
-      initDeleteButtons();
-      initCoverButtons();
-      initDragAndDrop();
-    }
-  });
-}
-
-function initDragAndDrop() {
-  const gallery = getGallery();
-  if (!gallery) return;
-
-  // Add drag listeners to existing items
-  const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
-  wrappers.forEach(addDragListeners);
-}
-
 await initGallery();
 initDeleteButtons();
 initCoverButtons();
+initMoveButtons();
 initPopover();
-initDragAndDrop();

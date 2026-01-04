@@ -1,8 +1,8 @@
-import { getImageUrls, deleteImage, setCoverImage, reorderImages } from './db.B2Whiv5I.js';
-import { getEditMode, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.CGpTTeM8.js';
+import { getImageUrls, deleteImage, setCoverImage, swapImageOrder } from './db.C5WFIfDw.js';
+import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.CFo0LeZd.js';
 import { confirm } from './confirm-dialog.CNJzHFJm.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.mmDGxKNb.js';
+import './content-manager.Bcz9BLLz.js';
 
 function getGallery() {
   return document.querySelector("[data-images]");
@@ -53,7 +53,9 @@ function updateCoverUI(oldCoverId, newCoverId) {
 function initDeleteButton(button) {
   const id = button.dataset.delete;
   if (!id) return;
-  button.addEventListener("click", async () => {
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
     const confirmed = await confirm({
       title: "Kép törlése",
       message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
@@ -87,9 +89,6 @@ function initCoverButton(button) {
       cancelText: "Mégse"
     });
     if (!confirmed) return;
-    gallery.querySelector(
-      "div[data-id]:has(button[data-delete]:not([data-delete]))"
-    )?.dataset.id ?? null;
     const wrappers = gallery.querySelectorAll("div[data-id]");
     let foundOldCoverId = null;
     for (const w of wrappers) {
@@ -110,6 +109,72 @@ function initCoverButton(button) {
     }
   });
 }
+function initMoveUpButton(button) {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const id = button.dataset.moveUp;
+  if (!id) return;
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
+    const wrappers = Array.from(
+      gallery.querySelectorAll("div[data-id]")
+    );
+    const currentIndex = wrappers.indexOf(wrapper);
+    if (currentIndex <= 0) return;
+    const prevWrapper = wrappers[currentIndex - 1];
+    const prevId = prevWrapper.dataset.id;
+    if (!prevId) return;
+    try {
+      await swapImageOrder(id, prevId);
+      prevWrapper.insertAdjacentElement("beforebegin", wrapper);
+      updateSortingAttributes();
+      showAlert("Áthelyezve", "success");
+    } catch (error) {
+      showAlert("Nem sikerült áthelyezni", "error");
+      console.error({ msg: "Error moving image up", id, error });
+    }
+  });
+}
+function initMoveDownButton(button) {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const id = button.dataset.moveDown;
+  if (!id) return;
+  button.addEventListener("click", async (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
+    const wrappers = Array.from(
+      gallery.querySelectorAll("div[data-id]")
+    );
+    const currentIndex = wrappers.indexOf(wrapper);
+    if (currentIndex >= wrappers.length - 1) return;
+    const nextWrapper = wrappers[currentIndex + 1];
+    const nextId = nextWrapper.dataset.id;
+    if (!nextId) return;
+    try {
+      await swapImageOrder(id, nextId);
+      nextWrapper.insertAdjacentElement("afterend", wrapper);
+      updateSortingAttributes();
+      showAlert("Áthelyezve", "success");
+    } catch (error) {
+      showAlert("Nem sikerült áthelyezni", "error");
+      console.error({ msg: "Error moving image down", id, error });
+    }
+  });
+}
+function updateSortingAttributes() {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const wrappers = gallery.querySelectorAll("div[data-id]");
+  wrappers.forEach((w, index) => {
+    w.dataset.sorting = String(index + 1);
+  });
+}
 function initDeleteButtons() {
   const deleteButtons = document.querySelectorAll("[data-delete]");
   deleteButtons.forEach((button) => initDeleteButton(button));
@@ -118,6 +183,12 @@ function initCoverButtons() {
   const coverButtons = document.querySelectorAll("[data-cover]");
   coverButtons.forEach((button) => initCoverButton(button));
 }
+function initMoveButtons() {
+  const moveUpButtons = document.querySelectorAll("[data-move-up]");
+  moveUpButtons.forEach((button) => initMoveUpButton(button));
+  const moveDownButtons = document.querySelectorAll("[data-move-down]");
+  moveDownButtons.forEach((button) => initMoveDownButton(button));
+}
 async function initGallery() {
   const gallery = getGallery();
   const template = getTemplate();
@@ -125,16 +196,15 @@ async function initGallery() {
   const key = gallery.dataset.images ?? "";
   const images = await getImageUrls(key);
   images.sort((a, b) => a.sorting - b.sorting);
-  for (const image of images) {
+  for (let i = 0; i < images.length; i++) {
+    const image = images[i];
+    const isFirst = i === 0;
+    const isLast = i === images.length - 1;
     const element = template.content.cloneNode(true);
     const wrapper = element.firstElementChild;
     if (!wrapper) continue;
     wrapper.dataset.sorting = String(image.sorting);
     wrapper.dataset.id = image.id;
-    if (getEditMode()) {
-      wrapper.setAttribute("draggable", "true");
-      wrapper.style.cursor = "move";
-    }
     const img = wrapper.querySelector("img");
     img?.setAttribute("src", image.url);
     const deleteButton = wrapper.querySelector(
@@ -145,6 +215,22 @@ async function initGallery() {
     const coverButton = wrapper.querySelector("button[data-cover]");
     coverButton?.setAttribute("data-cover", image.id);
     if (image.cover) coverButton?.remove();
+    const moveUpButton = wrapper.querySelector(
+      "button[data-move-up]"
+    );
+    if (isFirst) {
+      moveUpButton?.remove();
+    } else {
+      moveUpButton?.setAttribute("data-move-up", image.id);
+    }
+    const moveDownButton = wrapper.querySelector(
+      "button[data-move-down]"
+    );
+    if (isLast) {
+      moveDownButton?.remove();
+    } else {
+      moveDownButton?.setAttribute("data-move-down", image.id);
+    }
     gallery.appendChild(wrapper);
   }
 }
@@ -172,84 +258,8 @@ function initPopover() {
     }
   });
 }
-let draggedItemId = null;
-function addDragListeners(wrapper) {
-  const gallery = getGallery();
-  const id = wrapper.dataset.id;
-  if (!id || !gallery) return;
-  if (wrapper.dataset.dragListeners === "true") return;
-  wrapper.dataset.dragListeners = "true";
-  wrapper.addEventListener("dragstart", (e) => {
-    if (!getEditMode()) return;
-    draggedItemId = id;
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = "move";
-      e.dataTransfer.setData("text/plain", id);
-    }
-    wrapper.style.opacity = "0.5";
-  });
-  wrapper.addEventListener("dragend", () => {
-    wrapper.style.opacity = "1";
-    draggedItemId = null;
-    const allWrappers = gallery?.querySelectorAll("div[data-id]");
-    allWrappers?.forEach((w) => {
-      w.style.boxShadow = "";
-    });
-  });
-  wrapper.addEventListener("dragover", (e) => {
-    if (!getEditMode() || !draggedItemId) return;
-    e.preventDefault();
-    e.dataTransfer.dropEffect = "move";
-    wrapper.style.boxShadow = "0 4px 0 0 #3b82f6";
-    wrapper.style.transition = "box-shadow 0.2s ease";
-  });
-  wrapper.addEventListener("dragleave", (e) => {
-    if (!getEditMode() || !draggedItemId) return;
-    wrapper.style.boxShadow = "";
-  });
-  wrapper.addEventListener("drop", async (e) => {
-    if (!getEditMode() || !draggedItemId || !gallery) return;
-    e.preventDefault();
-    wrapper.style.boxShadow = "";
-    const targetId = wrapper.dataset.id;
-    if (!targetId || targetId === draggedItemId) return;
-    try {
-      const wrappers = gallery.querySelectorAll("div[data-id]");
-      const items = Array.from(wrappers).map((w) => ({
-        id: w.dataset.id,
-        sorting: parseInt(w.dataset.sorting) || 0
-      }));
-      const draggedElement = gallery.querySelector(
-        `div[data-id="${draggedItemId}"]`
-      );
-      const targetElement = wrapper;
-      if (!draggedElement || !targetElement) return;
-      targetElement.insertAdjacentElement("afterend", draggedElement);
-      await reorderImages(draggedItemId, targetId, items);
-      showAlert("Sorrend frissítve", "success");
-      const updatedWrappers = gallery.querySelectorAll("div[data-id]");
-      updatedWrappers.forEach((w, index) => {
-        w.dataset.sorting = String(index + 1);
-      });
-    } catch (error) {
-      showAlert("Nem sikerült frissíteni a sorrendet", "error");
-      console.error("Error reordering images:", error);
-      gallery.innerHTML = "";
-      await initGallery();
-      initDeleteButtons();
-      initCoverButtons();
-      initDragAndDrop();
-    }
-  });
-}
-function initDragAndDrop() {
-  const gallery = getGallery();
-  if (!gallery) return;
-  const wrappers = gallery.querySelectorAll("div[data-id]");
-  wrappers.forEach(addDragListeners);
-}
 await initGallery();
 initDeleteButtons();
 initCoverButtons();
+initMoveButtons();
 initPopover();
-initDragAndDrop();
