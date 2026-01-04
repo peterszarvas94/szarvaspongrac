@@ -131,6 +131,7 @@ function initMoveUpButton(button) {
       await swapImageOrder(id, prevId);
       prevWrapper.insertAdjacentElement("beforebegin", wrapper);
       updateSortingAttributes();
+      updateMoveButtons();
       showAlert("Áthelyezve", "success");
     } catch (error) {
       showAlert("Nem sikerült áthelyezni", "error");
@@ -160,6 +161,7 @@ function initMoveDownButton(button) {
       await swapImageOrder(id, nextId);
       nextWrapper.insertAdjacentElement("afterend", wrapper);
       updateSortingAttributes();
+      updateMoveButtons();
       showAlert("Áthelyezve", "success");
     } catch (error) {
       showAlert("Nem sikerült áthelyezni", "error");
@@ -173,6 +175,67 @@ function updateSortingAttributes() {
   const wrappers = gallery.querySelectorAll("div[data-id]");
   wrappers.forEach((w, index) => {
     w.dataset.sorting = String(index + 1);
+  });
+}
+function updateMoveButtons() {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const wrappers = Array.from(
+    gallery.querySelectorAll("div[data-id]")
+  );
+  wrappers.forEach((wrapper, index) => {
+    const isFirst = index === 0;
+    const isLast = index === wrappers.length - 1;
+    const id = wrapper.dataset.id;
+    if (!id) return;
+    const authDiv = wrapper.querySelector("div[data-auth]");
+    if (!authDiv) return;
+    const rightJoin = authDiv.querySelectorAll(".join")[1];
+    if (!rightJoin) return;
+    let moveUpBtn = wrapper.querySelector(
+      "button[data-move-up]"
+    );
+    if (isFirst) {
+      moveUpBtn?.remove();
+    } else if (!moveUpBtn) {
+      const template = getTemplate();
+      if (template) {
+        const templateContent = template.content.cloneNode(
+          true
+        );
+        moveUpBtn = templateContent.querySelector(
+          "button[data-move-up]"
+        );
+        if (moveUpBtn) {
+          moveUpBtn.setAttribute("data-move-up", id);
+          if (getEditMode()) moveUpBtn.classList.remove("hidden");
+          rightJoin.appendChild(moveUpBtn);
+          initMoveUpButton(moveUpBtn);
+        }
+      }
+    }
+    let moveDownBtn = wrapper.querySelector(
+      "button[data-move-down]"
+    );
+    if (isLast) {
+      moveDownBtn?.remove();
+    } else if (!moveDownBtn) {
+      const template = getTemplate();
+      if (template) {
+        const templateContent = template.content.cloneNode(
+          true
+        );
+        moveDownBtn = templateContent.querySelector(
+          "button[data-move-down]"
+        );
+        if (moveDownBtn) {
+          moveDownBtn.setAttribute("data-move-down", id);
+          if (getEditMode()) moveDownBtn.classList.remove("hidden");
+          rightJoin.appendChild(moveDownBtn);
+          initMoveDownButton(moveDownBtn);
+        }
+      }
+    }
   });
 }
 function initDeleteButtons() {
