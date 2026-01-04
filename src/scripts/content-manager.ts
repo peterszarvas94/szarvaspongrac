@@ -78,9 +78,5 @@ async function updateLinksOnPage() {
   });
 }
 
-async function init() {
-  await updateContentsOnPage();
-  await updateLinksOnPage();
-}
-
-init();
+await updateContentsOnPage();
+await updateLinksOnPage();

@@ -1,5 +1,8 @@
 import { TypedEvent } from "./event";
 
+const container = document.querySelector<HTMLDivElement>("[data-toaster]");
+const template = document.querySelector<HTMLTemplateElement>("#toast-template");
+
 export type ToastLevel = "info" | "success" | "warning" | "error";
 
 export interface ToastDetail {
@@ -27,39 +30,32 @@ const levelClasses: Record<ToastLevel, string> = {
   error: "alert-error",
 };
 
-function initToaster() {
-  const container = document.querySelector<HTMLDivElement>("[data-toaster]");
-  const template =
-    document.querySelector<HTMLTemplateElement>("#toast-template");
-  if (!container || !template) return;
+window.addEventListener(ToastEvent.eventName, ((e: ToastEvent) => {
+  const { message, level } = e.detail;
 
-  window.addEventListener(ToastEvent.eventName, ((e: ToastEvent) => {
-    const { message, level } = e.detail;
+  const toast = template?.content.cloneNode(true) as
+    | DocumentFragment
+    | undefined;
+  const alertDiv = toast?.querySelector<HTMLDivElement>(".alert");
+  const span = toast?.querySelector("span")!;
+  const icons = toast?.querySelectorAll<SVGElement>("[data-icon]");
 
-    const toast = template.content.cloneNode(true) as DocumentFragment;
-    const alertDiv = toast.querySelector<HTMLDivElement>(".alert")!;
-    const span = toast.querySelector("span")!;
-    const icons = toast.querySelectorAll<SVGElement>("[data-icon]");
+  alertDiv?.classList.add(levelClasses[level]);
+  span.textContent = message;
 
-    alertDiv.classList.add(levelClasses[level]);
-    span.textContent = message;
+  icons?.forEach((icon) => {
+    if (icon.dataset.icon === level) {
+      icon.classList.remove("hidden");
+    }
+  });
 
-    icons.forEach((icon) => {
-      if (icon.dataset.icon === level) {
-        icon.classList.remove("hidden");
-      }
-    });
+  const removeToast = () => {
+    alertDiv?.classList.add("opacity-0", "transition-opacity", "duration-300");
+    setTimeout(() => alertDiv?.remove(), 300);
+  };
 
-    const removeToast = () => {
-      alertDiv.classList.add("opacity-0", "transition-opacity", "duration-300");
-      setTimeout(() => alertDiv.remove(), 300);
-    };
+  alertDiv?.addEventListener("click", removeToast);
+  if (toast && container) container.appendChild(toast);
 
-    alertDiv.addEventListener("click", removeToast);
-    container.appendChild(toast);
-
-    setTimeout(removeToast, TOAST_DURATION);
-  }) as EventListener);
-}
-
-initToaster();
+  setTimeout(removeToast, TOAST_DURATION);
+}) as EventListener);

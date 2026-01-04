@@ -333,12 +333,8 @@ function initDragAndDrop() {
   wrappers.forEach(addDragListeners);
 }
 
-async function init() {
-  await initGallery();
-  initDeleteButtons();
-  initCoverButtons();
-  initPopover();
-  initDragAndDrop();
-}
-
-init();
+await initGallery();
+initDeleteButtons();
+initCoverButtons();
+initPopover();
+initDragAndDrop();

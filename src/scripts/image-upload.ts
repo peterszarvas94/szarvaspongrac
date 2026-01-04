@@ -3,11 +3,13 @@ import { pb, getURLFromRecord } from "@scripts/db";
 import { showAlert } from "./toaster";
 import { getEditMode } from "./edit";
 
-let dt = new DataTransfer();
+const form = document.querySelector<HTMLFormElement>("[data-upload]");
+const input = document.querySelector<HTMLInputElement>("#file-upload");
+const label = document.querySelector<HTMLLabelElement>(
+  "label[for='file-upload']",
+);
 
-function getInput() {
-  return document.querySelector<HTMLInputElement>("#file-upload");
-}
+let dt = new DataTransfer();
 
 function appendFilesToDt(newFiles: File[]) {
   newFiles.forEach((f) => {
@@ -19,7 +21,6 @@ function appendFilesToDt(newFiles: File[]) {
 }
 
 function removeFile(file: File) {
-  const input = getInput();
   if (!input) return;
 
   const newDt = new DataTransfer();
@@ -51,7 +52,6 @@ function updateFileList() {
 }
 
 function updateFiles(files: File[]) {
-  const input = getInput();
   if (!input) return;
 
   appendFilesToDt(files);
@@ -59,8 +59,8 @@ function updateFiles(files: File[]) {
   updateFileList();
 }
 
-function updateLabelClasses(label: HTMLLabelElement, active: boolean) {
-  const div = label.querySelector("div");
+function updateLabelClasses(active: boolean) {
+  const div = label?.querySelector("div");
   if (!div) return;
 
   div.classList.toggle("border-base-300", !active);
@@ -169,7 +169,6 @@ function appendImageToGallery(id: string, url: string, sorting: number) {
 
 function clearFileInput() {
   dt = new DataTransfer();
-  const input = getInput();
   if (input) input.files = dt.files;
   updateFileList();
 }
@@ -214,51 +213,40 @@ async function uploadFiles(key: string, files: File[]) {
   }
 }
 
-function init() {
-  const form = document.querySelector<HTMLFormElement>("[data-upload]");
-  const input = getInput();
-  const label = document.querySelector<HTMLLabelElement>(
-    "label[for='file-upload']",
-  );
-  if (!form || !input || !label) return;
+label?.addEventListener("dragenter", (e) => {
+  e.preventDefault();
+  updateLabelClasses(true);
+});
 
-  label.addEventListener("dragenter", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, true);
-  });
+label?.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  updateLabelClasses(true);
+});
 
-  label.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, true);
-  });
+label?.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  updateLabelClasses(false);
+});
 
-  label.addEventListener("dragleave", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, false);
-  });
+label?.addEventListener("drop", (e) => {
+  e.preventDefault();
+  updateLabelClasses(false);
+  updateFiles(Array.from(e.dataTransfer?.files ?? []));
+});
 
-  label.addEventListener("drop", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, false);
-    updateFiles(Array.from(e.dataTransfer?.files ?? []));
-  });
+input?.addEventListener("change", () => {
+  updateFiles(input.files ? Array.from(input.files) : []);
+});
 
-  input.addEventListener("change", () => {
-    updateFiles(input.files ? Array.from(input.files) : []);
-  });
+form?.addEventListener("submit", async (e) => {
+  e.preventDefault();
 
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
+  const files = new FormData(form).getAll("files") as File[];
+  if (files.length === 0 || files[0].name === "") {
+    showAlert("Nincs kép kiválasztva", "warning");
+    return;
+  }
 
-    const files = new FormData(form).getAll("files") as File[];
-    if (files.length === 0 || files[0].name === "") {
-      showAlert("Nincs kép kiválasztva", "warning");
-      return;
-    }
-
-    const key = form.dataset.upload;
-    if (key) await uploadFiles(key, files);
-  });
-}
-
-init();
+  const key = form.dataset.upload;
+  if (key) await uploadFiles(key, files);
+});

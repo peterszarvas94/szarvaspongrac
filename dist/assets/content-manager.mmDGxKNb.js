@@ -49,10 +49,7 @@ async function updateLinksOnPage() {
     if (span) span.innerHTML = item.text ?? "";
   });
 }
-async function init() {
-  await updateContentsOnPage();
-  await updateLinksOnPage();
-}
-init();
+await updateContentsOnPage();
+await updateLinksOnPage();
 
 export { getCachedContent, updateContentsOnPage };

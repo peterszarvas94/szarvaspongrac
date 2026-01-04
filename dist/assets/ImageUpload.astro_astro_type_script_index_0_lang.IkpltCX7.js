@@ -1,8 +1,8 @@
 const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/db.B2Whiv5I.js","assets/pocketbase.BNTe72gt.js"])))=>i.map(i=>d[i]);
 import { pb, getURLFromRecord } from './db.B2Whiv5I.js';
-import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.C-PKG11V.js';
+import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.CGpTTeM8.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.DLVaAOnU.js';
+import './content-manager.mmDGxKNb.js';
 
 const scriptRel = 'modulepreload';const assetsURL = function(dep) { return "/"+dep };const seen = {};const __vitePreload = function preload(baseModule, deps, importerUrl) {
   let promise = Promise.resolve();
@@ -74,10 +74,12 @@ const scriptRel = 'modulepreload';const assetsURL = function(dep) { return "/"+d
   });
 };
 
+const form = document.querySelector("[data-upload]");
+const input = document.querySelector("#file-upload");
+const label = document.querySelector(
+  "label[for='file-upload']"
+);
 let dt = new DataTransfer();
-function getInput() {
-  return document.querySelector("#file-upload");
-}
 function appendFilesToDt(newFiles) {
   newFiles.forEach((f) => {
     const isDuplicate = [...dt.files].some(
@@ -87,7 +89,6 @@ function appendFilesToDt(newFiles) {
   });
 }
 function removeFile(file) {
-  const input = getInput();
   if (!input) return;
   const newDt = new DataTransfer();
   [...dt.files].forEach((f) => {
@@ -112,14 +113,13 @@ function updateFileList() {
   });
 }
 function updateFiles(files) {
-  const input = getInput();
   if (!input) return;
   appendFilesToDt(files);
   input.files = dt.files;
   updateFileList();
 }
-function updateLabelClasses(label, active) {
-  const div = label.querySelector("div");
+function updateLabelClasses(active) {
+  const div = label?.querySelector("div");
   if (!div) return;
   div.classList.toggle("border-base-300", !active);
   div.classList.toggle("border-base-content", active);
@@ -206,7 +206,6 @@ function appendImageToGallery(id, url, sorting) {
 }
 function clearFileInput() {
   dt = new DataTransfer();
-  const input = getInput();
   if (input) input.files = dt.files;
   updateFileList();
 }
@@ -243,42 +242,33 @@ async function uploadFiles(key, files) {
     showAlert("Nem sikerült a feltöltés", "error");
   }
 }
-function init() {
-  const form = document.querySelector("[data-upload]");
-  const input = getInput();
-  const label = document.querySelector(
-    "label[for='file-upload']"
-  );
-  if (!form || !input || !label) return;
-  label.addEventListener("dragenter", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, true);
-  });
-  label.addEventListener("dragover", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, true);
-  });
-  label.addEventListener("dragleave", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, false);
-  });
-  label.addEventListener("drop", (e) => {
-    e.preventDefault();
-    updateLabelClasses(label, false);
-    updateFiles(Array.from(e.dataTransfer?.files ?? []));
-  });
-  input.addEventListener("change", () => {
-    updateFiles(input.files ? Array.from(input.files) : []);
-  });
-  form.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const files = new FormData(form).getAll("files");
-    if (files.length === 0 || files[0].name === "") {
-      showAlert("Nincs kép kiválasztva", "warning");
-      return;
-    }
-    const key = form.dataset.upload;
-    if (key) await uploadFiles(key, files);
-  });
-}
-init();
+label?.addEventListener("dragenter", (e) => {
+  e.preventDefault();
+  updateLabelClasses(true);
+});
+label?.addEventListener("dragover", (e) => {
+  e.preventDefault();
+  updateLabelClasses(true);
+});
+label?.addEventListener("dragleave", (e) => {
+  e.preventDefault();
+  updateLabelClasses(false);
+});
+label?.addEventListener("drop", (e) => {
+  e.preventDefault();
+  updateLabelClasses(false);
+  updateFiles(Array.from(e.dataTransfer?.files ?? []));
+});
+input?.addEventListener("change", () => {
+  updateFiles(input.files ? Array.from(input.files) : []);
+});
+form?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const files = new FormData(form).getAll("files");
+  if (files.length === 0 || files[0].name === "") {
+    showAlert("Nincs kép kiválasztva", "warning");
+    return;
+  }
+  const key = form.dataset.upload;
+  if (key) await uploadFiles(key, files);
+});

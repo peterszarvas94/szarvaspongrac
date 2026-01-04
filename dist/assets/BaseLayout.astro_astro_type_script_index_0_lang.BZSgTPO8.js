@@ -1,8 +1,8 @@
 import { login, logout, isAuthenticated, getCurrentUser } from './db.B2Whiv5I.js';
-import './content-manager.DLVaAOnU.js';
+import './content-manager.mmDGxKNb.js';
 import './pocketbase.BNTe72gt.js';
 
-function updateAuthForm() {
+function initAuthForm() {
   const form = document.getElementById("login-form");
   if (!form) return;
   const emailInput = form.querySelector("#email");
@@ -55,22 +55,16 @@ function initLogoutButtons() {
     });
   }
 }
-function init() {
-  updateAuthForm();
-  initLogoutButtons();
-}
-init();
+initAuthForm();
+initLogoutButtons();
 
-function initFooter() {
-  const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
-  const yearElement = document.querySelector("[data-copyright-year]");
-  const startYear = 2025;
-  if (yearElement) {
-    if (currentYear === startYear) {
-      yearElement.textContent = String(startYear);
-    } else {
-      yearElement.textContent = `${startYear}-${currentYear}`;
-    }
+const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
+const yearElement = document.querySelector("[data-copyright-year]");
+const startYear = 2025;
+if (yearElement) {
+  if (currentYear === startYear) {
+    yearElement.textContent = String(startYear);
+  } else {
+    yearElement.textContent = `${startYear}-${currentYear}`;
   }
 }
-initFooter();

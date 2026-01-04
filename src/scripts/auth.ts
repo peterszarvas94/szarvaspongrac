@@ -1,6 +1,6 @@
 import { getCurrentUser, isAuthenticated, login, logout } from "@scripts/db";
 
-export function updateAuthForm() {
+function initAuthForm() {
   const form = document.getElementById("login-form") as HTMLFormElement | null;
   if (!form) return;
 
@@ -62,9 +62,5 @@ export function initLogoutButtons() {
   }
 }
 
-function init() {
-  updateAuthForm();
-  initLogoutButtons();
-}
-
-init();
+initAuthForm();
+initLogoutButtons();

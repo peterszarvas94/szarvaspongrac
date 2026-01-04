@@ -1,8 +1,8 @@
 import { getImageUrls, deleteImage, setCoverImage, reorderImages } from './db.B2Whiv5I.js';
-import { getEditMode, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.C-PKG11V.js';
+import { getEditMode, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.CGpTTeM8.js';
 import { confirm } from './confirm-dialog.CNJzHFJm.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.DLVaAOnU.js';
+import './content-manager.mmDGxKNb.js';
 
 function getGallery() {
   return document.querySelector("[data-images]");
@@ -248,11 +248,8 @@ function initDragAndDrop() {
   const wrappers = gallery.querySelectorAll("div[data-id]");
   wrappers.forEach(addDragListeners);
 }
-async function init() {
-  await initGallery();
-  initDeleteButtons();
-  initCoverButtons();
-  initPopover();
-  initDragAndDrop();
-}
-init();
+await initGallery();
+initDeleteButtons();
+initCoverButtons();
+initPopover();
+initDragAndDrop();

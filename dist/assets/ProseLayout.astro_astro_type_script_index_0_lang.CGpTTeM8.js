@@ -1,5 +1,5 @@
 import { saveContent } from './db.B2Whiv5I.js';
-import { updateContentsOnPage } from './content-manager.DLVaAOnU.js';
+import { updateContentsOnPage } from './content-manager.mmDGxKNb.js';
 import './pocketbase.BNTe72gt.js';
 
 class TypedEvent extends CustomEvent {
@@ -14,6 +14,8 @@ class TypedEvent extends CustomEvent {
   }
 }
 
+const container = document.querySelector("[data-toaster]");
+const template = document.querySelector("#toast-template");
 class ToastEvent extends TypedEvent {
   static eventName = "toast";
   constructor(message, level = "info") {
@@ -30,33 +32,27 @@ const levelClasses = {
   warning: "alert-warning",
   error: "alert-error"
 };
-function initToaster() {
-  const container = document.querySelector("[data-toaster]");
-  const template = document.querySelector("#toast-template");
-  if (!container || !template) return;
-  window.addEventListener(ToastEvent.eventName, ((e) => {
-    const { message, level } = e.detail;
-    const toast = template.content.cloneNode(true);
-    const alertDiv = toast.querySelector(".alert");
-    const span = toast.querySelector("span");
-    const icons = toast.querySelectorAll("[data-icon]");
-    alertDiv.classList.add(levelClasses[level]);
-    span.textContent = message;
-    icons.forEach((icon) => {
-      if (icon.dataset.icon === level) {
-        icon.classList.remove("hidden");
-      }
-    });
-    const removeToast = () => {
-      alertDiv.classList.add("opacity-0", "transition-opacity", "duration-300");
-      setTimeout(() => alertDiv.remove(), 300);
-    };
-    alertDiv.addEventListener("click", removeToast);
-    container.appendChild(toast);
-    setTimeout(removeToast, TOAST_DURATION);
-  }));
-}
-initToaster();
+window.addEventListener(ToastEvent.eventName, ((e) => {
+  const { message, level } = e.detail;
+  const toast = template?.content.cloneNode(true);
+  const alertDiv = toast?.querySelector(".alert");
+  const span = toast?.querySelector("span");
+  const icons = toast?.querySelectorAll("[data-icon]");
+  alertDiv?.classList.add(levelClasses[level]);
+  span.textContent = message;
+  icons?.forEach((icon) => {
+    if (icon.dataset.icon === level) {
+      icon.classList.remove("hidden");
+    }
+  });
+  const removeToast = () => {
+    alertDiv?.classList.add("opacity-0", "transition-opacity", "duration-300");
+    setTimeout(() => alertDiv?.remove(), 300);
+  };
+  alertDiv?.addEventListener("click", removeToast);
+  if (toast && container) container.appendChild(toast);
+  setTimeout(removeToast, TOAST_DURATION);
+}));
 
 let editMode = false;
 class EditModeEvent extends TypedEvent {
@@ -123,12 +119,9 @@ async function handleSave(button) {
     showAlert("Mentés sikertelen", "error");
   }
 }
-function initEdit() {
-  initEditButtons();
-  initSaveButtons();
-  updateEditUI();
-}
-initEdit();
+initEditButtons();
+initSaveButtons();
+updateEditUI();
 window.addEventListener(EditModeEvent.eventName, updateEditUI);
 
 export { EditModeEvent, getEditMode, showAlert };

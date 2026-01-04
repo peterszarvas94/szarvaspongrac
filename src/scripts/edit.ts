@@ -88,11 +88,8 @@ async function handleSave(button: HTMLButtonElement) {
   }
 }
 
-function initEdit() {
-  initEditButtons();
-  initSaveButtons();
-  updateEditUI();
-}
+initEditButtons();
+initSaveButtons();
+updateEditUI();
 
-initEdit();
 window.addEventListener(EditModeEvent.eventName, updateEditUI);
