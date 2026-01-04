@@ -184,9 +184,11 @@ function initCoverButtons() {
   coverButtons.forEach((button) => initCoverButton(button));
 }
 function initMoveButtons() {
-  const moveUpButtons = document.querySelectorAll("[data-move-up]");
+  const gallery = getGallery();
+  if (!gallery) return;
+  const moveUpButtons = gallery.querySelectorAll("[data-move-up]");
   moveUpButtons.forEach((button) => initMoveUpButton(button));
-  const moveDownButtons = document.querySelectorAll("[data-move-down]");
+  const moveDownButtons = gallery.querySelectorAll("[data-move-down]");
   moveDownButtons.forEach((button) => initMoveDownButton(button));
 }
 async function initGallery() {

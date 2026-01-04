@@ -164,6 +164,7 @@ function initMoveUpButton(button: HTMLButtonElement) {
       await swapImageOrder(id, prevId);
       prevWrapper.insertAdjacentElement("beforebegin", wrapper);
       updateSortingAttributes();
+      updateMoveButtons();
       showAlert("Áthelyezve", "success");
     } catch (error) {
       showAlert("Nem sikerült áthelyezni", "error");
@@ -201,6 +202,7 @@ function initMoveDownButton(button: HTMLButtonElement) {
       await swapImageOrder(id, nextId);
       nextWrapper.insertAdjacentElement("afterend", wrapper);
       updateSortingAttributes();
+      updateMoveButtons();
       showAlert("Áthelyezve", "success");
     } catch (error) {
       showAlert("Nem sikerült áthelyezni", "error");
@@ -219,6 +221,78 @@ function updateSortingAttributes() {
   });
 }
 
+function updateMoveButtons() {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const wrappers = Array.from(
+    gallery.querySelectorAll<HTMLDivElement>("div[data-id]"),
+  );
+
+  wrappers.forEach((wrapper, index) => {
+    const isFirst = index === 0;
+    const isLast = index === wrappers.length - 1;
+    const id = wrapper.dataset.id;
+    if (!id) return;
+
+    const authDiv = wrapper.querySelector("div[data-auth]");
+    if (!authDiv) return;
+
+    const rightJoin = authDiv.querySelectorAll(".join")[1];
+    if (!rightJoin) return;
+
+    // Handle move up button
+    let moveUpBtn = wrapper.querySelector<HTMLButtonElement>(
+      "button[data-move-up]",
+    );
+    if (isFirst) {
+      moveUpBtn?.remove();
+    } else if (!moveUpBtn) {
+      // Add move up button
+      const template = getTemplate();
+      if (template) {
+        const templateContent = template.content.cloneNode(
+          true,
+        ) as DocumentFragment;
+        moveUpBtn = templateContent.querySelector<HTMLButtonElement>(
+          "button[data-move-up]",
+        );
+        if (moveUpBtn) {
+          moveUpBtn.setAttribute("data-move-up", id);
+          if (getEditMode()) moveUpBtn.classList.remove("hidden");
+          rightJoin.appendChild(moveUpBtn);
+          initMoveUpButton(moveUpBtn);
+        }
+      }
+    }
+
+    // Handle move down button
+    let moveDownBtn = wrapper.querySelector<HTMLButtonElement>(
+      "button[data-move-down]",
+    );
+    if (isLast) {
+      moveDownBtn?.remove();
+    } else if (!moveDownBtn) {
+      // Add move down button
+      const template = getTemplate();
+      if (template) {
+        const templateContent = template.content.cloneNode(
+          true,
+        ) as DocumentFragment;
+        moveDownBtn = templateContent.querySelector<HTMLButtonElement>(
+          "button[data-move-down]",
+        );
+        if (moveDownBtn) {
+          moveDownBtn.setAttribute("data-move-down", id);
+          if (getEditMode()) moveDownBtn.classList.remove("hidden");
+          rightJoin.appendChild(moveDownBtn);
+          initMoveDownButton(moveDownBtn);
+        }
+      }
+    }
+  });
+}
+
 function initDeleteButtons() {
   const deleteButtons =
     document.querySelectorAll<HTMLButtonElement>("[data-delete]");
@@ -232,12 +306,15 @@ function initCoverButtons() {
 }
 
 function initMoveButtons() {
+  const gallery = getGallery();
+  if (!gallery) return;
+
   const moveUpButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-move-up]");
+    gallery.querySelectorAll<HTMLButtonElement>("[data-move-up]");
   moveUpButtons.forEach((button) => initMoveUpButton(button));
 
   const moveDownButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-move-down]");
+    gallery.querySelectorAll<HTMLButtonElement>("[data-move-down]");
   moveDownButtons.forEach((button) => initMoveDownButton(button));
 }
 
