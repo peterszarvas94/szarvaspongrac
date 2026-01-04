@@ -1,12 +1,17 @@
 import {
   deleteImage,
+  getCoverImage,
   getImageUrls,
   setCoverImage,
   swapImageOrder,
 } from "@scripts/db";
-import { showAlert } from "./toaster";
-import { getEditMode } from "./edit";
-import { confirm } from "./confirm-dialog";
+import { showAlert } from "@scripts/toaster";
+import { updateEditUI } from "@scripts/edit";
+import { confirm } from "@scripts/confirm-dialog";
+
+function getPopover() {
+  return document.querySelector<HTMLDivElement>("#image-popover");
+}
 
 function getGallery() {
   return document.querySelector<HTMLDivElement>("[data-images]");
@@ -19,50 +24,15 @@ function getTemplate() {
 }
 
 function getWrapper(id: string) {
-  return getGallery()?.querySelector<HTMLDivElement>(`div[data-id="${id}"]`);
+  return getWrappers().find((wrapper) => wrapper.dataset.id === id);
 }
 
-function removeButtonsFromWrapper(wrapper: HTMLDivElement) {
-  wrapper.querySelector<HTMLButtonElement>("button[data-delete]")?.remove();
-  wrapper.querySelector<HTMLButtonElement>("button[data-cover]")?.remove();
-}
+function getWrappers() {
+  const gallery = getGallery();
+  if (!gallery) return [];
 
-function addButtonsToWrapper(wrapper: HTMLDivElement) {
-  const id = wrapper.dataset.id;
-  const template = getTemplate();
-  const authDiv = wrapper.querySelector("div[data-auth]");
-  if (!id || !template || !authDiv) return;
-
-  const templateContent = template.content.cloneNode(true) as DocumentFragment;
-
-  const deleteBtn = templateContent.querySelector<HTMLButtonElement>(
-    "button[data-delete]",
-  );
-  if (deleteBtn) {
-    deleteBtn.dataset.delete = id;
-    if (getEditMode()) deleteBtn.classList.remove("hidden");
-    authDiv.appendChild(deleteBtn);
-    initDeleteButton(deleteBtn);
-  }
-
-  const coverBtn =
-    templateContent.querySelector<HTMLButtonElement>("button[data-cover]");
-  if (coverBtn) {
-    coverBtn.dataset.cover = id;
-    if (getEditMode()) coverBtn.classList.remove("hidden");
-    authDiv.appendChild(coverBtn);
-    initCoverButton(coverBtn);
-  }
-}
-
-function updateCoverUI(oldCoverId: string | null, newCoverId: string) {
-  if (oldCoverId) {
-    const oldWrapper = getWrapper(oldCoverId);
-    if (oldWrapper) addButtonsToWrapper(oldWrapper);
-  }
-
-  const newWrapper = getWrapper(newCoverId);
-  if (newWrapper) removeButtonsFromWrapper(newWrapper);
+  const wrappers = gallery.querySelectorAll<HTMLDivElement>("[data-id]");
+  return Array.from(wrappers);
 }
 
 function initDeleteButton(button: HTMLButtonElement) {
@@ -70,8 +40,11 @@ function initDeleteButton(button: HTMLButtonElement) {
   if (!id) return;
 
   button.addEventListener("click", async (e) => {
-    e.stopPropagation();
     e.preventDefault();
+    e.stopPropagation();
+
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
 
     const confirmed = await confirm({
       title: "Kép törlése",
@@ -83,16 +56,50 @@ function initDeleteButton(button: HTMLButtonElement) {
 
     try {
       await deleteImage(id);
+      wrapper.remove();
       showAlert("Törölve", "success");
-      getWrapper(id)?.remove();
-    } catch (error) {
+      // TODO: change move buttons?
+    } catch {
       showAlert("Nem sikerült törölni a képet", "error");
-      console.error({ msg: "Error deleting the image", id, error });
     }
   });
 }
 
-function initCoverButton(button: HTMLButtonElement) {
+function showButtons(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const coverBtn =
+    wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
+  if (!coverBtn) return;
+
+  const deleteBtn = wrapper.querySelector<HTMLButtonElement>(
+    "button[data-delete]",
+  );
+  if (!deleteBtn) return;
+
+  coverBtn.classList.remove("hidden");
+  deleteBtn.classList.remove("hidden");
+}
+
+function hideButtons(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const coverBtn =
+    wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
+  if (!coverBtn) return;
+
+  const deleteBtn = wrapper.querySelector<HTMLButtonElement>(
+    "button[data-delete]",
+  );
+  if (!deleteBtn) return;
+
+  coverBtn.classList.add("hidden");
+  deleteBtn.classList.add("hidden");
+}
+
+function initCoverButton(button: HTMLButtonElement, isCurrentCover: boolean) {
   const gallery = getGallery();
   if (!gallery) return;
 
@@ -100,9 +107,16 @@ function initCoverButton(button: HTMLButtonElement) {
   const id = button.dataset.cover;
   if (!id) return;
 
+  if (isCurrentCover) {
+    hideButtons(id);
+  }
+
   button.addEventListener("click", async (e) => {
-    e.stopPropagation();
     e.preventDefault();
+    e.stopPropagation();
+
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
 
     const confirmed = await confirm({
       title: "Borítókép beállítása",
@@ -112,25 +126,12 @@ function initCoverButton(button: HTMLButtonElement) {
     });
     if (!confirmed) return;
 
-    // Find old cover by checking which wrapper has no buttons
-    const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
-    let foundOldCoverId: string | null = null;
-    for (const w of wrappers) {
-      const hasDeleteBtn = w.querySelector("button[data-delete]");
-      const hasCoverBtn = w.querySelector("button[data-cover]");
-      if (!hasDeleteBtn && !hasCoverBtn && w.dataset.id) {
-        foundOldCoverId = w.dataset.id;
-        break;
-      }
-    }
-
     try {
-      await setCoverImage(id, key);
-      updateCoverUI(foundOldCoverId, id);
-      showAlert("Borítókép beállítva", "success");
-    } catch (error) {
+      const { id: oldCoverId } = await setCoverImage(id, key);
+      hideButtons(id);
+      showButtons(oldCoverId);
+    } catch {
       showAlert("Nem sikerült beállítani a borítóképet", "error");
-      console.error({ msg: "Error setting cover image", id, error });
     }
   });
 }
@@ -143,33 +144,27 @@ function initMoveUpButton(button: HTMLButtonElement) {
   if (!id) return;
 
   button.addEventListener("click", async (e) => {
-    e.stopPropagation();
     e.preventDefault();
+    e.stopPropagation();
 
     const wrapper = getWrapper(id);
     if (!wrapper) return;
 
-    // Get all wrappers and find current position
-    const wrappers = Array.from(
-      gallery.querySelectorAll<HTMLDivElement>("div[data-id]"),
+    const wrappers = getWrappers();
+    const currentIndex = wrappers.findIndex(
+      (wrapper) => wrapper.dataset.id === id,
     );
-    const currentIndex = wrappers.indexOf(wrapper);
-    if (currentIndex <= 0) return;
+    const prevIndex = currentIndex - 1;
+    if (prevIndex < 0) return;
 
-    const prevWrapper = wrappers[currentIndex - 1];
+    const prevWrapper = wrappers[prevIndex];
     const prevId = prevWrapper.dataset.id;
     if (!prevId) return;
 
-    try {
-      await swapImageOrder(id, prevId);
-      prevWrapper.insertAdjacentElement("beforebegin", wrapper);
-      updateSortingAttributes();
-      updateMoveButtons();
-      showAlert("Áthelyezve", "success");
-    } catch (error) {
-      showAlert("Nem sikerült áthelyezni", "error");
-      console.error({ msg: "Error moving image up", id, error });
-    }
+    await swapImageOrder(id, prevId);
+    prevWrapper.insertAdjacentElement("beforebegin", wrapper);
+
+    // TODO: change buttons?
   });
 }
 
@@ -181,141 +176,28 @@ function initMoveDownButton(button: HTMLButtonElement) {
   if (!id) return;
 
   button.addEventListener("click", async (e) => {
-    e.stopPropagation();
     e.preventDefault();
+    e.stopPropagation();
 
     const wrapper = getWrapper(id);
     if (!wrapper) return;
 
-    // Get all wrappers and find current position
-    const wrappers = Array.from(
-      gallery.querySelectorAll<HTMLDivElement>("div[data-id]"),
+    const wrappers = getWrappers();
+    const currentIndex = wrappers.findIndex(
+      (wrapper) => wrapper.dataset.id === id,
     );
-    const currentIndex = wrappers.indexOf(wrapper);
-    if (currentIndex >= wrappers.length - 1) return;
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= wrappers.length) return;
 
-    const nextWrapper = wrappers[currentIndex + 1];
+    const nextWrapper = wrappers[nextIndex];
     const nextId = nextWrapper.dataset.id;
     if (!nextId) return;
 
-    try {
-      await swapImageOrder(id, nextId);
-      nextWrapper.insertAdjacentElement("afterend", wrapper);
-      updateSortingAttributes();
-      updateMoveButtons();
-      showAlert("Áthelyezve", "success");
-    } catch (error) {
-      showAlert("Nem sikerült áthelyezni", "error");
-      console.error({ msg: "Error moving image down", id, error });
-    }
+    await swapImageOrder(id, nextId);
+    nextWrapper.insertAdjacentElement("afterend", wrapper);
+
+    // TODO: change buttons?
   });
-}
-
-function updateSortingAttributes() {
-  const gallery = getGallery();
-  if (!gallery) return;
-
-  const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
-  wrappers.forEach((w, index) => {
-    w.dataset.sorting = String(index + 1);
-  });
-}
-
-function updateMoveButtons() {
-  const gallery = getGallery();
-  if (!gallery) return;
-
-  const wrappers = Array.from(
-    gallery.querySelectorAll<HTMLDivElement>("div[data-id]"),
-  );
-
-  wrappers.forEach((wrapper, index) => {
-    const isFirst = index === 0;
-    const isLast = index === wrappers.length - 1;
-    const id = wrapper.dataset.id;
-    if (!id) return;
-
-    const authDiv = wrapper.querySelector("div[data-auth]");
-    if (!authDiv) return;
-
-    const rightJoin = authDiv.querySelectorAll(".join")[1];
-    if (!rightJoin) return;
-
-    // Handle move up button
-    let moveUpBtn = wrapper.querySelector<HTMLButtonElement>(
-      "button[data-move-up]",
-    );
-    if (isFirst) {
-      moveUpBtn?.remove();
-    } else if (!moveUpBtn) {
-      // Add move up button
-      const template = getTemplate();
-      if (template) {
-        const templateContent = template.content.cloneNode(
-          true,
-        ) as DocumentFragment;
-        moveUpBtn = templateContent.querySelector<HTMLButtonElement>(
-          "button[data-move-up]",
-        );
-        if (moveUpBtn) {
-          moveUpBtn.setAttribute("data-move-up", id);
-          if (getEditMode()) moveUpBtn.classList.remove("hidden");
-          rightJoin.appendChild(moveUpBtn);
-          initMoveUpButton(moveUpBtn);
-        }
-      }
-    }
-
-    // Handle move down button
-    let moveDownBtn = wrapper.querySelector<HTMLButtonElement>(
-      "button[data-move-down]",
-    );
-    if (isLast) {
-      moveDownBtn?.remove();
-    } else if (!moveDownBtn) {
-      // Add move down button
-      const template = getTemplate();
-      if (template) {
-        const templateContent = template.content.cloneNode(
-          true,
-        ) as DocumentFragment;
-        moveDownBtn = templateContent.querySelector<HTMLButtonElement>(
-          "button[data-move-down]",
-        );
-        if (moveDownBtn) {
-          moveDownBtn.setAttribute("data-move-down", id);
-          if (getEditMode()) moveDownBtn.classList.remove("hidden");
-          rightJoin.appendChild(moveDownBtn);
-          initMoveDownButton(moveDownBtn);
-        }
-      }
-    }
-  });
-}
-
-function initDeleteButtons() {
-  const deleteButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-delete]");
-  deleteButtons.forEach((button) => initDeleteButton(button));
-}
-
-function initCoverButtons() {
-  const coverButtons =
-    document.querySelectorAll<HTMLButtonElement>("[data-cover]");
-  coverButtons.forEach((button) => initCoverButton(button));
-}
-
-function initMoveButtons() {
-  const gallery = getGallery();
-  if (!gallery) return;
-
-  const moveUpButtons =
-    gallery.querySelectorAll<HTMLButtonElement>("[data-move-up]");
-  moveUpButtons.forEach((button) => initMoveUpButton(button));
-
-  const moveDownButtons =
-    gallery.querySelectorAll<HTMLButtonElement>("[data-move-down]");
-  moveDownButtons.forEach((button) => initMoveDownButton(button));
 }
 
 async function initGallery() {
@@ -323,90 +205,74 @@ async function initGallery() {
   const template = getTemplate();
   if (!gallery || !template) return;
 
-  const key = gallery.dataset.images ?? "";
-  const images = await getImageUrls(key);
+  const key = gallery.dataset.images;
+  if (!key) return;
 
-  // Sort images by sorting field
+  const images = await getImageUrls(key);
   images.sort((a, b) => a.sorting - b.sorting);
 
-  for (let i = 0; i < images.length; i++) {
-    const image = images[i];
-    const isFirst = i === 0;
-    const isLast = i === images.length - 1;
+  const currentCover = await getCoverImage(key);
 
-    const element = template.content.cloneNode(true) as DocumentFragment;
-    const wrapper = element.firstElementChild as HTMLDivElement | null;
-    if (!wrapper) continue;
+  images.forEach((image) => {
+    const frag = template.content.cloneNode(true) as DocumentFragment;
+    const wrapper = frag.firstElementChild as HTMLDivElement;
 
-    wrapper.dataset.sorting = String(image.sorting);
     wrapper.dataset.id = image.id;
+    wrapper.dataset.sorting = String(image.sorting);
+    wrapper.dataset.cover = image.cover ? "true" : "false";
 
-    const img = wrapper.querySelector("img");
-    img?.setAttribute("src", image.url);
+    const img = wrapper.querySelector<HTMLImageElement>("img");
+    if (!img) return;
 
-    const deleteButton = wrapper.querySelector<HTMLButtonElement>(
-      "button[data-delete]",
+    img.setAttribute("src", image.url);
+
+    const popoverBtn = wrapper.querySelector<HTMLButtonElement>(
+      "[commandfor=image-popover]",
     );
-    deleteButton?.setAttribute("data-delete", image.id);
-    if (image.cover) deleteButton?.remove();
+    if (!popoverBtn) return;
 
-    const coverButton =
-      wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
-    coverButton?.setAttribute("data-cover", image.id);
-    if (image.cover) coverButton?.remove();
+    const deleteBtn = wrapper.querySelector<HTMLButtonElement>("[data-delete]");
+    if (!deleteBtn) return;
 
-    const moveUpButton = wrapper.querySelector<HTMLButtonElement>(
-      "button[data-move-up]",
-    );
-    if (isFirst) {
-      moveUpButton?.remove();
-    } else {
-      moveUpButton?.setAttribute("data-move-up", image.id);
-    }
+    const coverBtn = wrapper.querySelector<HTMLButtonElement>("[data-cover]");
+    if (!coverBtn) return;
 
-    const moveDownButton = wrapper.querySelector<HTMLButtonElement>(
-      "button[data-move-down]",
-    );
-    if (isLast) {
-      moveDownButton?.remove();
-    } else {
-      moveDownButton?.setAttribute("data-move-down", image.id);
-    }
+    const upBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-up]");
+    if (!upBtn) return;
+
+    const downBtn =
+      wrapper.querySelector<HTMLButtonElement>("[data-move-down]");
+    if (!downBtn) return;
+
+    popoverBtn.dataset.url = image.url;
+    deleteBtn.dataset.delete = image.id;
+    coverBtn.dataset.cover = image.id;
+    upBtn.dataset.moveUp = image.id;
+    downBtn.dataset.moveDown = image.id;
+
+    updateEditUI();
+
+    initDeleteButton(deleteBtn);
+    initCoverButton(coverBtn, currentCover.id === image.id);
+    initMoveUpButton(upBtn);
+    initMoveDownButton(downBtn);
+    initPopoverButton(popoverBtn);
 
     gallery.appendChild(wrapper);
-  }
-}
-
-function initPopover() {
-  const popover = document.getElementById("image-popover") as HTMLDivElement;
-  if (!popover) return;
-
-  const popoverImg = popover.querySelector("img");
-  const buttons = document.querySelectorAll<HTMLButtonElement>(
-    "button[commandfor='image-popover']",
-  );
-
-  buttons.forEach((button) =>
-    button.addEventListener("click", () => {
-      const url = button.querySelector("img")?.getAttribute("src") || "";
-      popoverImg?.setAttribute("src", url);
-    }),
-  );
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      const openPopover = document.querySelector<HTMLElement>(
-        "[popover]:popover-open",
-      );
-      if (openPopover) {
-        openPopover.hidePopover();
-      }
-    }
   });
 }
 
+function initPopoverButton(popoverBtn: HTMLButtonElement) {
+  const popover = getPopover();
+  if (!popover) return;
+
+  const popoverImg = popover.querySelector<HTMLImageElement>("img");
+  if (!popoverImg) return;
+
+  const url = popoverBtn.dataset.url;
+  if (!url) return;
+
+  popoverImg.setAttribute("src", url);
+}
+
 await initGallery();
-initDeleteButtons();
-initCoverButtons();
-initMoveButtons();
-initPopover();

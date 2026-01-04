@@ -1,4 +1,4 @@
-import { TypedEvent } from "./event";
+import { TypedEvent } from "@scripts/event";
 
 const container = document.querySelector<HTMLDivElement>("[data-toaster]");
 const template = document.querySelector<HTMLTemplateElement>("#toast-template");

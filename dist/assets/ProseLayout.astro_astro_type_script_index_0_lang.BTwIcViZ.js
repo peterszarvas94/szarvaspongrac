@@ -7,9 +7,7 @@ class TypedEvent extends CustomEvent {
     super(eventName, {
       detail,
       bubbles: true,
-      // optional: allows event to bubble
       composed: true
-      // optional: allows crossing shadow DOM
     });
   }
 }

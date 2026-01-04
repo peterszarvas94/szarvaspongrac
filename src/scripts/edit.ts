@@ -1,7 +1,7 @@
 import { saveContent } from "@scripts/db";
-import { updateContentsOnPage } from "./content-manager";
-import { TypedEvent } from "./event";
-import { showAlert } from "./toaster";
+import { updateContentsOnPage } from "@scripts/content-manager";
+import { TypedEvent } from "@scripts/event";
+import { showAlert } from "@scripts/toaster";
 
 let editMode = false;
 
@@ -38,7 +38,7 @@ function initEditButtons() {
   });
 }
 
-function updateEditUI() {
+export function updateEditUI() {
   const editElements = document.querySelectorAll<HTMLElement>("[data-edit]");
 
   editElements.forEach((element) => {

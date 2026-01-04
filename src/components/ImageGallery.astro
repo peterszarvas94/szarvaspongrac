@@ -18,18 +18,24 @@ const { key } = Astro.props;
 
 {/* image template */}
 <template id="image-gallery-item">
-  <div class="relative mb-4 block">
+  <div
+    data-id="id"
+    data-sorting="0"
+    data-cover="false"
+    class="relative mb-4 block"
+  >
     <button
       commandfor="image-popover"
       command="show-popover"
+      data-url="url"
       class="w-full block cursor-pointer border-0 bg-transparent p-0"
       type="button"
       aria-label="Kép megnyitása"
       title="Kép megnyitása"
     >
       <img
-        src=""
-        alt=""
+        src="src"
+        alt="alt"
         width={200}
         height={250}
         class="w-full block rounded-lg shadow-lg hover:shadow-xl"
@@ -43,7 +49,7 @@ const { key } = Astro.props;
     >
       <div class="join">
         <button
-          data-cover=""
+          data-cover="id"
           data-edit="true"
           class="hidden join-item btn btn-sm btn-square"
           title="Borítóképnek jelölés"

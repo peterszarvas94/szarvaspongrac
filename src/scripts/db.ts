@@ -61,19 +61,26 @@ export async function deleteImage(id: string) {
   }
 }
 
-export async function setCoverImage(id: string, key: string) {
+export async function getCoverImage(key: string) {
+  return await pb
+    .collection("image")
+    .getFirstListItem(`key="${key}" && cover=true`);
+}
+
+/** @return old cover image */
+export async function setCoverImage(
+  id: string,
+  key: string,
+): Promise<RecordModel> {
   try {
-    // First, unset any existing cover images for this key
-    const existingCovers = await pb
-      .collection("image")
-      .getFullList({ filter: `key="${key}" && cover=true` });
+    const oldCover = await getCoverImage(key);
+    const batch = pb.createBatch();
+    batch.collection("image").update(oldCover.id, { cover: false });
+    batch.collection("image").update(id, { cover: true });
 
-    for (const cover of existingCovers) {
-      await pb.collection("image").update(cover.id, { cover: false });
-    }
+    await batch.send();
 
-    // Then set the new cover image
-    await pb.collection("image").update(id, { cover: true });
+    return oldCover;
   } catch (error) {
     console.error("Set cover error:", error);
     throw error;
@@ -148,6 +155,8 @@ export async function swapImageOrder(id1: string, id2: string): Promise<void> {
   const record1 = await pb.collection("image").getOne(id1);
   const record2 = await pb.collection("image").getOne(id2);
 
-  await pb.collection("image").update(id1, { sorting: record2.sorting });
-  await pb.collection("image").update(id2, { sorting: record1.sorting });
+  const batch = pb.createBatch();
+  batch.collection("image").update(id1, { sorting: record2.sorting });
+  batch.collection("image").update(id2, { sorting: record1.sorting });
+  await batch.send();
 }

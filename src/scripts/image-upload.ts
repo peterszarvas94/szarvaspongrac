@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 import { pb, getURLFromRecord } from "@scripts/db";
-import { showAlert } from "./toaster";
-import { getEditMode } from "./edit";
+import { showAlert } from "@scripts/toaster";
+import { getEditMode } from "@scripts/edit";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 const input = document.querySelector<HTMLInputElement>("#file-upload");
@@ -99,63 +99,24 @@ function appendImageToGallery(id: string, url: string, sorting: number) {
   const img = wrapper.querySelector("img");
   img?.setAttribute("src", url);
 
+  // Remove move buttons from template - they will be added by updateMoveButtons()
+  const moveUpBtn = wrapper.querySelector("button[data-move-up]");
+  const moveDownBtn = wrapper.querySelector("button[data-move-down]");
+  moveUpBtn?.remove();
+  moveDownBtn?.remove();
+
+  // Set attributes for delete and cover buttons (event listeners will be added by update functions)
   const deleteButton = wrapper.querySelector<HTMLButtonElement>(
     "button[data-delete]",
   );
   if (deleteButton) {
     deleteButton.setAttribute("data-delete", id);
-    deleteButton.addEventListener("click", async () => {
-      const { confirm } = await import("./confirm-dialog");
-      const { deleteImage } = await import("@scripts/db");
-
-      const confirmed = await confirm({
-        title: "Kép törlése",
-        message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
-        confirmText: "Törlés",
-        cancelText: "Mégse",
-      });
-      if (!confirmed) return;
-
-      try {
-        await deleteImage(id);
-        showAlert("Törölve", "success");
-        wrapper.remove();
-      } catch (error) {
-        showAlert("Nem sikerült törölni a képet", "error");
-        console.error({ msg: "Error deleting the image", id, error });
-      }
-    });
   }
 
   const coverButton =
     wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
   if (coverButton) {
     coverButton.setAttribute("data-cover", id);
-    coverButton.addEventListener("click", async (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-
-      const { confirm } = await import("./confirm-dialog");
-      const { setCoverImage } = await import("@scripts/db");
-
-      const confirmed = await confirm({
-        title: "Borítókép beállítása",
-        message: "Ezt a képet állítod be borítóképnek?",
-        confirmText: "Beállítás",
-        cancelText: "Mégse",
-      });
-      if (!confirmed) return;
-
-      const key = gallery.dataset.images ?? "";
-      try {
-        await setCoverImage(id, key);
-        showAlert("Borítókép beállítva", "success");
-        window.location.reload();
-      } catch (error) {
-        showAlert("Nem sikerült beállítani a borítóképet", "error");
-        console.error({ msg: "Error setting cover image", id, error });
-      }
-    });
   }
 
   if (getEditMode()) {
@@ -201,6 +162,11 @@ async function uploadFiles(key: string, files: File[]) {
       console.error("Upload error:", result.reason);
     }
   });
+
+  // Update all buttons for all images after new ones are added
+  if (successCount > 0) {
+    // TODO: init buttons
+  }
 
   clearFileInput();
 
