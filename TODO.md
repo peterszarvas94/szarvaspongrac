@@ -1,3 +1,2 @@
+- upload is broken in gallery
 - 'illusztraciok | grafikak'
-- reorder images (drag & drop)
-- better partial updates
