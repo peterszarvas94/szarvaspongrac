@@ -18,7 +18,7 @@ const { key } = Astro.props;
 
 {/* image template */}
 <template id="image-gallery-item">
-  <div class="relative mb-4 block">
+  <div class="relative mb-4 block" data-edit="true" draggable="false">
     <button
       commandfor="image-popover"
       command="show-popover"

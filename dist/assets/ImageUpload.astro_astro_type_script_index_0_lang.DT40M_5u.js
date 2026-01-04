@@ -1,8 +1,8 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/db.CqHXNiAN.js","assets/pocketbase.BNTe72gt.js"])))=>i.map(i=>d[i]);
-import { pb, getURLFromRecord } from './db.CqHXNiAN.js';
-import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.C8bdA8EB.js';
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["assets/db.B2Whiv5I.js","assets/pocketbase.BNTe72gt.js"])))=>i.map(i=>d[i]);
+import { pb, getURLFromRecord } from './db.B2Whiv5I.js';
+import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.C-PKG11V.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.CHQSBTSA.js';
+import './content-manager.DLVaAOnU.js';
 
 const scriptRel = 'modulepreload';const assetsURL = function(dep) { return "/"+dep };const seen = {};const __vitePreload = function preload(baseModule, deps, importerUrl) {
   let promise = Promise.resolve();
@@ -155,7 +155,7 @@ function appendImageToGallery(id, url, sorting) {
     deleteButton.setAttribute("data-delete", id);
     deleteButton.addEventListener("click", async () => {
       const { confirm } = await __vitePreload(async () => { const { confirm } = await import('./confirm-dialog.CNJzHFJm.js');return { confirm }},true              ?[]:void 0);
-      const { deleteImage } = await __vitePreload(async () => { const { deleteImage } = await import('./db.CqHXNiAN.js');return { deleteImage }},true              ?__vite__mapDeps([0,1]):void 0);
+      const { deleteImage } = await __vitePreload(async () => { const { deleteImage } = await import('./db.B2Whiv5I.js');return { deleteImage }},true              ?__vite__mapDeps([0,1]):void 0);
       const confirmed = await confirm({
         title: "Kép törlése",
         message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
@@ -180,7 +180,7 @@ function appendImageToGallery(id, url, sorting) {
       e.stopPropagation();
       e.preventDefault();
       const { confirm } = await __vitePreload(async () => { const { confirm } = await import('./confirm-dialog.CNJzHFJm.js');return { confirm }},true              ?[]:void 0);
-      const { setCoverImage } = await __vitePreload(async () => { const { setCoverImage } = await import('./db.CqHXNiAN.js');return { setCoverImage }},true              ?__vite__mapDeps([0,1]):void 0);
+      const { setCoverImage } = await __vitePreload(async () => { const { setCoverImage } = await import('./db.B2Whiv5I.js');return { setCoverImage }},true              ?__vite__mapDeps([0,1]):void 0);
       const confirmed = await confirm({
         title: "Borítókép beállítása",
         message: "Ezt a képet állítod be borítóképnek?",

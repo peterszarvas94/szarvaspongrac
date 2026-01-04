@@ -1,8 +1,8 @@
-import { getImageUrls, deleteImage, setCoverImage } from './db.CqHXNiAN.js';
-import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.C8bdA8EB.js';
+import { getImageUrls, deleteImage, setCoverImage, reorderImages } from './db.B2Whiv5I.js';
+import { getEditMode, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.C-PKG11V.js';
 import { confirm } from './confirm-dialog.CNJzHFJm.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.CHQSBTSA.js';
+import './content-manager.DLVaAOnU.js';
 
 function getGallery() {
   return document.querySelector("[data-images]");
@@ -124,12 +124,17 @@ async function initGallery() {
   if (!gallery || !template) return;
   const key = gallery.dataset.images ?? "";
   const images = await getImageUrls(key);
+  images.sort((a, b) => a.sorting - b.sorting);
   for (const image of images) {
     const element = template.content.cloneNode(true);
     const wrapper = element.firstElementChild;
     if (!wrapper) continue;
     wrapper.dataset.sorting = String(image.sorting);
     wrapper.dataset.id = image.id;
+    if (getEditMode()) {
+      wrapper.setAttribute("draggable", "true");
+      wrapper.style.cursor = "move";
+    }
     const img = wrapper.querySelector("img");
     img?.setAttribute("src", image.url);
     const deleteButton = wrapper.querySelector(
@@ -167,10 +172,87 @@ function initPopover() {
     }
   });
 }
+let draggedItemId = null;
+function addDragListeners(wrapper) {
+  const gallery = getGallery();
+  const id = wrapper.dataset.id;
+  if (!id || !gallery) return;
+  if (wrapper.dataset.dragListeners === "true") return;
+  wrapper.dataset.dragListeners = "true";
+  wrapper.addEventListener("dragstart", (e) => {
+    if (!getEditMode()) return;
+    draggedItemId = id;
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", id);
+    }
+    wrapper.style.opacity = "0.5";
+  });
+  wrapper.addEventListener("dragend", () => {
+    wrapper.style.opacity = "1";
+    draggedItemId = null;
+    const allWrappers = gallery?.querySelectorAll("div[data-id]");
+    allWrappers?.forEach((w) => {
+      w.style.boxShadow = "";
+    });
+  });
+  wrapper.addEventListener("dragover", (e) => {
+    if (!getEditMode() || !draggedItemId) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    wrapper.style.boxShadow = "0 4px 0 0 #3b82f6";
+    wrapper.style.transition = "box-shadow 0.2s ease";
+  });
+  wrapper.addEventListener("dragleave", (e) => {
+    if (!getEditMode() || !draggedItemId) return;
+    wrapper.style.boxShadow = "";
+  });
+  wrapper.addEventListener("drop", async (e) => {
+    if (!getEditMode() || !draggedItemId || !gallery) return;
+    e.preventDefault();
+    wrapper.style.boxShadow = "";
+    const targetId = wrapper.dataset.id;
+    if (!targetId || targetId === draggedItemId) return;
+    try {
+      const wrappers = gallery.querySelectorAll("div[data-id]");
+      const items = Array.from(wrappers).map((w) => ({
+        id: w.dataset.id,
+        sorting: parseInt(w.dataset.sorting) || 0
+      }));
+      const draggedElement = gallery.querySelector(
+        `div[data-id="${draggedItemId}"]`
+      );
+      const targetElement = wrapper;
+      if (!draggedElement || !targetElement) return;
+      targetElement.insertAdjacentElement("afterend", draggedElement);
+      await reorderImages(draggedItemId, targetId, items);
+      showAlert("Sorrend frissítve", "success");
+      const updatedWrappers = gallery.querySelectorAll("div[data-id]");
+      updatedWrappers.forEach((w, index) => {
+        w.dataset.sorting = String(index + 1);
+      });
+    } catch (error) {
+      showAlert("Nem sikerült frissíteni a sorrendet", "error");
+      console.error("Error reordering images:", error);
+      gallery.innerHTML = "";
+      await initGallery();
+      initDeleteButtons();
+      initCoverButtons();
+      initDragAndDrop();
+    }
+  });
+}
+function initDragAndDrop() {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const wrappers = gallery.querySelectorAll("div[data-id]");
+  wrappers.forEach(addDragListeners);
+}
 async function init() {
   await initGallery();
   initDeleteButtons();
   initCoverButtons();
   initPopover();
+  initDragAndDrop();
 }
 init();

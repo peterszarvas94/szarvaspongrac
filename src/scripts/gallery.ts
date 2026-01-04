@@ -1,4 +1,9 @@
-import { deleteImage, getImageUrls, setCoverImage } from "@scripts/db";
+import {
+  deleteImage,
+  getImageUrls,
+  setCoverImage,
+  reorderImages,
+} from "@scripts/db";
 import { showAlert } from "./toaster";
 import { getEditMode } from "./edit";
 import { confirm } from "./confirm-dialog";
@@ -152,6 +157,9 @@ async function initGallery() {
   const key = gallery.dataset.images ?? "";
   const images = await getImageUrls(key);
 
+  // Sort images by sorting field
+  images.sort((a, b) => a.sorting - b.sorting);
+
   for (const image of images) {
     const element = template.content.cloneNode(true) as DocumentFragment;
     const wrapper = element.firstElementChild as HTMLDivElement | null;
@@ -159,6 +167,12 @@ async function initGallery() {
 
     wrapper.dataset.sorting = String(image.sorting);
     wrapper.dataset.id = image.id;
+
+    // Set draggable attribute based on edit mode
+    if (getEditMode()) {
+      wrapper.setAttribute("draggable", "true");
+      wrapper.style.cursor = "move";
+    }
 
     const img = wrapper.querySelector("img");
     img?.setAttribute("src", image.url);
@@ -206,11 +220,125 @@ function initPopover() {
   });
 }
 
+let draggedItemId: string | null = null;
+
+function addDragListeners(wrapper: HTMLDivElement) {
+  const gallery = getGallery();
+  const id = wrapper.dataset.id;
+  if (!id || !gallery) return;
+
+  // Prevent duplicate listeners
+  if (wrapper.dataset.dragListeners === "true") return;
+  wrapper.dataset.dragListeners = "true";
+
+  wrapper.addEventListener("dragstart", (e) => {
+    if (!getEditMode()) return;
+    draggedItemId = id;
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", id);
+    }
+    wrapper.style.opacity = "0.5";
+  });
+
+  wrapper.addEventListener("dragend", () => {
+    wrapper.style.opacity = "1";
+    draggedItemId = null;
+
+    // Clean up any remaining visual indicators
+    const allWrappers =
+      gallery?.querySelectorAll<HTMLDivElement>("div[data-id]");
+    allWrappers?.forEach((w) => {
+      w.style.boxShadow = "";
+    });
+  });
+
+  wrapper.addEventListener("dragover", (e) => {
+    if (!getEditMode() || !draggedItemId) return;
+    e.preventDefault();
+    e.dataTransfer!.dropEffect = "move";
+
+    // Add visual drop indicator
+    wrapper.style.boxShadow = "0 4px 0 0 #3b82f6";
+    wrapper.style.transition = "box-shadow 0.2s ease";
+  });
+
+  wrapper.addEventListener("dragleave", (e) => {
+    if (!getEditMode() || !draggedItemId) return;
+
+    // Remove visual drop indicator
+    wrapper.style.boxShadow = "";
+  });
+
+  wrapper.addEventListener("drop", async (e) => {
+    if (!getEditMode() || !draggedItemId || !gallery) return;
+    e.preventDefault();
+
+    // Clean up visual indicator
+    wrapper.style.boxShadow = "";
+
+    const targetId = wrapper.dataset.id;
+    if (!targetId || targetId === draggedItemId) return;
+
+    try {
+      // Get current items from DOM
+      const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
+      const items = Array.from(wrappers).map((w) => ({
+        id: w.dataset.id!,
+        sorting: parseInt(w.dataset.sorting!) || 0,
+      }));
+
+      // Find the dragged and target DOM elements
+      const draggedElement = gallery.querySelector<HTMLDivElement>(
+        `div[data-id="${draggedItemId}"]`,
+      );
+      const targetElement = wrapper;
+
+      if (!draggedElement || !targetElement) return;
+
+      // Move the DOM node immediately for smooth UX
+      // Insert dragged element after target element
+      targetElement.insertAdjacentElement("afterend", draggedElement);
+
+      // Update database in background
+      await reorderImages(draggedItemId, targetId, items);
+      showAlert("Sorrend frissítve", "success");
+
+      // Update the sorting data attributes to reflect new order
+      const updatedWrappers =
+        gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
+      updatedWrappers.forEach((w, index) => {
+        w.dataset.sorting = String(index + 1);
+      });
+    } catch (error) {
+      showAlert("Nem sikerült frissíteni a sorrendet", "error");
+      console.error("Error reordering images:", error);
+
+      // If database update failed, refresh to restore correct order
+      gallery.innerHTML = "";
+      await initGallery();
+      initDeleteButtons();
+      initCoverButtons();
+      initDragAndDrop();
+    }
+  });
+}
+
+function initDragAndDrop() {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  // Add drag listeners to existing items
+  const wrappers = gallery.querySelectorAll<HTMLDivElement>("div[data-id]");
+  wrappers.forEach(addDragListeners);
+}
+
 async function init() {
   await initGallery();
   initDeleteButtons();
   initCoverButtons();
   initPopover();
+  initDragAndDrop();
 }
 
 init();

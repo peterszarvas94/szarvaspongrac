@@ -143,3 +143,49 @@ export async function saveContent(key: string, value: string): Promise<void> {
     await pb.collection("content").create({ key, value });
   }
 }
+
+export async function reorderImages(
+  draggedId: string,
+  targetId: string,
+  items: Array<{ id: string; sorting: number }>,
+): Promise<void> {
+  try {
+    // Find indices of dragged and target items
+    const draggedIndex = items.findIndex((item) => item.id === draggedId);
+    const targetIndex = items.findIndex((item) => item.id === targetId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      throw new Error("Could not find dragged or target image");
+    }
+
+    // Create new order array
+    const newOrder = [...items];
+    const draggedItem = newOrder.splice(draggedIndex, 1)[0];
+
+    // insertAdjacentElement('afterend') inserts AFTER the target
+    // After removing draggedItem, indices shift, so we need to calculate correctly:
+    // - If dragging forward (draggedIndex < targetIndex): targetIndex stays same after removal
+    // - If dragging backward (draggedIndex > targetIndex): need to insert at targetIndex + 1
+    const insertIndex =
+      draggedIndex < targetIndex ? targetIndex : targetIndex + 1;
+    newOrder.splice(insertIndex, 0, draggedItem);
+
+    // Enable batch database updates
+    const batch = pb.createBatch();
+    for (let i = 0; i < newOrder.length; i++) {
+      const newSorting = i + 1;
+      if (newOrder[i].sorting !== newSorting) {
+        batch
+          .collection("image")
+          .update(newOrder[i].id, { sorting: newSorting });
+      }
+    }
+    // Send batch with unique request key to avoid auto-cancellation
+    await batch.send({
+      requestKey: `reorder_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    });
+  } catch (error) {
+    console.error("Reorder error:", error);
+    throw error;
+  }
+}

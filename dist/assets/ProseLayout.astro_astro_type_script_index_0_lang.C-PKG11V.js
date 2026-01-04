@@ -1,5 +1,5 @@
-import { saveContent } from './db.CqHXNiAN.js';
-import { updateContentsOnPage } from './content-manager.CHQSBTSA.js';
+import { saveContent } from './db.B2Whiv5I.js';
+import { updateContentsOnPage } from './content-manager.DLVaAOnU.js';
 import './pocketbase.BNTe72gt.js';
 
 class TypedEvent extends CustomEvent {
