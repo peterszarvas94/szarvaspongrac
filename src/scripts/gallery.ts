@@ -58,7 +58,6 @@ function initDeleteButton(button: HTMLButtonElement) {
       await deleteImage(id);
       wrapper.remove();
       showAlert("Törölve", "success");
-      // TODO: change move buttons?
     } catch {
       showAlert("Nem sikerült törölni a képet", "error");
     }
@@ -130,6 +129,7 @@ function initCoverButton(button: HTMLButtonElement, isCurrentCover: boolean) {
       const { id: oldCoverId } = await setCoverImage(id, key);
       hideButtons(id);
       showButtons(oldCoverId);
+      showAlert("A borítókép sikeresen cserélve", "success");
     } catch {
       showAlert("Nem sikerült beállítani a borítóképet", "error");
     }
@@ -164,7 +164,7 @@ function initMoveUpButton(button: HTMLButtonElement) {
     await swapImageOrder(id, prevId);
     prevWrapper.insertAdjacentElement("beforebegin", wrapper);
 
-    // TODO: change buttons?
+    showAlert("Sorrend frissítve", "success");
   });
 }
 
@@ -196,7 +196,7 @@ function initMoveDownButton(button: HTMLButtonElement) {
     await swapImageOrder(id, nextId);
     nextWrapper.insertAdjacentElement("afterend", wrapper);
 
-    // TODO: change buttons?
+    showAlert("Sorrend frissítve", "success");
   });
 }
 
@@ -212,6 +212,7 @@ async function initGallery() {
   images.sort((a, b) => a.sorting - b.sorting);
 
   const currentCover = await getCoverImage(key);
+  console.log({ currentCover });
 
   images.forEach((image) => {
     const frag = template.content.cloneNode(true) as DocumentFragment;
@@ -253,6 +254,7 @@ async function initGallery() {
     updateEditUI();
 
     initDeleteButton(deleteBtn);
+    // TODO: this kind of works after you change 2, but not before 2 changes
     initCoverButton(coverBtn, currentCover.id === image.id);
     initMoveUpButton(upBtn);
     initMoveDownButton(downBtn);
