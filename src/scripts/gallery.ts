@@ -215,10 +215,60 @@ function initMoveDownButton(button: HTMLButtonElement) {
   });
 }
 
-async function initGallery() {
+interface AppendImageOptions {
+  id: string;
+  url: string;
+  sorting: number;
+  cover?: boolean;
+}
+
+export function appendImage({
+  id,
+  url,
+  sorting,
+  cover = false,
+}: AppendImageOptions) {
   const gallery = getGallery();
   const template = getTemplate();
   if (!gallery || !template) return;
+
+  const frag = template.content.cloneNode(true) as DocumentFragment;
+  const wrapper = frag.firstElementChild as HTMLDivElement;
+
+  wrapper.dataset.id = id;
+  wrapper.dataset.sorting = String(sorting);
+  wrapper.dataset.cover = cover ? "true" : "false";
+
+  const img = wrapper.querySelector<HTMLImageElement>("img");
+  if (!img) return;
+
+  img.setAttribute("src", url);
+
+  const popoverBtn = wrapper.querySelector<HTMLButtonElement>(
+    "[commandfor=image-popover]",
+  );
+  if (popoverBtn) popoverBtn.dataset.url = url;
+
+  const deleteBtn = wrapper.querySelector<HTMLButtonElement>("[data-delete]");
+  if (deleteBtn) deleteBtn.dataset.delete = id;
+
+  const coverBtn = wrapper.querySelector<HTMLButtonElement>("[data-cover]");
+  if (coverBtn) coverBtn.dataset.cover = id;
+
+  const upBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-up]");
+  if (upBtn) upBtn.dataset.moveUp = id;
+
+  const downBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-down]");
+  if (downBtn) downBtn.dataset.moveDown = id;
+
+  gallery.appendChild(wrapper);
+  initImageButtons(id);
+  updateEditUI();
+}
+
+async function initGallery() {
+  const gallery = getGallery();
+  if (!gallery) return;
 
   const key = gallery.dataset.images;
   if (!key) return;
@@ -227,51 +277,12 @@ async function initGallery() {
   images.sort((a, b) => a.sorting - b.sorting);
 
   images.forEach((image) => {
-    const frag = template.content.cloneNode(true) as DocumentFragment;
-    const wrapper = frag.firstElementChild as HTMLDivElement;
-
-    wrapper.dataset.id = image.id;
-    wrapper.dataset.sorting = String(image.sorting);
-    wrapper.dataset.cover = image.cover ? "true" : "false";
-
-    const img = wrapper.querySelector<HTMLImageElement>("img");
-    if (!img) return;
-
-    img.setAttribute("src", image.url);
-
-    const popoverBtn = wrapper.querySelector<HTMLButtonElement>(
-      "[commandfor=image-popover]",
-    );
-    if (!popoverBtn) return;
-
-    const deleteBtn = wrapper.querySelector<HTMLButtonElement>("[data-delete]");
-    if (!deleteBtn) return;
-
-    const coverBtn = wrapper.querySelector<HTMLButtonElement>("[data-cover]");
-    if (!coverBtn) return;
-
-    const upBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-up]");
-    if (!upBtn) return;
-
-    const downBtn =
-      wrapper.querySelector<HTMLButtonElement>("[data-move-down]");
-    if (!downBtn) return;
-
-    popoverBtn.dataset.url = image.url;
-    deleteBtn.dataset.delete = image.id;
-    coverBtn.dataset.cover = image.id;
-    upBtn.dataset.moveUp = image.id;
-    downBtn.dataset.moveDown = image.id;
-
-    updateEditUI();
-
-    initDeleteButton(deleteBtn);
-    initCoverButton(coverBtn);
-    initMoveUpButton(upBtn);
-    initMoveDownButton(downBtn);
-    initPopoverButton(popoverBtn);
-
-    gallery.appendChild(wrapper);
+    appendImage({
+      id: image.id,
+      url: image.url,
+      sorting: image.sorting,
+      cover: image.cover,
+    });
   });
 
   hideCurrentCoverButtons();
@@ -288,6 +299,28 @@ function initPopoverButton(popoverBtn: HTMLButtonElement) {
   if (!url) return;
 
   popoverImg.setAttribute("src", url);
+}
+
+export function initImageButtons(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const deleteBtn = wrapper.querySelector<HTMLButtonElement>("[data-delete]");
+  if (deleteBtn) initDeleteButton(deleteBtn);
+
+  const coverBtn = wrapper.querySelector<HTMLButtonElement>("[data-cover]");
+  if (coverBtn) initCoverButton(coverBtn);
+
+  const upBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-up]");
+  if (upBtn) initMoveUpButton(upBtn);
+
+  const downBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-down]");
+  if (downBtn) initMoveDownButton(downBtn);
+
+  const popoverBtn = wrapper.querySelector<HTMLButtonElement>(
+    "[commandfor=image-popover]",
+  );
+  if (popoverBtn) initPopoverButton(popoverBtn);
 }
 
 await initGallery();

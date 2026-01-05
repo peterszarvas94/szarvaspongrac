@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 import { pb, getURLFromRecord } from "@scripts/db";
 import { showAlert } from "@scripts/toaster";
-import { getEditMode } from "@scripts/edit";
+import { appendImage } from "@scripts/gallery";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 const input = document.querySelector<HTMLInputElement>("#file-upload");
@@ -82,52 +82,6 @@ function getMaxSortingFromGallery(): number {
   return maxSorting;
 }
 
-function appendImageToGallery(id: string, url: string, sorting: number) {
-  const gallery = document.querySelector<HTMLDivElement>("[data-images]");
-  const template = document.querySelector<HTMLTemplateElement>(
-    "template#image-gallery-item",
-  );
-  if (!gallery || !template) return;
-
-  const element = template.content.cloneNode(true) as DocumentFragment;
-  const wrapper = element.firstElementChild as HTMLDivElement | null;
-  if (!wrapper) return;
-
-  wrapper.dataset.sorting = String(sorting);
-  wrapper.dataset.id = id;
-
-  const img = wrapper.querySelector("img");
-  img?.setAttribute("src", url);
-
-  // Remove move buttons from template - they will be added by updateMoveButtons()
-  const moveUpBtn = wrapper.querySelector("button[data-move-up]");
-  const moveDownBtn = wrapper.querySelector("button[data-move-down]");
-  moveUpBtn?.remove();
-  moveDownBtn?.remove();
-
-  // Set attributes for delete and cover buttons (event listeners will be added by update functions)
-  const deleteButton = wrapper.querySelector<HTMLButtonElement>(
-    "button[data-delete]",
-  );
-  if (deleteButton) {
-    deleteButton.setAttribute("data-delete", id);
-  }
-
-  const coverButton =
-    wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
-  if (coverButton) {
-    coverButton.setAttribute("data-cover", id);
-  }
-
-  if (getEditMode()) {
-    wrapper
-      .querySelectorAll<HTMLElement>("[data-edit]")
-      .forEach((el) => el.classList.remove("hidden"));
-  }
-
-  gallery.appendChild(wrapper);
-}
-
 function clearFileInput() {
   dt = new DataTransfer();
   if (input) input.files = dt.files;
@@ -152,21 +106,16 @@ async function uploadFiles(key: string, files: File[]) {
   results.forEach((result, index) => {
     if (result.status === "fulfilled") {
       const record = result.value;
-      appendImageToGallery(
-        record.id,
-        getURLFromRecord(record),
-        maxSorting + index + 1,
-      );
+      appendImage({
+        id: record.id,
+        url: getURLFromRecord(record),
+        sorting: maxSorting + index + 1,
+      });
       successCount++;
     } else {
       console.error("Upload error:", result.reason);
     }
   });
-
-  // Update all buttons for all images after new ones are added
-  if (successCount > 0) {
-    // TODO: init buttons
-  }
 
   clearFileInput();
 

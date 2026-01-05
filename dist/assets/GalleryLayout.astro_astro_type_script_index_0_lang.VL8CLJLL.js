@@ -212,47 +212,53 @@ function initMoveDownButton(button) {
     showAlert("Sorrend frissítve", "success");
   });
 }
-async function initGallery() {
+function appendImage({
+  id,
+  url,
+  sorting,
+  cover = false
+}) {
   const gallery = getGallery();
   const template = getTemplate();
   if (!gallery || !template) return;
+  const frag = template.content.cloneNode(true);
+  const wrapper = frag.firstElementChild;
+  wrapper.dataset.id = id;
+  wrapper.dataset.sorting = String(sorting);
+  wrapper.dataset.cover = cover ? "true" : "false";
+  const img = wrapper.querySelector("img");
+  if (!img) return;
+  img.setAttribute("src", url);
+  const popoverBtn = wrapper.querySelector(
+    "[commandfor=image-popover]"
+  );
+  if (popoverBtn) popoverBtn.dataset.url = url;
+  const deleteBtn = wrapper.querySelector("[data-delete]");
+  if (deleteBtn) deleteBtn.dataset.delete = id;
+  const coverBtn = wrapper.querySelector("[data-cover]");
+  if (coverBtn) coverBtn.dataset.cover = id;
+  const upBtn = wrapper.querySelector("[data-move-up]");
+  if (upBtn) upBtn.dataset.moveUp = id;
+  const downBtn = wrapper.querySelector("[data-move-down]");
+  if (downBtn) downBtn.dataset.moveDown = id;
+  gallery.appendChild(wrapper);
+  initImageButtons(id);
+  updateEditUI();
+}
+async function initGallery() {
+  const gallery = getGallery();
+  if (!gallery) return;
   const key = gallery.dataset.images;
   if (!key) return;
   const images = await getImageUrls(key);
   images.sort((a, b) => a.sorting - b.sorting);
   images.forEach((image) => {
-    const frag = template.content.cloneNode(true);
-    const wrapper = frag.firstElementChild;
-    wrapper.dataset.id = image.id;
-    wrapper.dataset.sorting = String(image.sorting);
-    wrapper.dataset.cover = image.cover ? "true" : "false";
-    const img = wrapper.querySelector("img");
-    if (!img) return;
-    img.setAttribute("src", image.url);
-    const popoverBtn = wrapper.querySelector(
-      "[commandfor=image-popover]"
-    );
-    if (!popoverBtn) return;
-    const deleteBtn = wrapper.querySelector("[data-delete]");
-    if (!deleteBtn) return;
-    const coverBtn = wrapper.querySelector("[data-cover]");
-    if (!coverBtn) return;
-    const upBtn = wrapper.querySelector("[data-move-up]");
-    if (!upBtn) return;
-    const downBtn = wrapper.querySelector("[data-move-down]");
-    if (!downBtn) return;
-    popoverBtn.dataset.url = image.url;
-    deleteBtn.dataset.delete = image.id;
-    coverBtn.dataset.cover = image.id;
-    upBtn.dataset.moveUp = image.id;
-    downBtn.dataset.moveDown = image.id;
-    updateEditUI();
-    initDeleteButton(deleteBtn);
-    initCoverButton(coverBtn);
-    initMoveUpButton(upBtn);
-    initMoveDownButton(downBtn);
-    initPopoverButton(popoverBtn);
-    gallery.appendChild(wrapper);
+    appendImage({
+      id: image.id,
+      url: image.url,
+      sorting: image.sorting,
+      cover: image.cover
+    });
   });
   hideCurrentCoverButtons();
 }
@@ -265,4 +271,22 @@ function initPopoverButton(popoverBtn) {
   if (!url) return;
   popoverImg.setAttribute("src", url);
 }
+function initImageButtons(id) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+  const deleteBtn = wrapper.querySelector("[data-delete]");
+  if (deleteBtn) initDeleteButton(deleteBtn);
+  const coverBtn = wrapper.querySelector("[data-cover]");
+  if (coverBtn) initCoverButton(coverBtn);
+  const upBtn = wrapper.querySelector("[data-move-up]");
+  if (upBtn) initMoveUpButton(upBtn);
+  const downBtn = wrapper.querySelector("[data-move-down]");
+  if (downBtn) initMoveDownButton(downBtn);
+  const popoverBtn = wrapper.querySelector(
+    "[commandfor=image-popover]"
+  );
+  if (popoverBtn) initPopoverButton(popoverBtn);
+}
 await initGallery();
+
+export { appendImage };

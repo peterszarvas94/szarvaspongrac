@@ -1,5 +1,6 @@
 import { pb, getURLFromRecord } from './db.DXOn0jkR.js';
-import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.COSNvfw1.js';
+import { showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.COSNvfw1.js';
+import { appendImage } from './GalleryLayout.astro_astro_type_script_index_0_lang.VL8CLJLL.js';
 import './pocketbase.BNTe72gt.js';
 import './content-manager.DSCqf6hU.js';
 
@@ -64,38 +65,6 @@ function getMaxSortingFromGallery() {
   });
   return maxSorting;
 }
-function appendImageToGallery(id, url, sorting) {
-  const gallery = document.querySelector("[data-images]");
-  const template = document.querySelector(
-    "template#image-gallery-item"
-  );
-  if (!gallery || !template) return;
-  const element = template.content.cloneNode(true);
-  const wrapper = element.firstElementChild;
-  if (!wrapper) return;
-  wrapper.dataset.sorting = String(sorting);
-  wrapper.dataset.id = id;
-  const img = wrapper.querySelector("img");
-  img?.setAttribute("src", url);
-  const moveUpBtn = wrapper.querySelector("button[data-move-up]");
-  const moveDownBtn = wrapper.querySelector("button[data-move-down]");
-  moveUpBtn?.remove();
-  moveDownBtn?.remove();
-  const deleteButton = wrapper.querySelector(
-    "button[data-delete]"
-  );
-  if (deleteButton) {
-    deleteButton.setAttribute("data-delete", id);
-  }
-  const coverButton = wrapper.querySelector("button[data-cover]");
-  if (coverButton) {
-    coverButton.setAttribute("data-cover", id);
-  }
-  if (getEditMode()) {
-    wrapper.querySelectorAll("[data-edit]").forEach((el) => el.classList.remove("hidden"));
-  }
-  gallery.appendChild(wrapper);
-}
 function clearFileInput() {
   dt = new DataTransfer();
   if (input) input.files = dt.files;
@@ -115,11 +84,11 @@ async function uploadFiles(key, files) {
   results.forEach((result, index) => {
     if (result.status === "fulfilled") {
       const record = result.value;
-      appendImageToGallery(
-        record.id,
-        getURLFromRecord(record),
-        maxSorting + index + 1
-      );
+      appendImage({
+        id: record.id,
+        url: getURLFromRecord(record),
+        sorting: maxSorting + index + 1
+      });
       successCount++;
     } else {
       console.error("Upload error:", result.reason);
