@@ -57,10 +57,24 @@ function initDeleteButton(button: HTMLButtonElement) {
       await deleteImage(id);
       wrapper.remove();
       showAlert("Törölve", "success");
+      checkEmptyGallery();
     } catch {
       showAlert("Nem sikerült törölni a képet", "error");
     }
   });
+}
+
+async function checkEmptyGallery() {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const key = gallery.dataset.images;
+  if (!key) return;
+
+  const images = await getImageUrls(key);
+  if (images.length === 0) {
+    showEmptyGalleryText();
+  }
 }
 
 function showButtons(id: string) {
@@ -266,6 +280,26 @@ export function appendImage({
   updateEditUI();
 }
 
+export function hideEmptyGalleryText() {
+  const div = document.querySelector<HTMLDivElement>("div#empty-gallery");
+  if (!div) return;
+  div.remove();
+}
+
+export function showEmptyGalleryText() {
+  const gallery = getGallery();
+  if (!gallery) return;
+
+  const template = document.querySelector<HTMLTemplateElement>(
+    "template#empty-gallery-template",
+  );
+  if (!template) return;
+
+  const fragment = template.content.cloneNode(true) as DocumentFragment;
+
+  gallery.after(fragment);
+}
+
 async function initGallery() {
   const gallery = getGallery();
   if (!gallery) return;
@@ -274,6 +308,11 @@ async function initGallery() {
   if (!key) return;
 
   const images = await getImageUrls(key);
+  if (images.length === 0) {
+    showEmptyGalleryText();
+    return;
+  }
+
   images.sort((a, b) => a.sorting - b.sorting);
 
   images.forEach((image) => {

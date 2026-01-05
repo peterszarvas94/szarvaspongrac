@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 import { pb, getURLFromRecord } from "@scripts/db";
 import { showAlert } from "@scripts/toaster";
-import { appendImage } from "@scripts/gallery";
+import { appendImage, hideEmptyGalleryText } from "@scripts/gallery";
 import { getMaxSorting, isDuplicateFile } from "@scripts/utils";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
@@ -115,6 +115,7 @@ async function uploadFiles(key: string, files: File[]) {
   });
 
   clearFileInput();
+  hideEmptyGalleryText();
 
   if (successCount === files.length) {
     showAlert("Sikeres feltöltés", "success");

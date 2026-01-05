@@ -1,5 +1,6 @@
 ---
 import { Trash, BookImage, ChevronUp, ChevronDown } from "@lucide/astro";
+import { ImageOff } from "lucide-astro";
 
 export interface Props {
   key: string;
@@ -15,6 +16,16 @@ const { key } = Astro.props;
   class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4"
 >
 </div>
+
+<template id="empty-gallery-template">
+  <div
+    id="empty-gallery"
+    class="w-full flex flex-col gap-4 items-center justify-center"
+  >
+    <ImageOff class="size-10 text-base-content opacity-60" />
+    <p class="text-lg">Nincs kép feltöltve</p>
+  </div>
+</template>
 
 {/* image template */}
 <template id="image-gallery-item">

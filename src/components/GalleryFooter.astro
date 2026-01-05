@@ -1,0 +1,24 @@
+---
+import Footer from "./Footer.astro";
+import { ArrowLeft } from "lucide-astro";
+
+export interface Props {
+  backHref: string;
+  backText: string;
+}
+
+const { backHref, backText } = Astro.props;
+---
+
+<section
+  class="flex flex-wrap justify-center items-center py-4 px-4 sm:px-6 md:px-8"
+>
+  <a
+    href={backHref}
+    class="btn btn-soft"
+  >
+    <ArrowLeft class="size-4" />
+    {backText}
+  </a>
+</section>
+<Footer />

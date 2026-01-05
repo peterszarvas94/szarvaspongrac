@@ -9,7 +9,7 @@ await Promise.all(
 
     const coverUrl = await getCoverImageUrl(key);
     if (!coverUrl) {
-      const parent = img.parentElement as HTMLElement;
+      const parent = img.parentElement as HTMLDivElement;
       if (!parent) return;
 
       const tempate = document.querySelector<HTMLTemplateElement>(
@@ -23,8 +23,7 @@ await Promise.all(
 
       img.remove();
 
-      //TODO: fix
-      parent.insertAdjacentHTML("afterbegin", missingIcon);
+      parent.prepend(missingIcon);
       return;
     }
 
