@@ -51,13 +51,17 @@ async function deleteImage(id) {
     console.error("Delete error:", error);
   }
 }
+async function getCoverImage(key) {
+  return await pb.collection("image").getFirstListItem(`key="${key}" && cover=true`);
+}
 async function setCoverImage(id, key) {
   try {
-    const existingCovers = await pb.collection("image").getFullList({ filter: `key="${key}" && cover=true` });
-    for (const cover of existingCovers) {
-      await pb.collection("image").update(cover.id, { cover: false });
-    }
-    await pb.collection("image").update(id, { cover: true });
+    const oldCover = await getCoverImage(key);
+    const batch = pb.createBatch();
+    batch.collection("image").update(oldCover.id, { cover: false });
+    batch.collection("image").update(id, { cover: true });
+    await batch.send();
+    return oldCover;
   } catch (error) {
     console.error("Set cover error:", error);
     throw error;
@@ -107,8 +111,10 @@ async function saveContent(key, value) {
 async function swapImageOrder(id1, id2) {
   const record1 = await pb.collection("image").getOne(id1);
   const record2 = await pb.collection("image").getOne(id2);
-  await pb.collection("image").update(id1, { sorting: record2.sorting });
-  await pb.collection("image").update(id2, { sorting: record1.sorting });
+  const batch = pb.createBatch();
+  batch.collection("image").update(id1, { sorting: record2.sorting });
+  batch.collection("image").update(id2, { sorting: record1.sorting });
+  await batch.send();
 }
 
 export { combineFilters, createFilter, deleteImage, getCollection, getCoverImageUrl, getCurrentUser, getImageUrls, getURLFromRecord, isAuthenticated, login, logout, pb, saveContent, setCoverImage, swapImageOrder };

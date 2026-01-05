@@ -1,6 +1,5 @@
 import {
   deleteImage,
-  getCoverImage,
   getImageUrls,
   setCoverImage,
   swapImageOrder,
@@ -98,7 +97,16 @@ function hideButtons(id: string) {
   deleteBtn.classList.add("hidden");
 }
 
-function initCoverButton(button: HTMLButtonElement, isCurrentCover: boolean) {
+function hideCurrentCoverButtons() {
+  const wrappers = getWrappers();
+  const currentCoverWrapper = wrappers.find(
+    (wrapper) => wrapper.dataset.cover === "true",
+  );
+  if (!currentCoverWrapper?.dataset.id) return;
+  hideButtons(currentCoverWrapper.dataset.id);
+}
+
+function initCoverButton(button: HTMLButtonElement) {
   const gallery = getGallery();
   if (!gallery) return;
 
@@ -106,16 +114,15 @@ function initCoverButton(button: HTMLButtonElement, isCurrentCover: boolean) {
   const id = button.dataset.cover;
   if (!id) return;
 
-  if (isCurrentCover) {
-    hideButtons(id);
-  }
-
   button.addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
     const wrapper = getWrapper(id);
     if (!wrapper) return;
+
+    // Skip if already the cover
+    if (wrapper.dataset.cover === "true") return;
 
     const confirmed = await confirm({
       title: "Borítókép beállítása",
@@ -126,9 +133,17 @@ function initCoverButton(button: HTMLButtonElement, isCurrentCover: boolean) {
     if (!confirmed) return;
 
     try {
-      const { id: oldCoverId } = await setCoverImage(id, key);
+      const oldCover = await setCoverImage(id, key);
+
+      // Update data attributes to track cover state
+      const oldWrapper = getWrapper(oldCover.id);
+      if (oldWrapper) {
+        oldWrapper.dataset.cover = "false";
+      }
+      wrapper.dataset.cover = "true";
+
       hideButtons(id);
-      showButtons(oldCoverId);
+      showButtons(oldCover.id);
       showAlert("A borítókép sikeresen cserélve", "success");
     } catch {
       showAlert("Nem sikerült beállítani a borítóképet", "error");
@@ -211,9 +226,6 @@ async function initGallery() {
   const images = await getImageUrls(key);
   images.sort((a, b) => a.sorting - b.sorting);
 
-  const currentCover = await getCoverImage(key);
-  console.log({ currentCover });
-
   images.forEach((image) => {
     const frag = template.content.cloneNode(true) as DocumentFragment;
     const wrapper = frag.firstElementChild as HTMLDivElement;
@@ -254,14 +266,15 @@ async function initGallery() {
     updateEditUI();
 
     initDeleteButton(deleteBtn);
-    // TODO: this kind of works after you change 2, but not before 2 changes
-    initCoverButton(coverBtn, currentCover.id === image.id);
+    initCoverButton(coverBtn);
     initMoveUpButton(upBtn);
     initMoveDownButton(downBtn);
     initPopoverButton(popoverBtn);
 
     gallery.appendChild(wrapper);
   });
+
+  hideCurrentCoverButtons();
 }
 
 function initPopoverButton(popoverBtn: HTMLButtonElement) {

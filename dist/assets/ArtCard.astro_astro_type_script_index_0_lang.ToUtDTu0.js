@@ -1,4 +1,4 @@
-import { getCoverImageUrl } from './db.C5WFIfDw.js';
+import { getCoverImageUrl } from './db.DXOn0jkR.js';
 import './pocketbase.BNTe72gt.js';
 
 const coverImages = document.querySelectorAll("[data-cover]");

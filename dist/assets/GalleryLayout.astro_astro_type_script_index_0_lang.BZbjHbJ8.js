@@ -1,7 +1,7 @@
-import { getImageUrls, deleteImage, setCoverImage, swapImageOrder } from './db.C5WFIfDw.js';
-import { getEditMode, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.BTwIcViZ.js';
+import { getImageUrls, deleteImage, setCoverImage, swapImageOrder } from './db.DXOn0jkR.js';
+import { updateEditUI, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.COSNvfw1.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.Bcz9BLLz.js';
+import './content-manager.DSCqf6hU.js';
 
 function confirm(options) {
   return new Promise((resolve) => {
@@ -54,6 +54,9 @@ function confirm(options) {
   });
 }
 
+function getPopover() {
+  return document.querySelector("#image-popover");
+}
 function getGallery() {
   return document.querySelector("[data-images]");
 }
@@ -63,34 +66,13 @@ function getTemplate() {
   );
 }
 function getWrapper(id) {
-  return getGallery()?.querySelector(`div[data-id="${id}"]`);
+  return getWrappers().find((wrapper) => wrapper.dataset.id === id);
 }
-function updateGalleryButtons() {
+function getWrappers() {
   const gallery = getGallery();
-  if (!gallery) return;
-  const wrappers = Array.from(
-    gallery.querySelectorAll("div[data-id]")
-  );
-  wrappers.forEach((wrapper, index) => {
-    const isFirst = index === 0;
-    const isLast = index === wrappers.length - 1;
-    const isCover = wrapper.dataset.cover === "true";
-    const moveUp = wrapper.querySelector("[data-move-up]");
-    const moveDown = wrapper.querySelector("[data-move-down]");
-    const cover = wrapper.querySelector("[data-cover]");
-    const del = wrapper.querySelector("[data-delete]");
-    if (isFirst) moveUp?.remove();
-    else moveUp?.classList.remove("hidden");
-    if (isLast) moveDown?.remove();
-    else moveDown?.classList.remove("hidden");
-    if (isCover) {
-      cover?.remove();
-      del?.remove();
-    } else {
-      cover?.classList.remove("hidden");
-      del?.classList.remove("hidden");
-    }
-  });
+  if (!gallery) return [];
+  const wrappers = gallery.querySelectorAll("[data-id]");
+  return Array.from(wrappers);
 }
 function initDeleteButton(button) {
   const id = button.dataset.delete;
@@ -98,6 +80,8 @@ function initDeleteButton(button) {
   button.addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
     const confirmed = await confirm({
       title: "Kép törlése",
       message: "Biztosan törölni szeretnéd ezt a képet? Nem vonható vissza!",
@@ -107,13 +91,44 @@ function initDeleteButton(button) {
     if (!confirmed) return;
     try {
       await deleteImage(id);
-      getWrapper(id)?.remove();
-      updateGalleryButtons();
+      wrapper.remove();
       showAlert("Törölve", "success");
     } catch {
       showAlert("Nem sikerült törölni a képet", "error");
     }
   });
+}
+function showButtons(id) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+  const coverBtn = wrapper.querySelector("button[data-cover]");
+  if (!coverBtn) return;
+  const deleteBtn = wrapper.querySelector(
+    "button[data-delete]"
+  );
+  if (!deleteBtn) return;
+  coverBtn.classList.remove("hidden");
+  deleteBtn.classList.remove("hidden");
+}
+function hideButtons(id) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+  const coverBtn = wrapper.querySelector("button[data-cover]");
+  if (!coverBtn) return;
+  const deleteBtn = wrapper.querySelector(
+    "button[data-delete]"
+  );
+  if (!deleteBtn) return;
+  coverBtn.classList.add("hidden");
+  deleteBtn.classList.add("hidden");
+}
+function hideCurrentCoverButtons() {
+  const wrappers = getWrappers();
+  const currentCoverWrapper = wrappers.find(
+    (wrapper) => wrapper.dataset.cover === "true"
+  );
+  if (!currentCoverWrapper?.dataset.id) return;
+  hideButtons(currentCoverWrapper.dataset.id);
 }
 function initCoverButton(button) {
   const gallery = getGallery();
@@ -124,6 +139,9 @@ function initCoverButton(button) {
   button.addEventListener("click", async (e) => {
     e.preventDefault();
     e.stopPropagation();
+    const wrapper = getWrapper(id);
+    if (!wrapper) return;
+    if (wrapper.dataset.cover === "true") return;
     const confirmed = await confirm({
       title: "Borítókép beállítása",
       message: "Ezt a képet állítod be borítóképnek?",
@@ -132,11 +150,15 @@ function initCoverButton(button) {
     });
     if (!confirmed) return;
     try {
-      await setCoverImage(id, key);
-      gallery.querySelectorAll("div[data-id]").forEach((w) => w.dataset.cover = "false");
-      getWrapper(id).dataset.cover = "true";
-      updateGalleryButtons();
-      showAlert("Borítókép beállítva", "success");
+      const oldCover = await setCoverImage(id, key);
+      const oldWrapper = getWrapper(oldCover.id);
+      if (oldWrapper) {
+        oldWrapper.dataset.cover = "false";
+      }
+      wrapper.dataset.cover = "true";
+      hideButtons(id);
+      showButtons(oldCover.id);
+      showAlert("A borítókép sikeresen cserélve", "success");
     } catch {
       showAlert("Nem sikerült beállítani a borítóképet", "error");
     }
@@ -152,15 +174,18 @@ function initMoveUpButton(button) {
     e.stopPropagation();
     const wrapper = getWrapper(id);
     if (!wrapper) return;
-    const wrappers = Array.from(
-      gallery.querySelectorAll("div[data-id]")
+    const wrappers = getWrappers();
+    const currentIndex = wrappers.findIndex(
+      (wrapper2) => wrapper2.dataset.id === id
     );
-    const index = wrappers.indexOf(wrapper);
-    if (index <= 0) return;
-    const prev = wrappers[index - 1];
-    await swapImageOrder(id, prev.dataset.id);
-    prev.insertAdjacentElement("beforebegin", wrapper);
-    updateGalleryButtons();
+    const prevIndex = currentIndex - 1;
+    if (prevIndex < 0) return;
+    const prevWrapper = wrappers[prevIndex];
+    const prevId = prevWrapper.dataset.id;
+    if (!prevId) return;
+    await swapImageOrder(id, prevId);
+    prevWrapper.insertAdjacentElement("beforebegin", wrapper);
+    showAlert("Sorrend frissítve", "success");
   });
 }
 function initMoveDownButton(button) {
@@ -173,73 +198,71 @@ function initMoveDownButton(button) {
     e.stopPropagation();
     const wrapper = getWrapper(id);
     if (!wrapper) return;
-    const wrappers = Array.from(
-      gallery.querySelectorAll("div[data-id]")
+    const wrappers = getWrappers();
+    const currentIndex = wrappers.findIndex(
+      (wrapper2) => wrapper2.dataset.id === id
     );
-    const index = wrappers.indexOf(wrapper);
-    if (index >= wrappers.length - 1) return;
-    const next = wrappers[index + 1];
-    await swapImageOrder(id, next.dataset.id);
-    next.insertAdjacentElement("afterend", wrapper);
-    updateGalleryButtons();
+    const nextIndex = currentIndex + 1;
+    if (nextIndex >= wrappers.length) return;
+    const nextWrapper = wrappers[nextIndex];
+    const nextId = nextWrapper.dataset.id;
+    if (!nextId) return;
+    await swapImageOrder(id, nextId);
+    nextWrapper.insertAdjacentElement("afterend", wrapper);
+    showAlert("Sorrend frissítve", "success");
   });
 }
 async function initGallery() {
   const gallery = getGallery();
   const template = getTemplate();
   if (!gallery || !template) return;
-  const key = gallery.dataset.images ?? "";
+  const key = gallery.dataset.images;
+  if (!key) return;
   const images = await getImageUrls(key);
   images.sort((a, b) => a.sorting - b.sorting);
-  for (const image of images) {
+  images.forEach((image) => {
     const frag = template.content.cloneNode(true);
     const wrapper = frag.firstElementChild;
     wrapper.dataset.id = image.id;
     wrapper.dataset.sorting = String(image.sorting);
     wrapper.dataset.cover = image.cover ? "true" : "false";
-    wrapper.querySelector("img")?.setAttribute("src", image.url);
-    const del = wrapper.querySelector("[data-delete]");
-    const cover = wrapper.querySelector("[data-cover]");
-    const up = wrapper.querySelector("[data-move-up]");
-    const down = wrapper.querySelector("[data-move-down]");
-    del.dataset.delete = image.id;
-    cover.dataset.cover = image.id;
-    up.dataset.moveUp = image.id;
-    down.dataset.moveDown = image.id;
-    if (getEditMode()) {
-      del?.classList.remove("hidden");
-      cover?.classList.remove("hidden");
-      up?.classList.remove("hidden");
-      down?.classList.remove("hidden");
-    }
-    initDeleteButton(del);
-    initCoverButton(cover);
-    initMoveUpButton(up);
-    initMoveDownButton(down);
+    const img = wrapper.querySelector("img");
+    if (!img) return;
+    img.setAttribute("src", image.url);
+    const popoverBtn = wrapper.querySelector(
+      "[commandfor=image-popover]"
+    );
+    if (!popoverBtn) return;
+    const deleteBtn = wrapper.querySelector("[data-delete]");
+    if (!deleteBtn) return;
+    const coverBtn = wrapper.querySelector("[data-cover]");
+    if (!coverBtn) return;
+    const upBtn = wrapper.querySelector("[data-move-up]");
+    if (!upBtn) return;
+    const downBtn = wrapper.querySelector("[data-move-down]");
+    if (!downBtn) return;
+    popoverBtn.dataset.url = image.url;
+    deleteBtn.dataset.delete = image.id;
+    coverBtn.dataset.cover = image.id;
+    upBtn.dataset.moveUp = image.id;
+    downBtn.dataset.moveDown = image.id;
+    updateEditUI();
+    initDeleteButton(deleteBtn);
+    initCoverButton(coverBtn);
+    initMoveUpButton(upBtn);
+    initMoveDownButton(downBtn);
+    initPopoverButton(popoverBtn);
     gallery.appendChild(wrapper);
-  }
-  updateGalleryButtons();
+  });
+  hideCurrentCoverButtons();
 }
-function updatePopoverButtons() {
-  const popover = document.getElementById("image-popover");
+function initPopoverButton(popoverBtn) {
+  const popover = getPopover();
   if (!popover) return;
   const popoverImg = popover.querySelector("img");
-  const buttons = document.querySelectorAll(
-    "button[commandfor='image-popover']"
-  );
-  buttons.forEach(
-    (button) => button.addEventListener("click", () => {
-      const url = button.querySelector("img")?.getAttribute("src") || "";
-      popoverImg?.setAttribute("src", url);
-    })
-  );
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      document.querySelector("[popover]:popover-open")?.hidePopover();
-    }
-  });
+  if (!popoverImg) return;
+  const url = popoverBtn.dataset.url;
+  if (!url) return;
+  popoverImg.setAttribute("src", url);
 }
 await initGallery();
-updatePopoverButtons();
-
-export { updateGalleryButtons };

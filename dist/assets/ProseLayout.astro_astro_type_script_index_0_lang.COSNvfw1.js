@@ -1,5 +1,5 @@
-import { saveContent } from './db.C5WFIfDw.js';
-import { updateContentsOnPage } from './content-manager.Bcz9BLLz.js';
+import { saveContent } from './db.DXOn0jkR.js';
+import { updateContentsOnPage } from './content-manager.DSCqf6hU.js';
 import './pocketbase.BNTe72gt.js';
 
 class TypedEvent extends CustomEvent {
@@ -122,4 +122,4 @@ initSaveButtons();
 updateEditUI();
 window.addEventListener(EditModeEvent.eventName, updateEditUI);
 
-export { EditModeEvent, getEditMode, showAlert };
+export { EditModeEvent, getEditMode, showAlert, updateEditUI };

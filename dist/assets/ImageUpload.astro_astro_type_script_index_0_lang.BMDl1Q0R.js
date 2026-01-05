@@ -1,8 +1,7 @@
-import { pb, getURLFromRecord } from './db.C5WFIfDw.js';
-import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.BTwIcViZ.js';
-import { updateGalleryButtons } from './GalleryLayout.astro_astro_type_script_index_0_lang.BhWA6ILp.js';
+import { pb, getURLFromRecord } from './db.DXOn0jkR.js';
+import { showAlert, getEditMode } from './ProseLayout.astro_astro_type_script_index_0_lang.COSNvfw1.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.Bcz9BLLz.js';
+import './content-manager.DSCqf6hU.js';
 
 const form = document.querySelector("[data-upload]");
 const input = document.querySelector("#file-upload");
@@ -126,9 +125,6 @@ async function uploadFiles(key, files) {
       console.error("Upload error:", result.reason);
     }
   });
-  if (successCount > 0) {
-    updateGalleryButtons();
-  }
   clearFileInput();
   if (successCount === files.length) {
     showAlert("Sikeres feltöltés", "success");
