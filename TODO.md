@@ -1,2 +1,1 @@
-- upload is broken in gallery
 - 'illusztraciok | grafikak'

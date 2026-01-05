@@ -1,4 +1,6 @@
 ---
+import { ImageOff } from "lucide-astro";
+
 export interface Props {
   href: string;
   coverKey: string;
@@ -38,6 +40,10 @@ const { href, coverKey, imageAlt, title, className } = Astro.props;
     <div></div>
   </div>
 </a>
+
+<template id="missing-cover">
+  <ImageOff class="size-10" />
+</template>
 
 <script>
   import "@scripts/art-card";
