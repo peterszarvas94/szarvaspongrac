@@ -1,1 +1,0 @@
-- 'illusztraciok | grafikak'
