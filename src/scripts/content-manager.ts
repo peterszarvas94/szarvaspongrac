@@ -1,4 +1,5 @@
 import { combineFilters, createFilter, getCollection } from "@scripts/db";
+import { parseDataAttr } from "@scripts/utils";
 
 interface CollectionItem {
   key: string;
@@ -14,28 +15,20 @@ export function getCachedContent(key: string): string | undefined {
   return contentCache.get(key);
 }
 
-function parseDataPb(
-  value: string,
-): { collection: string; key: string } | null {
-  const [collection, key] = value.split(":");
-  if (!collection || !key) return null;
-  return { collection, key };
-}
-
 async function updateElementsOnPage(
   collection: string,
   transformer: (element: HTMLElement, item: CollectionItem) => void,
 ) {
   const allPbElements = document.querySelectorAll<HTMLElement>("[data-pb]");
   const elements = Array.from(allPbElements).filter((el) => {
-    const parsed = parseDataPb(el.dataset.pb || "");
+    const parsed = parseDataAttr(el.dataset.pb || "");
     return parsed?.collection === collection;
   });
 
   if (!elements.length) return;
 
   const filters = elements
-    .map((element) => parseDataPb(element.dataset.pb || "")?.key)
+    .map((element) => parseDataAttr(element.dataset.pb || "")?.key)
     .filter((key): key is string => key !== undefined)
     .map((key) => createFilter(key));
 
@@ -46,7 +39,7 @@ async function updateElementsOnPage(
   )) as unknown as CollectionItem[];
 
   elements.forEach((element) => {
-    const parsed = parseDataPb(element.dataset.pb || "");
+    const parsed = parseDataAttr(element.dataset.pb || "");
     if (!parsed) return;
     const item = items.find((item) => item.key === parsed.key);
     if (item) {

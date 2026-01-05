@@ -1,5 +1,5 @@
 import { login, logout, isAuthenticated, getCurrentUser } from './db.DXOn0jkR.js';
-import './content-manager.DSCqf6hU.js';
+import './content-manager.Cvq1o4Aa.js';
 import './pocketbase.BNTe72gt.js';
 
 function initAuthForm() {

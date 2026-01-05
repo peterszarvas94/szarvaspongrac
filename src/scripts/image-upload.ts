@@ -2,6 +2,7 @@
 import { pb, getURLFromRecord } from "@scripts/db";
 import { showAlert } from "@scripts/toaster";
 import { appendImage } from "@scripts/gallery";
+import { getMaxSorting, isDuplicateFile } from "@scripts/utils";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 const input = document.querySelector<HTMLInputElement>("#file-upload");
@@ -13,10 +14,9 @@ let dt = new DataTransfer();
 
 function appendFilesToDt(newFiles: File[]) {
   newFiles.forEach((f) => {
-    const isDuplicate = [...dt.files].some(
-      (existing) => existing.name === f.name && existing.size === f.size,
-    );
-    if (!isDuplicate) dt.items.add(f);
+    if (!isDuplicateFile(f, [...dt.files])) {
+      dt.items.add(f);
+    }
   });
 }
 
@@ -72,14 +72,11 @@ function getMaxSortingFromGallery(): number {
   if (!gallery) return 0;
 
   const items = gallery.querySelectorAll<HTMLDivElement>("div[data-sorting]");
-  let maxSorting = 0;
+  const sortingValues = Array.from(items).map((item) =>
+    parseInt(item.dataset.sorting ?? "0", 10),
+  );
 
-  items.forEach((item) => {
-    const sorting = parseInt(item.dataset.sorting ?? "0", 10);
-    if (sorting > maxSorting) maxSorting = sorting;
-  });
-
-  return maxSorting;
+  return getMaxSorting(sortingValues);
 }
 
 function clearFileInput() {

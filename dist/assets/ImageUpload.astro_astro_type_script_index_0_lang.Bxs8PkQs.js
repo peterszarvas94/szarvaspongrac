@@ -1,8 +1,8 @@
 import { pb, getURLFromRecord } from './db.DXOn0jkR.js';
-import { showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.COSNvfw1.js';
-import { appendImage } from './GalleryLayout.astro_astro_type_script_index_0_lang.VL8CLJLL.js';
+import { showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.CFE0aOYe.js';
+import { appendImage } from './GalleryLayout.astro_astro_type_script_index_0_lang.BOkp_p3V.js';
+import { isDuplicateFile, getMaxSorting } from './content-manager.Cvq1o4Aa.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.DSCqf6hU.js';
 
 const form = document.querySelector("[data-upload]");
 const input = document.querySelector("#file-upload");
@@ -12,10 +12,9 @@ const label = document.querySelector(
 let dt = new DataTransfer();
 function appendFilesToDt(newFiles) {
   newFiles.forEach((f) => {
-    const isDuplicate = [...dt.files].some(
-      (existing) => existing.name === f.name && existing.size === f.size
-    );
-    if (!isDuplicate) dt.items.add(f);
+    if (!isDuplicateFile(f, [...dt.files])) {
+      dt.items.add(f);
+    }
   });
 }
 function removeFile(file) {
@@ -58,12 +57,10 @@ function getMaxSortingFromGallery() {
   const gallery = document.querySelector("[data-images]");
   if (!gallery) return 0;
   const items = gallery.querySelectorAll("div[data-sorting]");
-  let maxSorting = 0;
-  items.forEach((item) => {
-    const sorting = parseInt(item.dataset.sorting ?? "0", 10);
-    if (sorting > maxSorting) maxSorting = sorting;
-  });
-  return maxSorting;
+  const sortingValues = Array.from(items).map(
+    (item) => parseInt(item.dataset.sorting ?? "0", 10)
+  );
+  return getMaxSorting(sortingValues);
 }
 function clearFileInput() {
   dt = new DataTransfer();

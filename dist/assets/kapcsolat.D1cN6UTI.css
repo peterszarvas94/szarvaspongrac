@@ -66,9 +66,7 @@
   :root, :host {
     --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-    --color-gray-900: oklch(21% .034 264.665);
     --color-black: #000;
-    --color-white: #fff;
     --spacing: .25rem;
     --container-md: 28rem;
     --container-xl: 36rem;
@@ -5896,12 +5894,12 @@
     }
   }
 
-  .bg-gray-900 {
-    background-color: var(--color-gray-900);
-  }
-
   .bg-info {
     background-color: var(--color-info);
+  }
+
+  .bg-neutral {
+    background-color: var(--color-neutral);
   }
 
   .bg-primary {
@@ -6135,12 +6133,12 @@
     color: var(--color-error);
   }
 
-  .text-primary {
-    color: var(--color-primary);
+  .text-neutral-content {
+    color: var(--color-neutral-content);
   }
 
-  .text-white {
-    color: var(--color-white);
+  .text-primary {
+    color: var(--color-primary);
   }
 
   .capitalize {
@@ -6433,13 +6431,13 @@
     display: block;
   }
 
-  .backdrop\:bg-black\/50::backdrop {
-    background-color: #00000080;
+  .backdrop\:bg-neutral\/50::backdrop {
+    background-color: var(--color-neutral);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .backdrop\:bg-black\/50::backdrop {
-      background-color: color-mix(in oklab, var(--color-black) 50%, transparent);
+    .backdrop\:bg-neutral\/50::backdrop {
+      background-color: color-mix(in oklab, var(--color-neutral) 50%, transparent);
     }
   }
 
@@ -6458,14 +6456,14 @@
     inset: calc(var(--spacing) * 0);
   }
 
-  .before\:bg-black\/40:before {
+  .before\:bg-neutral\/40:before {
     content: var(--tw-content);
-    background-color: #0006;
+    background-color: var(--color-neutral);
   }
 
   @supports (color: color-mix(in lab, red, red)) {
-    .before\:bg-black\/40:before {
-      background-color: color-mix(in oklab, var(--color-black) 40%, transparent);
+    .before\:bg-neutral\/40:before {
+      background-color: color-mix(in oklab, var(--color-neutral) 40%, transparent);
     }
   }
 

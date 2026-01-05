@@ -9,6 +9,9 @@
     "astro": "astro",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:delete": "./bin/delete_test_user.sh",
     "pb:dev:mac": "./pb/pocketbase_mac_arm64 serve --dev --dir=./pb/pb_data --migrationsDir=./pb/pb_migrations",
     "pb:dev:linux": "./pb/pocketbase_linux_amd64 serve --dev --dir=./pb/pb_data --migrationsDir=./pb/pb_migrations"
   },
@@ -34,8 +37,11 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
+    "@types/jsdom": "^27.0.0",
     "daisyui": "^5.5.14",
+    "jsdom": "^27.4.0",
     "prettier": "^3.7.4",
-    "prettier-plugin-astro": "^0.14.1"
+    "prettier-plugin-astro": "^0.14.1",
+    "vitest": "^4.0.16"
   }
 }

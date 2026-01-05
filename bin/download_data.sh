@@ -5,4 +5,7 @@ SERVER="peti@shared"
 REMOTE_PATH="/home/peti/projects/szarvaspongrac/pb"
 LOCAL_PATH="./pb"
 
-rsync -avz --delete --progress "$SERVER:$REMOTE_PATH/pb_data/" "$LOCAL_PATH/pb_data/"
+# Exclude superusers to preserve local test accounts
+rsync -avz --delete --progress \
+  --exclude='_superusers/' \
+  "$SERVER:$REMOTE_PATH/pb_data/" "$LOCAL_PATH/pb_data/"

@@ -1,7 +1,7 @@
 import { getImageUrls, deleteImage, setCoverImage, swapImageOrder } from './db.DXOn0jkR.js';
-import { updateEditUI, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.COSNvfw1.js';
+import { updateEditUI, showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.CFE0aOYe.js';
 import './pocketbase.BNTe72gt.js';
-import './content-manager.DSCqf6hU.js';
+import './content-manager.Cvq1o4Aa.js';
 
 function confirm(options) {
   return new Promise((resolve) => {

@@ -2,6 +2,7 @@ import { saveContent } from "@scripts/db";
 import { updateContentsOnPage } from "@scripts/content-manager";
 import { TypedEvent } from "@scripts/event";
 import { showAlert } from "@scripts/toaster";
+import { parseDataAttr } from "@scripts/utils";
 
 let editMode = false;
 
@@ -49,14 +50,6 @@ export function updateEditUI() {
       element.classList.add("hidden");
     }
   });
-}
-
-function parseDataAttr(
-  value: string,
-): { collection: string; key: string } | null {
-  const [collection, key] = value.split(":");
-  if (!collection || !key) return null;
-  return { collection, key };
 }
 
 function initSaveButtons() {

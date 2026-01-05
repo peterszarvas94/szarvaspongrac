@@ -1,5 +1,5 @@
 import { saveContent } from './db.DXOn0jkR.js';
-import { updateContentsOnPage } from './content-manager.DSCqf6hU.js';
+import { parseDataAttr, updateContentsOnPage } from './content-manager.Cvq1o4Aa.js';
 import './pocketbase.BNTe72gt.js';
 
 class TypedEvent extends CustomEvent {
@@ -88,11 +88,6 @@ function updateEditUI() {
       element.classList.add("hidden");
     }
   });
-}
-function parseDataAttr(value) {
-  const [collection, key] = value.split(":");
-  if (!collection || !key) return null;
-  return { collection, key };
 }
 function initSaveButtons() {
   const saveButtons = document.querySelectorAll("[data-save]");

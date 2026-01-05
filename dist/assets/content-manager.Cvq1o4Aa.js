@@ -1,29 +1,39 @@
 import { createFilter, combineFilters, getCollection } from './db.DXOn0jkR.js';
 
-const contentCache = /* @__PURE__ */ new Map();
-function getCachedContent(key) {
-  return contentCache.get(key);
-}
-function parseDataPb(value) {
+function parseDataAttr(value) {
   const [collection, key] = value.split(":");
   if (!collection || !key) return null;
   return { collection, key };
 }
+function getMaxSorting(sortingValues) {
+  if (sortingValues.length === 0) return 0;
+  return Math.max(...sortingValues);
+}
+function isDuplicateFile(file, existingFiles) {
+  return existingFiles.some(
+    (existing) => existing.name === file.name && existing.size === file.size
+  );
+}
+
+const contentCache = /* @__PURE__ */ new Map();
+function getCachedContent(key) {
+  return contentCache.get(key);
+}
 async function updateElementsOnPage(collection, transformer) {
   const allPbElements = document.querySelectorAll("[data-pb]");
   const elements = Array.from(allPbElements).filter((el) => {
-    const parsed = parseDataPb(el.dataset.pb || "");
+    const parsed = parseDataAttr(el.dataset.pb || "");
     return parsed?.collection === collection;
   });
   if (!elements.length) return;
-  const filters = elements.map((element) => parseDataPb(element.dataset.pb || "")?.key).filter((key) => key !== void 0).map((key) => createFilter(key));
+  const filters = elements.map((element) => parseDataAttr(element.dataset.pb || "")?.key).filter((key) => key !== void 0).map((key) => createFilter(key));
   const combined = combineFilters(filters);
   const items = await getCollection(
     collection,
     combined
   );
   elements.forEach((element) => {
-    const parsed = parseDataPb(element.dataset.pb || "");
+    const parsed = parseDataAttr(element.dataset.pb || "");
     if (!parsed) return;
     const item = items.find((item2) => item2.key === parsed.key);
     if (item) {
@@ -52,4 +62,4 @@ async function updateLinksOnPage() {
 await updateContentsOnPage();
 await updateLinksOnPage();
 
-export { getCachedContent, updateContentsOnPage };
+export { getCachedContent, getMaxSorting, isDuplicateFile, parseDataAttr, updateContentsOnPage };
