@@ -5531,12 +5531,13 @@
     height: calc(var(--spacing) * 6);
   }
 
-  .h-4 {
-    height: calc(var(--spacing) * 4);
+  .size-10 {
+    width: calc(var(--spacing) * 10);
+    height: calc(var(--spacing) * 10);
   }
 
-  .h-5 {
-    height: calc(var(--spacing) * 5);
+  .h-4 {
+    height: calc(var(--spacing) * 4);
   }
 
   .h-6 {
@@ -5597,10 +5598,6 @@
 
   .w-4 {
     width: calc(var(--spacing) * 4);
-  }
-
-  .w-5 {
-    width: calc(var(--spacing) * 5);
   }
 
   .w-6 {
@@ -5884,7 +5881,7 @@
     }
   }
 
-  .bg-base-content, .bg-base-content\/20 {
+  .bg-base-content\/20 {
     background-color: var(--color-base-content);
   }
 
@@ -6014,16 +6011,8 @@
     padding-inline: calc(var(--spacing) * 4);
   }
 
-  .px-6 {
-    padding-inline: calc(var(--spacing) * 6);
-  }
-
   .py-2 {
     padding-block: calc(var(--spacing) * 2);
-  }
-
-  .py-3 {
-    padding-block: calc(var(--spacing) * 3);
   }
 
   .py-4 {
@@ -6291,6 +6280,60 @@
         --btn-noise: none;
       }
     }
+
+    .btn-soft:not(.btn-active, :hover, :active:focus, :focus-visible, input:checked:not(.filter .btn), :disabled, [disabled], .btn-disabled) {
+      --btn-shadow: "";
+      --btn-fg: var(--btn-color, var(--color-base-content));
+      --btn-bg: var(--btn-color, var(--color-base-content));
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .btn-soft:not(.btn-active, :hover, :active:focus, :focus-visible, input:checked:not(.filter .btn), :disabled, [disabled], .btn-disabled) {
+        --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-content)) 8%, var(--color-base-100));
+      }
+    }
+
+    .btn-soft:not(.btn-active, :hover, :active:focus, :focus-visible, input:checked:not(.filter .btn), :disabled, [disabled], .btn-disabled) {
+      --btn-border: var(--btn-color, var(--color-base-content));
+    }
+
+    @supports (color: color-mix(in lab, red, red)) {
+      .btn-soft:not(.btn-active, :hover, :active:focus, :focus-visible, input:checked:not(.filter .btn), :disabled, [disabled], .btn-disabled) {
+        --btn-border: color-mix(in oklab, var(--btn-color, var(--color-base-content)) 10%, var(--color-base-100));
+      }
+    }
+
+    .btn-soft:not(.btn-active, :hover, :active:focus, :focus-visible, input:checked:not(.filter .btn), :disabled, [disabled], .btn-disabled) {
+      --btn-noise: none;
+    }
+
+    @media (hover: none) {
+      .btn-soft:not(.btn-active, :active, :focus-visible, input:checked:not(.filter .btn)):hover {
+        --btn-shadow: "";
+        --btn-fg: var(--btn-color, var(--color-base-content));
+        --btn-bg: var(--btn-color, var(--color-base-content));
+      }
+
+      @supports (color: color-mix(in lab, red, red)) {
+        .btn-soft:not(.btn-active, :active, :focus-visible, input:checked:not(.filter .btn)):hover {
+          --btn-bg: color-mix(in oklab, var(--btn-color, var(--color-base-content)) 8%, var(--color-base-100));
+        }
+      }
+
+      .btn-soft:not(.btn-active, :active, :focus-visible, input:checked:not(.filter .btn)):hover {
+        --btn-border: var(--btn-color, var(--color-base-content));
+      }
+
+      @supports (color: color-mix(in lab, red, red)) {
+        .btn-soft:not(.btn-active, :active, :focus-visible, input:checked:not(.filter .btn)):hover {
+          --btn-border: color-mix(in oklab, var(--btn-color, var(--color-base-content)) 10%, var(--color-base-100));
+        }
+      }
+
+      .btn-soft:not(.btn-active, :active, :focus-visible, input:checked:not(.filter .btn)):hover {
+        --btn-noise: none;
+      }
+    }
   }
 
   .blur {
@@ -6340,11 +6383,6 @@
     transition-property: opacity;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
-
-  .duration-200 {
-    --tw-duration: .2s;
-    transition-duration: .2s;
   }
 
   .duration-300 {
@@ -6510,16 +6548,6 @@
       }
     }
 
-    .hover\:bg-base-content\/70:hover {
-      background-color: var(--color-base-content);
-    }
-
-    @supports (color: color-mix(in lab, red, red)) {
-      .hover\:bg-base-content\/70:hover {
-        background-color: color-mix(in oklab, var(--color-base-content) 70%, transparent);
-      }
-    }
-
     .hover\:text-base-content:hover {
       color: var(--color-base-content);
     }
@@ -6600,8 +6628,8 @@
       columns: 4;
     }
 
-    .lg\:grid-cols-4 {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+    .lg\:grid-cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .lg\:px-8 {

@@ -93,10 +93,21 @@ function initDeleteButton(button) {
       await deleteImage(id);
       wrapper.remove();
       showAlert("Törölve", "success");
+      checkEmptyGallery();
     } catch {
       showAlert("Nem sikerült törölni a képet", "error");
     }
   });
+}
+async function checkEmptyGallery() {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const key = gallery.dataset.images;
+  if (!key) return;
+  const images = await getImageUrls(key);
+  if (images.length === 0) {
+    showEmptyGalleryText();
+  }
 }
 function showButtons(id) {
   const wrapper = getWrapper(id);
@@ -245,12 +256,31 @@ function appendImage({
   initImageButtons(id);
   updateEditUI();
 }
+function hideEmptyGalleryText() {
+  const div = document.querySelector("div#empty-gallery");
+  if (!div) return;
+  div.remove();
+}
+function showEmptyGalleryText() {
+  const gallery = getGallery();
+  if (!gallery) return;
+  const template = document.querySelector(
+    "template#empty-gallery-template"
+  );
+  if (!template) return;
+  const fragment = template.content.cloneNode(true);
+  gallery.after(fragment);
+}
 async function initGallery() {
   const gallery = getGallery();
   if (!gallery) return;
   const key = gallery.dataset.images;
   if (!key) return;
   const images = await getImageUrls(key);
+  if (images.length === 0) {
+    showEmptyGalleryText();
+    return;
+  }
   images.sort((a, b) => a.sorting - b.sorting);
   images.forEach((image) => {
     appendImage({
@@ -289,4 +319,4 @@ function initImageButtons(id) {
 }
 await initGallery();
 
-export { appendImage };
+export { appendImage, hideEmptyGalleryText };

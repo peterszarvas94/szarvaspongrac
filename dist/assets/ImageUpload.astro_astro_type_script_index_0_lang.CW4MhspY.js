@@ -1,6 +1,6 @@
 import { pb, getURLFromRecord } from './db.DXOn0jkR.js';
 import { showAlert } from './ProseLayout.astro_astro_type_script_index_0_lang.CFE0aOYe.js';
-import { appendImage } from './GalleryLayout.astro_astro_type_script_index_0_lang.BOkp_p3V.js';
+import { appendImage, hideEmptyGalleryText } from './GalleryLayout.astro_astro_type_script_index_0_lang.CzRqAlUc.js';
 import { isDuplicateFile, getMaxSorting } from './content-manager.Cvq1o4Aa.js';
 import './pocketbase.BNTe72gt.js';
 
@@ -92,6 +92,7 @@ async function uploadFiles(key, files) {
     }
   });
   clearFileInput();
+  hideEmptyGalleryText();
   if (successCount === files.length) {
     showAlert("Sikeres feltöltés", "success");
   } else if (successCount > 0) {

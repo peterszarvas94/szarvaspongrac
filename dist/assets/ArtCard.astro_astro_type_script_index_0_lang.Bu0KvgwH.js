@@ -7,7 +7,19 @@ await Promise.all(
     const key = img.dataset.cover;
     if (!key) return;
     const coverUrl = await getCoverImageUrl(key);
-    if (!coverUrl) return;
+    if (!coverUrl) {
+      const parent = img.parentElement;
+      if (!parent) return;
+      const tempate = document.querySelector(
+        "template#missing-cover"
+      );
+      if (!tempate) return;
+      const missingIcon = tempate?.content.cloneNode(true);
+      if (!missingIcon) return;
+      img.remove();
+      parent.prepend(missingIcon);
+      return;
+    }
     img.src = coverUrl;
     img.onload = () => img.classList.replace("opacity-0", "opacity-100");
   })
