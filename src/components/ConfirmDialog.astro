@@ -2,20 +2,36 @@
 // Confirm Dialog using native Popover API
 ---
 
-<div id="confirm-dialog" popover class="p-0 rounded-lg shadow-xl border-0 backdrop:bg-neutral/50">
-  <div class="card bg-base-100 w-96">
+<div
+  id="confirm-dialog"
+  popover
+  class="p-0 rounded-lg shadow-xl border-0 backdrop:bg-neutral/50"
+>
+  <div class="card bg-base-100 w-full max-w-96">
     <div class="card-body">
-      <h3 id="confirm-dialog-title" class="card-title text-lg">
+      <h3
+        id="confirm-dialog-title"
+        class="card-title text-lg"
+      >
         Megerősítés
       </h3>
-      <p id="confirm-dialog-message" class="py-4">
+      <p
+        id="confirm-dialog-message"
+        class="py-4"
+      >
         Biztosan folytatni szeretnéd?
       </p>
       <div class="card-actions justify-end gap-2">
-        <button id="confirm-dialog-cancel" class="btn btn-ghost">
+        <button
+          id="confirm-dialog-cancel"
+          class="btn btn-ghost"
+        >
           Mégse
         </button>
-        <button id="confirm-dialog-confirm" class="btn btn-primary">
+        <button
+          id="confirm-dialog-confirm"
+          class="btn btn-primary"
+        >
           Rendben
         </button>
       </div>
