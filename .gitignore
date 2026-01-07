@@ -21,3 +21,5 @@ pnpm-debug.log*
 
 # data
 /pb/pb_data
+
+/dist
