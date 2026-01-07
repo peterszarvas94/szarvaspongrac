@@ -1,5 +1,5 @@
-import { saveContent } from "@scripts/db";
 import { updateContentsOnPage } from "@scripts/content-manager";
+import { saveContent } from "@scripts/db";
 import { TypedEvent } from "@scripts/event";
 import { showAlert } from "@scripts/toaster";
 import { parseDataAttr } from "@scripts/utils";

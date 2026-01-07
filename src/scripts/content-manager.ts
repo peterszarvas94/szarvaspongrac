@@ -1,3 +1,4 @@
+import { setCachedContent } from "@scripts/content-cache";
 import { combineFilters, createFilter, getCollection } from "@scripts/db";
 import { parseDataAttr } from "@scripts/utils";
 
@@ -6,13 +7,6 @@ interface CollectionItem {
   value?: string;
   url?: string;
   text?: string;
-}
-
-// In-memory content cache
-const contentCache = new Map<string, string>();
-
-export function getCachedContent(key: string): string | undefined {
-  return contentCache.get(key);
 }
 
 async function updateElementsOnPage(
@@ -58,7 +52,7 @@ export async function updateContentsOnPage() {
   // Cache content for Editor to use
   items?.forEach((item) => {
     if (item.value) {
-      contentCache.set(item.key, item.value);
+      setCachedContent(item.key, item.value);
     }
   });
 }

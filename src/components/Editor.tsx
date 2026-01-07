@@ -1,11 +1,11 @@
-import { createSignal, onMount, onCleanup, For, Show } from "solid-js";
-import { Editor as TipTap } from "@tiptap/core";
-import { pb, getURLFromRecord } from "@scripts/db";
-import { getCachedContent } from "@scripts/content-manager";
-import "@styles/tiptap.css";
-import { toolbarActions, extensions } from "@scripts/tiptap-setup";
-import { getEditMode, EditModeEvent } from "@scripts/edit";
+import { getCachedContent } from "@scripts/content-cache";
+import { getURLFromRecord, pb } from "@scripts/db";
+import { EditModeEvent, getEditMode } from "@scripts/edit";
+import { extensions, toolbarActions } from "@scripts/tiptap-setup";
 import { showAlert } from "@scripts/toaster";
+import "@styles/tiptap.css";
+import { Editor as TipTap } from "@tiptap/core";
+import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 
 interface EditorProps {
   contentKey: string;
@@ -17,9 +17,10 @@ export default function Editor(props: EditorProps) {
 
   const handleEditModeChange = (event: EditModeEvent) => {
     setIsEditMode(event.detail.editMode);
-    // Get content from cache when entering edit mode
     if (event.detail.editMode) {
       setContent(getCachedContent(props.contentKey));
+    } else {
+      setContent(undefined);
     }
   };
 

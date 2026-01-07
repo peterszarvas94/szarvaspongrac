@@ -1,28 +1,28 @@
+import { Figure } from "@scripts/tiptap-figure";
+import type { Editor } from "@tiptap/core";
+import Placeholder from "@tiptap/extension-placeholder";
+import TextAlign from "@tiptap/extension-text-align";
+import StarterKit from "@tiptap/starter-kit";
 import {
   Bold,
-  Italic,
-  Strikethrough,
   Heading1,
   Heading2,
   Heading3,
-  Pilcrow,
+  ImageIcon,
+  Italic,
   List,
   ListOrdered,
+  Pilcrow,
   Quote,
-  Undo,
   Redo,
-  TextAlignStart,
+  Strikethrough,
   TextAlignCenter,
   TextAlignEnd,
   TextAlignJustify,
-  ImageIcon,
+  TextAlignStart,
+  Undo,
 } from "lucide-solid";
 import type { JSX } from "solid-js";
-import type { Editor } from "@tiptap/core";
-import StarterKit from "@tiptap/starter-kit";
-import Placeholder from "@tiptap/extension-placeholder";
-import TextAlign from "@tiptap/extension-text-align";
-import { Figure } from "@scripts/tiptap-figure";
 
 type ToolbarAction =
   | {

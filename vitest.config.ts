@@ -8,6 +8,7 @@ export default defineConfig({
     setupFiles: ["./test/setup.ts"],
     include: ["test/**/*.test.ts", "src/**/*.test.ts"],
     fileParallelism: false,
+    reporters: ["verbose"],
   },
   resolve: {
     alias: {
