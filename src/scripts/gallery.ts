@@ -327,20 +327,77 @@ async function initGallery() {
   hideCurrentCoverButtons();
 }
 
+let currentImageIndex = -1;
+
+function getGalleryImageUrls(): string[] {
+  const wrappers = getWrappers();
+  return wrappers
+    .map((w) => w.querySelector<HTMLButtonElement>("[data-url]")?.dataset.url)
+    .filter((url): url is string => !!url);
+}
+
+function showImageAtIndex(index: number) {
+  const urls = getGalleryImageUrls();
+  if (index < 0 || index >= urls.length) return;
+
+  const popover = getPopover();
+  if (!popover) return;
+
+  const popoverImg = popover.querySelector<HTMLImageElement>("img");
+  if (!popoverImg) return;
+
+  currentImageIndex = index;
+  popoverImg.setAttribute("src", urls[index]);
+}
+
+function showNextImage() {
+  const urls = getGalleryImageUrls();
+  if (currentImageIndex < urls.length - 1) {
+    showImageAtIndex(currentImageIndex + 1);
+  }
+}
+
+function showPrevImage() {
+  if (currentImageIndex > 0) {
+    showImageAtIndex(currentImageIndex - 1);
+  }
+}
+
+function initPopoverNavigation() {
+  const popover = getPopover();
+  if (!popover) return;
+
+  const prevBtn = document.querySelector<HTMLButtonElement>("#popover-prev");
+  const nextBtn = document.querySelector<HTMLButtonElement>("#popover-next");
+
+  prevBtn?.addEventListener("click", showPrevImage);
+  nextBtn?.addEventListener("click", showNextImage);
+
+  document.addEventListener("keydown", (e) => {
+    if (!popover.matches(":popover-open")) return;
+
+    if (e.key === "ArrowRight") {
+      e.preventDefault();
+      showNextImage();
+    } else if (e.key === "ArrowLeft") {
+      e.preventDefault();
+      showPrevImage();
+    }
+  });
+}
+
 function initPopoverButton(popoverBtn: HTMLButtonElement) {
   popoverBtn.addEventListener("click", () => {
-    const popover = getPopover();
-    if (!popover) return;
-
-    const popoverImg = popover.querySelector<HTMLImageElement>("img");
-    if (!popoverImg) return;
-
+    const urls = getGalleryImageUrls();
     const url = popoverBtn.dataset.url;
     if (!url) return;
 
-    popoverImg.setAttribute("src", url);
+    currentImageIndex = urls.indexOf(url);
+    showImageAtIndex(currentImageIndex);
   });
 }
+
+initPopoverNavigation();
 
 export function initImageButtons(id: string) {
   const wrapper = getWrapper(id);

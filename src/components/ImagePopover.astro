@@ -1,5 +1,5 @@
 ---
-import { X } from "lucide-astro";
+import { ChevronLeft, ChevronRight, X } from "lucide-astro";
 ---
 
 {/* one popover for all images template */}
@@ -13,11 +13,29 @@ import { X } from "lucide-astro";
       commandfor="image-popover"
       command="hide-popover"
       class="absolute top-4 right-4 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer"
-      aria-label="Kép bezárása (Esc)"
-      title="Kép bezárása (Esc)"
+      aria-label="Kép bezárása [Esc]"
+      title="Kép bezárása [Esc]"
       type="button"
     >
       <X class="w-6 h-6 text-base-100" />
+    </button>
+    <button
+      id="popover-prev"
+      class="absolute left-4 top-1/2 -translate-y-1/2 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer"
+      aria-label="Előző kép [←]"
+      title="Előző kép [←]"
+      type="button"
+    >
+      <ChevronLeft class="w-6 h-6 text-base-100" />
+    </button>
+    <button
+      id="popover-next"
+      class="absolute right-4 top-1/2 -translate-y-1/2 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer"
+      aria-label="Következő kép [→]"
+      title="Következő kép [→]"
+      type="button"
+    >
+      <ChevronRight class="w-6 h-6 text-base-100" />
     </button>
     <img
       src=""
