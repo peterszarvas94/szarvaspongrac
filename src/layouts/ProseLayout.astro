@@ -24,7 +24,7 @@ const { key, title, description, pageTitle } = Astro.props;
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div data-auth="true" class="w-full p-4 flex justify-center gap-2">
+    <div data-auth="true" class="hidden w-full p-4 flex justify-center gap-2">
       <EditButton />
       <CancelSaveButtons contentKey={key} />
     </div>
@@ -42,7 +42,7 @@ const { key, title, description, pageTitle } = Astro.props;
       <slot />
     </article>
 
-    <div data-auth="true" class="w-full p-4 flex justify-center gap-2">
+    <div data-auth="true" class="hidden w-full p-4 flex justify-center gap-2">
       <EditButton />
       <CancelSaveButtons contentKey={key} />
     </div>
