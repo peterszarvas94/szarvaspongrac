@@ -26,6 +26,10 @@ StandardError=append:/home/peti/pb/std.log
 WantedBy=multi-user.target
 EOF
 
+# Allow peti to restart pocketbase without password
+echo 'peti ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart pocketbase' | sudo tee /etc/sudoers.d/pocketbase
+sudo chmod 440 /etc/sudoers.d/pocketbase
+
 sudo systemctl daemon-reload
 sudo systemctl enable --now pocketbase
 sudo systemctl status pocketbase
