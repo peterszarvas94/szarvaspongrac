@@ -328,16 +328,18 @@ async function initGallery() {
 }
 
 function initPopoverButton(popoverBtn: HTMLButtonElement) {
-  const popover = getPopover();
-  if (!popover) return;
+  popoverBtn.addEventListener("click", () => {
+    const popover = getPopover();
+    if (!popover) return;
 
-  const popoverImg = popover.querySelector<HTMLImageElement>("img");
-  if (!popoverImg) return;
+    const popoverImg = popover.querySelector<HTMLImageElement>("img");
+    if (!popoverImg) return;
 
-  const url = popoverBtn.dataset.url;
-  if (!url) return;
+    const url = popoverBtn.dataset.url;
+    if (!url) return;
 
-  popoverImg.setAttribute("src", url);
+    popoverImg.setAttribute("src", url);
+  });
 }
 
 export function initImageButtons(id: string) {
