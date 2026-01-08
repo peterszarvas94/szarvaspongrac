@@ -23,3 +23,5 @@ pnpm-debug.log*
 /pb/pb_data
 
 /dist
+
+/backups
