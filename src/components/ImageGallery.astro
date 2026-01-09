@@ -13,7 +13,7 @@ const { key } = Astro.props;
 <div
   id="image-gallery"
   data-images={key}
-  class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4"
+  class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-6"
 >
 </div>
 
@@ -33,13 +33,14 @@ const { key } = Astro.props;
     data-id="id"
     data-sorting="0"
     data-cover="false"
-    class="relative mb-4 block"
+    class="relative block"
   >
+    <div class="hover:bg-error h-3 break-after-avoid"></div>
     <button
       commandfor="image-popover"
       command="show-popover"
       data-url="url"
-      class="w-full block cursor-pointer border-0 bg-transparent p-0"
+      class="w-full block cursor-pointer border-0 bg-transparent p-0 break-after-avoid"
       type="button"
       aria-label="Kép megnyitása"
       title="Kép megnyitása"
@@ -93,5 +94,6 @@ const { key } = Astro.props;
         </button>
       </div>
     </div>
+    <div class="hover:bg-accent h-3"></div>
   </div>
 </template>

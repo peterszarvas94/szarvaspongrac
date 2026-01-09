@@ -9,6 +9,7 @@ import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
 
 interface EditorProps {
   contentKey: string;
+  id?: string;
 }
 
 export default function Editor(props: EditorProps) {
