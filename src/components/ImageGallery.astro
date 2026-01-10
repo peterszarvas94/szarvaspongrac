@@ -85,14 +85,21 @@ const { key } = Astro.props;
       class="absolute -left-6 top-1/2 -translate-y-1/2 h-30 w-6"
       data-drop-before="0"
     >
+      <div
+        class="pointer-events-none absolute left-1/2 top-0 h-full w-1 -translate-x-1/2 rounded-full bg-base-content opacity-0 transition-opacity"
+        data-drop-line
+      >
+      </div>
     </div>
-  </div>
-</template>
-
-<template id="dropzone-after">
-  <div
-    class="absolute -right-6 top-1/2 -translate-y-1/2 h-30 w-6"
-    data-drop-after="0"
-  >
+    <div
+      class="absolute -right-6 top-1/2 -translate-y-1/2 h-30 w-6"
+      data-drop-after="0"
+    >
+      <div
+        class="pointer-events-none absolute left-1/2 top-0 h-full w-1 -translate-x-1/2 rounded-full bg-base-content opacity-0 transition-opacity"
+        data-drop-line
+      >
+      </div>
+    </div>
   </div>
 </template>

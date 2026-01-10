@@ -22,10 +22,6 @@ function getTemplate() {
   );
 }
 
-function getAfterDropZoneTemplate() {
-  return document.querySelector<HTMLTemplateElement>("template#dropzone-after");
-}
-
 function getWrapper(id: string) {
   return getWrappers().find((wrapper) => wrapper.dataset.id === id);
 }
@@ -60,7 +56,6 @@ function initDeleteButton(button: HTMLButtonElement) {
     try {
       await deleteImage(id);
       wrapper.remove();
-      refreshAfterDropZones();
       showAlert("Törölve", "success");
       checkEmptyGallery();
     } catch {
@@ -197,7 +192,6 @@ function initMoveUpButton(button: HTMLButtonElement) {
 
     await swapImageOrder(id, prevId);
     prevWrapper.insertAdjacentElement("beforebegin", wrapper);
-    refreshAfterDropZones();
 
     showAlert("Sorrend frissítve", "success");
   });
@@ -230,7 +224,6 @@ function initMoveDownButton(button: HTMLButtonElement) {
 
     await swapImageOrder(id, nextId);
     nextWrapper.insertAdjacentElement("afterend", wrapper);
-    refreshAfterDropZones();
 
     showAlert("Sorrend frissítve", "success");
   });
@@ -294,17 +287,31 @@ export function appendImage({
     wrapper.querySelector<HTMLDivElement>("[data-drop-before]");
   if (dropZoneBefore) dropZoneBefore.dataset.dropBefore = id;
 
+  const dropZoneAfter =
+    wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
+  if (dropZoneAfter) dropZoneAfter.dataset.dropAfter = id;
+
   gallery.appendChild(wrapper);
   initImageButtons(id);
   initDropZones(id);
-  refreshAfterDropZones();
   updateEditUI();
+}
+
+function getDropLine(dropZone: HTMLDivElement) {
+  return dropZone.querySelector<HTMLDivElement>("[data-drop-line]");
+}
+
+function setDropLineActive(dropZone: HTMLDivElement, active: boolean) {
+  const line = getDropLine(dropZone);
+  if (!line) return;
+
+  line.classList.toggle("opacity-0", !active);
 }
 
 function initDropZoneBefore(dropZoneBefore: HTMLDivElement) {
   dropZoneBefore.addEventListener("dragenter", (event) => {
     event.preventDefault();
-    dropZoneBefore.classList.add("bg-accent");
+    setDropLineActive(dropZoneBefore, true);
   });
 
   dropZoneBefore.addEventListener("dragover", (event) => {
@@ -312,12 +319,12 @@ function initDropZoneBefore(dropZoneBefore: HTMLDivElement) {
   });
 
   dropZoneBefore.addEventListener("dragleave", () => {
-    dropZoneBefore.classList.remove("bg-accent");
+    setDropLineActive(dropZoneBefore, false);
   });
 
   dropZoneBefore.addEventListener("drop", (event) => {
     event.preventDefault();
-    dropZoneBefore.classList.remove("bg-accent");
+    setDropLineActive(dropZoneBefore, false);
 
     const targetId = dropZoneBefore.dataset.dropBefore;
     const draggedId = event.dataTransfer?.getData("text/plain") ?? "";
@@ -334,7 +341,7 @@ function initDropZoneBefore(dropZoneBefore: HTMLDivElement) {
 function initDropZoneAfter(dropZoneAfter: HTMLDivElement) {
   dropZoneAfter.addEventListener("dragenter", (event) => {
     event.preventDefault();
-    dropZoneAfter.classList.add("bg-error");
+    setDropLineActive(dropZoneAfter, true);
   });
 
   dropZoneAfter.addEventListener("dragover", (event) => {
@@ -342,12 +349,12 @@ function initDropZoneAfter(dropZoneAfter: HTMLDivElement) {
   });
 
   dropZoneAfter.addEventListener("dragleave", () => {
-    dropZoneAfter.classList.remove("bg-error");
+    setDropLineActive(dropZoneAfter, false);
   });
 
   dropZoneAfter.addEventListener("drop", (event) => {
     event.preventDefault();
-    dropZoneAfter.classList.remove("bg-error");
+    setDropLineActive(dropZoneAfter, false);
 
     const targetId = dropZoneAfter.dataset.dropAfter;
     const draggedId = event.dataTransfer?.getData("text/plain") ?? "";
@@ -359,50 +366,6 @@ function initDropZoneAfter(dropZoneAfter: HTMLDivElement) {
       draggedId,
     });
   });
-}
-
-export function removeAfterDropZone(id: string) {
-  const wrapper = getWrapper(id);
-  if (!wrapper) return;
-
-  const dropZoneAfter =
-    wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
-  dropZoneAfter?.remove();
-}
-
-export function addAfterDropZone(id: string) {
-  const wrapper = getWrapper(id);
-  if (!wrapper) return;
-
-  const existing = wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
-  if (existing) {
-    existing.dataset.dropAfter = id;
-    return;
-  }
-
-  const template = getAfterDropZoneTemplate();
-  if (!template) return;
-
-  const fragment = template.content.cloneNode(true) as DocumentFragment;
-  const dropZoneAfter = fragment.firstElementChild as HTMLDivElement | null;
-  if (!dropZoneAfter) return;
-
-  dropZoneAfter.dataset.dropAfter = id;
-  initDropZoneAfter(dropZoneAfter);
-  wrapper.appendChild(dropZoneAfter);
-}
-
-function refreshAfterDropZones() {
-  const wrappers = getWrappers();
-  wrappers.forEach((wrapper) => {
-    const wrapperId = wrapper.dataset.id;
-    if (!wrapperId) return;
-    removeAfterDropZone(wrapperId);
-  });
-
-  const lastWrapper = wrappers[wrappers.length - 1];
-  const lastId = lastWrapper?.dataset.id;
-  if (lastId) addAfterDropZone(lastId);
 }
 
 export function initDropZones(id: string) {
