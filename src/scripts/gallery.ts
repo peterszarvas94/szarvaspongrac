@@ -22,6 +22,10 @@ function getTemplate() {
   );
 }
 
+function getAfterDropZoneTemplate() {
+  return document.querySelector<HTMLTemplateElement>("template#dropzone-after");
+}
+
 function getWrapper(id: string) {
   return getWrappers().find((wrapper) => wrapper.dataset.id === id);
 }
@@ -56,6 +60,7 @@ function initDeleteButton(button: HTMLButtonElement) {
     try {
       await deleteImage(id);
       wrapper.remove();
+      refreshAfterDropZones();
       showAlert("Törölve", "success");
       checkEmptyGallery();
     } catch {
@@ -192,6 +197,7 @@ function initMoveUpButton(button: HTMLButtonElement) {
 
     await swapImageOrder(id, prevId);
     prevWrapper.insertAdjacentElement("beforebegin", wrapper);
+    refreshAfterDropZones();
 
     showAlert("Sorrend frissítve", "success");
   });
@@ -224,8 +230,22 @@ function initMoveDownButton(button: HTMLButtonElement) {
 
     await swapImageOrder(id, nextId);
     nextWrapper.insertAdjacentElement("afterend", wrapper);
+    refreshAfterDropZones();
 
     showAlert("Sorrend frissítve", "success");
+  });
+}
+
+function initDragSource(wrapper: HTMLDivElement, id: string) {
+  const img = wrapper.querySelector<HTMLImageElement>("img");
+  if (!img) return;
+
+  img.setAttribute("draggable", "true");
+
+  img.addEventListener("dragstart", (event) => {
+    event.dataTransfer?.setData("text/plain", id);
+    event.dataTransfer?.setData("application/x-image-id", id);
+    if (event.dataTransfer) event.dataTransfer.effectAllowed = "move";
   });
 }
 
@@ -257,6 +277,7 @@ export function appendImage({
   if (!img) return;
 
   img.setAttribute("src", url);
+  initDragSource(wrapper, id);
 
   const popoverBtn = wrapper.querySelector<HTMLButtonElement>(
     "[commandfor=image-popover]",
@@ -273,14 +294,115 @@ export function appendImage({
     wrapper.querySelector<HTMLDivElement>("[data-drop-before]");
   if (dropZoneBefore) dropZoneBefore.dataset.dropBefore = id;
 
-  const dropZoneAfter =
-    wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
-  if (dropZoneAfter) dropZoneAfter.dataset.dropAfter = id;
-
   gallery.appendChild(wrapper);
   initImageButtons(id);
   initDropZones(id);
+  refreshAfterDropZones();
   updateEditUI();
+}
+
+function initDropZoneBefore(dropZoneBefore: HTMLDivElement) {
+  dropZoneBefore.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    dropZoneBefore.classList.add("bg-accent");
+  });
+
+  dropZoneBefore.addEventListener("dragover", (event) => {
+    event.preventDefault();
+  });
+
+  dropZoneBefore.addEventListener("dragleave", () => {
+    dropZoneBefore.classList.remove("bg-accent");
+  });
+
+  dropZoneBefore.addEventListener("drop", (event) => {
+    event.preventDefault();
+    dropZoneBefore.classList.remove("bg-accent");
+
+    const targetId = dropZoneBefore.dataset.dropBefore;
+    const draggedId = event.dataTransfer?.getData("text/plain") ?? "";
+    if (!targetId || !draggedId) return;
+
+    console.log("drop", {
+      targetId,
+      position: "before",
+      draggedId,
+    });
+  });
+}
+
+function initDropZoneAfter(dropZoneAfter: HTMLDivElement) {
+  dropZoneAfter.addEventListener("dragenter", (event) => {
+    event.preventDefault();
+    dropZoneAfter.classList.add("bg-error");
+  });
+
+  dropZoneAfter.addEventListener("dragover", (event) => {
+    event.preventDefault();
+  });
+
+  dropZoneAfter.addEventListener("dragleave", () => {
+    dropZoneAfter.classList.remove("bg-error");
+  });
+
+  dropZoneAfter.addEventListener("drop", (event) => {
+    event.preventDefault();
+    dropZoneAfter.classList.remove("bg-error");
+
+    const targetId = dropZoneAfter.dataset.dropAfter;
+    const draggedId = event.dataTransfer?.getData("text/plain") ?? "";
+    if (!targetId || !draggedId) return;
+
+    console.log("drop", {
+      targetId,
+      position: "after",
+      draggedId,
+    });
+  });
+}
+
+export function removeAfterDropZone(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const dropZoneAfter =
+    wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
+  dropZoneAfter?.remove();
+}
+
+export function addAfterDropZone(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const existing = wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
+  if (existing) {
+    existing.dataset.dropAfter = id;
+    return;
+  }
+
+  const template = getAfterDropZoneTemplate();
+  if (!template) return;
+
+  const fragment = template.content.cloneNode(true) as DocumentFragment;
+  const dropZoneAfter = fragment.firstElementChild as HTMLDivElement | null;
+  if (!dropZoneAfter) return;
+
+  dropZoneAfter.dataset.dropAfter = id;
+  initDropZoneAfter(dropZoneAfter);
+  wrapper.appendChild(dropZoneAfter);
+}
+
+function refreshAfterDropZones() {
+  const wrappers = getWrappers();
+  wrappers.forEach((wrapper) => {
+    const wrapperId = wrapper.dataset.id;
+    if (!wrapperId) return;
+    removeAfterDropZone(wrapperId);
+  });
+
+  const lastWrapper = wrappers[wrappers.length - 1];
+  const lastId = lastWrapper?.dataset.id;
+  if (lastId) addAfterDropZone(lastId);
 }
 
 export function initDropZones(id: string) {
@@ -289,15 +411,11 @@ export function initDropZones(id: string) {
 
   const dropZoneBefore =
     wrapper.querySelector<HTMLDivElement>("[data-drop-before]");
-  if (dropZoneBefore) {
-    // TODO:
-  }
+  if (dropZoneBefore) initDropZoneBefore(dropZoneBefore);
 
   const dropZoneAfter =
     wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
-  if (dropZoneAfter) {
-    // TODO:
-  }
+  if (dropZoneAfter) initDropZoneAfter(dropZoneAfter);
 }
 
 export function hideEmptyGalleryText() {

@@ -82,14 +82,17 @@ const { key } = Astro.props;
 
     {/* drop zones */}
     <div
-      class="absolute -left-3 top-1/2 -translate-y-1/2 h-20 w-3 hover:bg-accent"
+      class="absolute -left-6 top-1/2 -translate-y-1/2 h-30 w-6"
       data-drop-before="0"
     >
     </div>
-    <div
-      class="absolute -right-3 top-1/2 -translate-y-1/2 h-20 w-3 hover:bg-error"
-      data-drop-after="0"
-    >
-    </div>
+  </div>
+</template>
+
+<template id="dropzone-after">
+  <div
+    class="absolute -right-6 top-1/2 -translate-y-1/2 h-30 w-6"
+    data-drop-after="0"
+  >
   </div>
 </template>
