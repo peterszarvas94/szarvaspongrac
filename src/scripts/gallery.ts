@@ -269,15 +269,35 @@ export function appendImage({
   const coverBtn = wrapper.querySelector<HTMLButtonElement>("[data-cover]");
   if (coverBtn) coverBtn.dataset.cover = id;
 
-  const upBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-up]");
-  if (upBtn) upBtn.dataset.moveUp = id;
+  const dropZoneBefore =
+    wrapper.querySelector<HTMLDivElement>("[data-drop-before]");
+  if (dropZoneBefore) dropZoneBefore.dataset.dropBefore = id;
 
-  const downBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-down]");
-  if (downBtn) downBtn.dataset.moveDown = id;
+  const dropZoneAfter =
+    wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
+  if (dropZoneAfter) dropZoneAfter.dataset.dropAfter = id;
 
   gallery.appendChild(wrapper);
   initImageButtons(id);
+  initDropZones(id);
   updateEditUI();
+}
+
+export function initDropZones(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const dropZoneBefore =
+    wrapper.querySelector<HTMLDivElement>("[data-drop-before]");
+  if (dropZoneBefore) {
+    // TODO:
+  }
+
+  const dropZoneAfter =
+    wrapper.querySelector<HTMLDivElement>("[data-drop-after]");
+  if (dropZoneAfter) {
+    // TODO:
+  }
 }
 
 export function hideEmptyGalleryText() {
