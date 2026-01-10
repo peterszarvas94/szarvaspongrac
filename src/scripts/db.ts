@@ -72,11 +72,19 @@ export async function getCoverImage(key: string) {
 export async function setCoverImage(
   id: string,
   key: string,
-): Promise<RecordModel> {
+): Promise<RecordModel | undefined> {
+  let oldCover: RecordModel | undefined;
   try {
-    const oldCover = await getCoverImage(key);
+    oldCover = await getCoverImage(key);
+  } catch (error) {
+    console.error("Get cover error:", error);
+  }
+
+  try {
     const batch = pb.createBatch();
-    batch.collection("image").update(oldCover.id, { cover: false });
+    if (oldCover) {
+      batch.collection("image").update(oldCover.id, { cover: false });
+    }
     batch.collection("image").update(id, { cover: true });
 
     await batch.send();

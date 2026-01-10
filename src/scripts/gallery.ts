@@ -150,14 +150,14 @@ function initCoverButton(button: HTMLButtonElement) {
       const oldCover = await setCoverImage(id, key);
 
       // Update data attributes to track cover state
-      const oldWrapper = getWrapper(oldCover.id);
+      const oldWrapper = oldCover ? getWrapper(oldCover.id) : undefined;
       if (oldWrapper) {
         oldWrapper.dataset.cover = "false";
       }
       wrapper.dataset.cover = "true";
 
       hideButtons(id);
-      showButtons(oldCover.id);
+      if (oldCover) showButtons(oldCover.id);
       showAlert("A borítókép sikeresen cserélve", "success");
     } catch {
       showAlert("Nem sikerült beállítani a borítóképet", "error");
