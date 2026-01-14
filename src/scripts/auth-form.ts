@@ -1,4 +1,4 @@
-import { getCurrentUser, isAuthenticated, login, logout } from "@scripts/db";
+import { login, logout } from "@scripts/db";
 
 function notifyAuthUpdated() {
   const body = document.body;
@@ -9,15 +9,13 @@ function notifyAuthUpdated() {
 
 function initAuthForm() {
   const form = document.getElementById("login-form") as HTMLFormElement | null;
-  if (!form) return;
+  if (!form || form.dataset.authBound === "true") return;
+
+  form.dataset.authBound = "true";
 
   const emailInput = form.querySelector("#email") as HTMLInputElement;
   const passwordInput = form.querySelector("#password") as HTMLInputElement;
   const messageDiv = form.querySelector("#message") as HTMLDivElement;
-
-  if (document.getElementById("login-section")) {
-    initLogoutButtons();
-  }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -36,8 +34,12 @@ function initAuthForm() {
 }
 
 export function initLogoutButtons() {
-  const logoutButtons = document.querySelectorAll("[data-logout]");
-  logoutButtons.forEach((button) =>
+  const logoutButtons =
+    document.querySelectorAll<HTMLButtonElement>("[data-logout]");
+  logoutButtons.forEach((button) => {
+    if (button.dataset.logoutBound === "true") return;
+    button.dataset.logoutBound = "true";
+
     button.addEventListener(
       "click",
       async () => {
@@ -46,26 +48,14 @@ export function initLogoutButtons() {
         notifyAuthUpdated();
       },
       { once: true },
-    ),
-  );
-
-  const controlledElements =
-    document.querySelectorAll<HTMLElement>("[data-auth]");
-  Array.from(controlledElements).forEach((element) => {
-    if ((element.dataset.auth === "true") === isAuthenticated()) {
-      element.classList.remove("hidden");
-    } else {
-      element.classList.add("hidden");
-    }
+    );
   });
-
-  if (isAuthenticated()) {
-    const user = getCurrentUser();
-    if (!user) {
-      throw new Error(`Authenticated, but user is ${user}`);
-    }
-  }
 }
 
 initAuthForm();
 initLogoutButtons();
+
+document.body.addEventListener("htmx:afterSwap", () => {
+  initAuthForm();
+  initLogoutButtons();
+});

@@ -1,5 +1,4 @@
 ---
-import { Mail, Lock, User, LogOut } from "lucide-astro";
 import PageLayout from "../layouts/PageLayout.astro";
 ---
 
@@ -9,81 +8,10 @@ import PageLayout from "../layouts/PageLayout.astro";
   pageTitle="Admin"
 >
   <div class="max-w-md mx-auto">
-    <div class="card bg-base-100 shadow-xl">
-      <div class="card-body">
-        <div
-          data-auth="false"
-          class="hidden"
-        >
-          <h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
-          <form id="login-form">
-            <div>
-              <div class="flex items-center gap-2 mb-2">
-                <Mail class="w-4 h-4 text-primary" />
-                <label class="label-text font-medium">Email</label>
-              </div>
-              <input
-                type="email"
-                id="email"
-                class="input input-bordered input-primary w-full"
-                placeholder="email@example.com"
-                autocomplete="email"
-                required
-              />
-            </div>
-            <div class="form-control mt-4">
-              <div class="flex items-center gap-2 mb-2">
-                <Lock class="w-4 h-4 text-primary" />
-                <label class="label-text font-medium">Jelszó</label>
-              </div>
-              <input
-                type="password"
-                id="password"
-                class="input input-bordered input-primary w-full"
-                placeholder="••••••••"
-                autocomplete="current-password"
-                required
-              />
-            </div>
-            <div class="form-control mt-8">
-              <button
-                type="submit"
-                class="btn btn-primary btn-block"
-              >
-                Bejelentkezés
-              </button>
-            </div>
-            <div
-              id="message"
-              class="mt-4 text-center"
-            >
-            </div>
-          </form>
-        </div>
-
-        <div
-          data-auth="true"
-          class="hidden text-center"
-        >
-          <User class="w-16 h-16 mx-auto text-primary mb-4" />
-          <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
-          <p
-            data-email
-            class="text-lg mb-6"
-            hx-get={`${import.meta.env.PUBLIC_PB_URL}/partials/auth-email`}
-            hx-trigger="load, auth-updated from:body"
-            hx-swap="innerHTML"
-          >
-          </p>
-          <button
-            data-logout
-            class="btn btn-outline btn-error btn-block"
-          >
-            <LogOut class="w-4 h-4 mr-2" />
-            Kijelentkezés
-          </button>
-        </div>
-      </div>
-    </div>
+    <div
+      hx-get={`${import.meta.env.PUBLIC_PB_URL}/partials/admin-auth-card`}
+      hx-trigger="load, auth-updated from:body"
+      hx-swap="innerHTML"
+    ></div>
   </div>
 </PageLayout>

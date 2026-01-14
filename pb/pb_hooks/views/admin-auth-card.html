@@ -1,0 +1,83 @@
+{{if .email}}
+<div class="card bg-base-100 shadow-xl">
+  <div class="card-body text-center">
+    <div
+      class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-content"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="lucide lucide-user-icon lucide-user"
+      >
+        <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+        <circle
+          cx="12"
+          cy="7"
+          r="4"
+        ></circle>
+      </svg>
+    </div>
+    <h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
+    <p class="text-lg mb-6">{{.email}}</p>
+    <button
+      data-logout
+      class="btn btn-outline btn-error btn-block"
+    >
+      Kijelentkezés
+    </button>
+  </div>
+</div>
+{{else}}
+<div class="card bg-base-100 shadow-xl">
+  <div class="card-body">
+    <h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
+    <form id="login-form">
+      <div>
+        <div class="flex items-center gap-2 mb-2">
+          <label class="label-text font-medium">Email</label>
+        </div>
+        <input
+          type="email"
+          id="email"
+          class="input input-bordered input-primary w-full"
+          placeholder="email@example.com"
+          autocomplete="email"
+          required
+        />
+      </div>
+      <div class="form-control mt-4">
+        <div class="flex items-center gap-2 mb-2">
+          <label class="label-text font-medium">Jelszó</label>
+        </div>
+        <input
+          type="password"
+          id="password"
+          class="input input-bordered input-primary w-full"
+          placeholder="••••••••"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+      <div class="form-control mt-8">
+        <button
+          type="submit"
+          class="btn btn-primary btn-block"
+        >
+          Bejelentkezés
+        </button>
+      </div>
+      <div
+        id="message"
+        class="mt-4 text-center"
+      ></div>
+    </form>
+  </div>
+</div>
+{{end}}
