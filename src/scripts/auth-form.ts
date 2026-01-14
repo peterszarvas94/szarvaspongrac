@@ -1,5 +1,12 @@
 import { getCurrentUser, isAuthenticated, login, logout } from "@scripts/db";
 
+function notifyAuthUpdated() {
+  const body = document.body;
+  if (body) {
+    body.dispatchEvent(new Event("auth-updated"));
+  }
+}
+
 function initAuthForm() {
   const form = document.getElementById("login-form") as HTMLFormElement | null;
   if (!form) return;
@@ -20,6 +27,7 @@ function initAuthForm() {
     try {
       await login(email, password);
       setTimeout(() => initLogoutButtons(), 100);
+      notifyAuthUpdated();
     } catch (error) {
       messageDiv.textContent = "Hibás email vagy jelszó.";
       messageDiv.className = "mt-4 text-center text-error";
@@ -35,6 +43,7 @@ export function initLogoutButtons() {
       async () => {
         await logout();
         setTimeout(() => initLogoutButtons(), 100);
+        notifyAuthUpdated();
       },
       { once: true },
     ),
@@ -55,10 +64,6 @@ export function initLogoutButtons() {
     if (!user) {
       throw new Error(`Authenticated, but user is ${user}`);
     }
-    const emailFields = document.querySelectorAll("[data-email]");
-    emailFields.forEach((field) => {
-      field.textContent = user.email;
-    });
   }
 }
 

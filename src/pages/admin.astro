@@ -70,6 +70,9 @@ import PageLayout from "../layouts/PageLayout.astro";
           <p
             data-email
             class="text-lg mb-6"
+            hx-get={`${import.meta.env.PUBLIC_PB_URL}/partials/auth-email`}
+            hx-trigger="load, auth-updated from:body"
+            hx-swap="innerHTML"
           >
           </p>
           <button
