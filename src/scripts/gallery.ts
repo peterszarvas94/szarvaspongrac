@@ -22,6 +22,22 @@ function getTemplate() {
   );
 }
 
+function setAnchor(id: string) {
+  const wrapper = getWrapper(id);
+  if (!wrapper) return;
+
+  const img = wrapper.querySelector<HTMLImageElement>("img");
+  if (!img) return;
+
+  const imgId = `gallery-image-${id}`;
+  img.id = imgId;
+  img.style.setProperty("anchor-name", `--${imgId}`);
+
+  const buttonWrapper =
+    wrapper.querySelector<HTMLDivElement>('[data-edit="true"]');
+  buttonWrapper?.style.setProperty("position-anchor", `--${imgId}`);
+}
+
 function getWrapper(id: string) {
   return getWrappers().find((wrapper) => wrapper.dataset.id === id);
 }
@@ -91,7 +107,6 @@ function enableCoverButton(id: string) {
   if (!deleteBtn) return;
 
   coverBtn.removeAttribute("disabled");
-  coverBtn.classList.remove("disabled");
 }
 
 function disableCoverButton(id: string) {
@@ -103,7 +118,6 @@ function disableCoverButton(id: string) {
   if (!coverBtn) return;
 
   coverBtn.setAttribute("disabled", "true");
-  coverBtn.classList.add("disabled");
 }
 
 function disableCurrentCoverButton() {
@@ -254,6 +268,7 @@ export function appendImage({
   if (!img) return;
 
   img.setAttribute("src", url);
+  setAnchor(id);
 
   const popoverBtn = wrapper.querySelector<HTMLButtonElement>(
     "[commandfor=image-popover]",
@@ -319,6 +334,8 @@ async function initGallery() {
       sorting: image.sorting,
       cover: image.cover,
     });
+
+    setAnchor(image.id);
   });
 
   disableCurrentCoverButton();
