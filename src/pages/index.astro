@@ -1,19 +1,40 @@
 ---
 import HomeLayout from "../layouts/HomeLayout.astro";
 import NavigationCard from "@components/NavigationCard.astro";
-import { BookUser, Palette, Mail } from "@lucide/astro";
+import {
+  BookUser,
+  Palette,
+  Mail,
+  Trophy,
+  BookImage,
+  FileUser,
+} from "@lucide/astro";
 ---
 
 <HomeLayout
   title="Szarvas Pongrác - Grafikus, Illusztrátor, Festő"
   description="Szarvas Pongrác grafikus, festő, illusztrátor honlapja"
 >
-  <div class="flex gap-4 flex-col sm:flex-row items-center justify-center">
+  <div class="flex gap-4 flex-row flex-wrap items-center justify-center">
     <NavigationCard
       href="/eletrajz"
       title="Életrajz"
-      icon={BookUser}
+      icon={FileUser}
       hoverColor="primary"
+    />
+
+    <NavigationCard
+      href="/elismeresek"
+      title="Elismerések"
+      icon={Trophy}
+      hoverColor="warning"
+    />
+
+    <NavigationCard
+      href="/konyvillusztraciok"
+      title="Könyvillusztrációk"
+      icon={BookImage}
+      hoverColor="success"
     />
 
     <NavigationCard
