@@ -77,7 +77,7 @@ async function checkEmptyGallery() {
   }
 }
 
-function showButtons(id: string) {
+function enableCoverButton(id: string) {
   const wrapper = getWrapper(id);
   if (!wrapper) return;
 
@@ -90,11 +90,11 @@ function showButtons(id: string) {
   );
   if (!deleteBtn) return;
 
-  coverBtn.classList.remove("hidden");
-  deleteBtn.classList.remove("hidden");
+  coverBtn.removeAttribute("disabled");
+  coverBtn.classList.remove("disabled");
 }
 
-function hideButtons(id: string) {
+function disableCoverButton(id: string) {
   const wrapper = getWrapper(id);
   if (!wrapper) return;
 
@@ -102,22 +102,19 @@ function hideButtons(id: string) {
     wrapper.querySelector<HTMLButtonElement>("button[data-cover]");
   if (!coverBtn) return;
 
-  const deleteBtn = wrapper.querySelector<HTMLButtonElement>(
-    "button[data-delete]",
-  );
-  if (!deleteBtn) return;
-
-  coverBtn.classList.add("hidden");
-  deleteBtn.classList.add("hidden");
+  coverBtn.setAttribute("disabled", "true");
+  coverBtn.classList.add("disabled");
 }
 
-function hideCurrentCoverButtons() {
+function disableCurrentCoverButton() {
   const wrappers = getWrappers();
   const currentCoverWrapper = wrappers.find(
     (wrapper) => wrapper.dataset.cover === "true",
   );
-  if (!currentCoverWrapper?.dataset.id) return;
-  hideButtons(currentCoverWrapper.dataset.id);
+  const id = currentCoverWrapper?.dataset.id;
+  if (!id) return;
+
+  disableCoverButton(id);
 }
 
 function initCoverButton(button: HTMLButtonElement) {
@@ -156,8 +153,8 @@ function initCoverButton(button: HTMLButtonElement) {
       }
       wrapper.dataset.cover = "true";
 
-      hideButtons(id);
-      if (oldCover) showButtons(oldCover.id);
+      disableCoverButton(id);
+      if (oldCover) enableCoverButton(oldCover.id);
       showAlert("A borítókép sikeresen cserélve", "success");
     } catch {
       showAlert("Nem sikerült beállítani a borítóképet", "error");
@@ -324,7 +321,7 @@ async function initGallery() {
     });
   });
 
-  hideCurrentCoverButtons();
+  disableCurrentCoverButton();
 }
 
 let currentImageIndex = -1;
