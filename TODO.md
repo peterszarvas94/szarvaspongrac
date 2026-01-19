@@ -1,2 +1,1 @@
-- delete/cover buttons position fix
-- remove arrows and add drag and drop
+- drag and drop
