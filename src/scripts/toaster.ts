@@ -37,7 +37,9 @@ window.addEventListener(ToastEvent.eventName, ((e: ToastEvent) => {
     | DocumentFragment
     | undefined;
   const alertDiv = toast?.querySelector<HTMLDivElement>(".alert");
-  const span = toast?.querySelector("span")!;
+  const span = toast?.querySelector("span");
+  if (!span) return;
+
   const icons = toast?.querySelectorAll<SVGElement>("[data-icon]");
 
   alertDiv?.classList.add(levelClasses[level]);

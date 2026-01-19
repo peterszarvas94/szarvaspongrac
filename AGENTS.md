@@ -15,13 +15,6 @@ Always use `bun` over npm.
 - `bun run format` - Format code with Prettier
 - `bun run format:check` - Check formatting
 
-### Testing (Vitest)
-
-- `bun run test` - Run tests in watch mode
-- `bun run test:run` - Run all tests once
-- `bun run test:run src/scripts/utils.test.ts` - Run a single test file
-- `bun run test:run -t "parseDataAttr"` - Run tests matching a pattern
-
 ### PocketBase (Database)
 
 - `bun run pb:dev:mac` - Start PocketBase on macOS ARM
@@ -43,7 +36,6 @@ Always use `bun` over npm.
 - **Database**: PocketBase
 - **Rich Text**: TipTap editor
 - **Icons**: `@lucide/astro` for Astro, `lucide-solid` for Solid.js
-- **Testing**: Vitest
 - **Formatting**: Prettier with Astro plugin
 
 ## File Structure
@@ -54,7 +46,6 @@ Always use `bun` over npm.
 - `src/scripts/` - TypeScript utilities and client-side logic
 - `src/styles/` - Global CSS (`global.css`, `tiptap.css`)
 - `public/images/` - Static image assets
-- `test/` - Integration tests
 - `pb/` - PocketBase binary and migrations
 
 ## Path Aliases
@@ -99,11 +90,6 @@ Always use `bun` over npm.
 
 - Extend `TypedEvent<T>` from `@scripts/event`
 - Use static `eventName` property, dispatch via `window.dispatchEvent()`
-
-### Testing
-
-- Test files: `*.test.ts` alongside source or in `test/`
-- Use `describe`, `it`, `expect` from vitest
 
 ## Icons
 

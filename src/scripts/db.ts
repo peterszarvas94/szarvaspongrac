@@ -1,13 +1,16 @@
 /// <reference types="astro/client" />
 import { setCachedContent } from "@scripts/content-cache";
 import PocketBase, { type RecordModel } from "pocketbase";
+import { showAlert } from "./toaster";
 
 export const pb = new PocketBase(import.meta.env.PUBLIC_PB_URL);
 
 export async function login(email: string, password: string) {
   try {
     await pb.collection("_superusers").authWithPassword(email, password);
+    showAlert("Sikeres bejelentkezés", "success");
   } catch (error) {
+    showAlert("Nem sikerült bejelentkezni", "error");
     console.error("Login failed:", error);
     throw error;
   }
@@ -16,8 +19,10 @@ export async function login(email: string, password: string) {
 export async function logout() {
   try {
     pb.authStore.clear();
+    showAlert("Sikeres kijelentkezés", "success");
   } catch (error) {
     console.error("Logout failed:", error);
+    showAlert("Nem sikerült kijelentkezni", "error");
     throw error;
   }
 }
