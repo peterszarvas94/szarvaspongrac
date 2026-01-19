@@ -24,11 +24,14 @@ const { key, title, description, pageTitle } = Astro.props;
   {pageTitle && <PageTitle title={pageTitle} />}
 
   <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div data-auth="true" class="hidden w-full p-4 flex justify-center gap-2">
+    <div
+      data-auth="true"
+      class="hidden w-full p-4 flex justify-center gap-2"
+    >
       <EditButton />
       <CancelSaveButtons contentKey={key} />
     </div>
-    
+
     <Editor
       contentKey={key}
       client:only="solid-js"
@@ -39,13 +42,8 @@ const { key, title, description, pageTitle } = Astro.props;
       data-edit="false"
       class="prose max-w-none"
     >
-      <slot />
+      <div data-pb={`content:${key}`}>&nbsp;</div>
     </article>
-
-    <div data-auth="true" class="hidden w-full p-4 flex justify-center gap-2">
-      <EditButton />
-      <CancelSaveButtons contentKey={key} />
-    </div>
   </div>
 
   <Footer slot="footer" />

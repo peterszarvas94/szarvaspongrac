@@ -149,14 +149,17 @@ restore_dev() {
     fi
     
     # Determine file types and find pairs
+    local backup_dir
+    backup_dir=$(dirname "$backup_path")
+
     if [[ "$backup_path" == *".db" ]]; then
         db_file="$backup_path"
         backup_base=$(basename "$backup_path" .db)
-        storage_file="$BACKUP_DIR/${backup_base}_storage.tar.gz"
+        storage_file="$backup_dir/${backup_base}_storage.tar.gz"
     elif [[ "$backup_path" == *"_storage.tar.gz" ]]; then
         storage_file="$backup_path"
         backup_base=$(basename "$backup_path" "_storage.tar.gz")
-        db_file="$BACKUP_DIR/${backup_base}.db"
+        db_file="$backup_dir/${backup_base}.db"
     else
         echo "Error: Invalid backup file. Must be .db or _storage.tar.gz"
         exit 1
