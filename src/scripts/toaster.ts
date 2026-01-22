@@ -2,6 +2,13 @@ import { TypedEvent } from "@scripts/event";
 
 const container = document.querySelector<HTMLDivElement>("[data-toaster]");
 const template = document.querySelector<HTMLTemplateElement>("#toast-template");
+const TOAST_DURATION = 3000;
+const levelClasses: Record<ToastLevel, string> = {
+  info: "alert-info",
+  success: "alert-success",
+  warning: "alert-warning",
+  error: "alert-error",
+};
 
 export type ToastLevel = "info" | "success" | "warning" | "error";
 
@@ -22,42 +29,40 @@ export function showAlert(message: string, level: ToastLevel = "info") {
   window.dispatchEvent(new ToastEvent(message, level));
 }
 
-const TOAST_DURATION = 3000;
-const levelClasses: Record<ToastLevel, string> = {
-  info: "alert-info",
-  success: "alert-success",
-  warning: "alert-warning",
-  error: "alert-error",
-};
+function removeToast(div: HTMLDivElement) {
+  div.classList.add("opacity-0", "transition-opacity", "duration-300");
+  setTimeout(() => div.remove(), 300);
+}
 
 window.addEventListener(ToastEvent.eventName, ((e: ToastEvent) => {
+  if (!container) return;
+
   const { message, level } = e.detail;
 
   const toast = template?.content.cloneNode(true) as
     | DocumentFragment
     | undefined;
-  const alertDiv = toast?.querySelector<HTMLDivElement>(".alert");
-  const span = toast?.querySelector("span");
+  if (!toast) return;
+
+  const alertDiv = toast.querySelector<HTMLDivElement>(".alert");
+  if (!alertDiv) return;
+
+  const span = toast.querySelector("span");
   if (!span) return;
 
-  const icons = toast?.querySelectorAll<SVGElement>("[data-icon]");
+  const icons = toast.querySelectorAll<SVGElement>("[data-icon]");
 
-  alertDiv?.classList.add(levelClasses[level]);
+  alertDiv.classList.add(levelClasses[level]);
   span.textContent = message;
 
-  icons?.forEach((icon) => {
+  icons.forEach((icon) => {
     if (icon.dataset.icon === level) {
       icon.classList.remove("hidden");
     }
   });
 
-  const removeToast = () => {
-    alertDiv?.classList.add("opacity-0", "transition-opacity", "duration-300");
-    setTimeout(() => alertDiv?.remove(), 300);
-  };
+  alertDiv.addEventListener("click", () => removeToast(alertDiv));
+  container.appendChild(toast);
 
-  alertDiv?.addEventListener("click", removeToast);
-  if (toast && container) container.appendChild(toast);
-
-  setTimeout(removeToast, TOAST_DURATION);
+  setTimeout(() => removeToast(alertDiv), TOAST_DURATION);
 }) as EventListener);
