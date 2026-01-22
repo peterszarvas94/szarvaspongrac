@@ -2,13 +2,14 @@
 import { getURLFromRecord, pb } from "@scripts/db";
 import { appendImage, hideEmptyGalleryText } from "@scripts/gallery";
 import { showAlert } from "@scripts/toaster";
-import { getMaxSorting, isDuplicateFile } from "@scripts/utils";
+import { getMaxSorting, isDuplicateFile, toInt } from "@scripts/utils";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 const input = document.querySelector<HTMLInputElement>("#file-upload");
 const label = document.querySelector<HTMLLabelElement>(
   "label[for='file-upload']",
 );
+const maxItems = toInt(form?.dataset.maxItems);
 
 let dt = new DataTransfer();
 
@@ -20,6 +21,11 @@ function appendFilesToDt(newFiles: File[]) {
   });
 }
 
+function replaceFileForSingleInDt(newFile: File) {
+  dt.items.clear();
+  dt.items.add(newFile);
+}
+
 function removeFile(file: File) {
   if (!input) return;
 
@@ -29,7 +35,7 @@ function removeFile(file: File) {
   });
 
   dt = newDt;
-  input.files = dt.files;
+  updateInputFiles();
   updateFileList();
 }
 
@@ -51,11 +57,18 @@ function updateFileList() {
   });
 }
 
-function updateFiles(files: File[]) {
+function updateInputFiles() {
   if (!input) return;
-
-  appendFilesToDt(files);
   input.files = dt.files;
+}
+
+function updateFiles(files: File[]) {
+  if (maxItems && maxItems === 1) {
+    replaceFileForSingleInDt(files[0]);
+  } else {
+    appendFilesToDt(files);
+  }
+  updateInputFiles();
   updateFileList();
 }
 

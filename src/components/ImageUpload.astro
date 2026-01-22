@@ -3,15 +3,18 @@ import { ImagePlus, Upload, X } from "lucide-astro";
 
 interface Props {
   key: string;
+  maxItems?: number;
 }
 
-const { key }: Props = Astro.props;
+const { key, maxItems }: Props = Astro.props;
+const multiple = maxItems === undefined || maxItems > 1;
 ---
 
 <form
   data-edit="true"
   class="hidden max-w-xl mx-auto w-full"
   data-upload={key}
+  data-max-items={maxItems}
 >
   <div
     data-auth="true"
@@ -26,44 +29,58 @@ const { key }: Props = Astro.props;
         class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full"
       >
         <ImagePlus class="w-10 h-10 text-base-content opacity-60" />
-        <span class="text-base-content font-medium">Képek kiválasztása</span>
+        <span class="text-base-content font-medium">
+          {multiple ? "Képek kiválasztása" : "Kép kiválasztása"}
+        </span>
       </div>
+
+      <div class="w-full flex flex-wrap justify-between gap-2">
+        <ul data-files></ul>
+        <button
+          type="submit"
+          class="btn mt-2"
+        >
+          <Upload class="size-4" />
+          Feltöltés
+        </button>
+      </div>
+
+      {
+        multiple ? (
+          <input
+            id="file-upload"
+            type="file"
+            class="hidden"
+            accept="image/*"
+            name="files"
+            multiple
+          />
+        ) : (
+          <input
+            id="file-upload"
+            type="file"
+            class="hidden"
+            accept="image/*"
+            name="files"
+          />
+        )
+      }
     </label>
-
-    <div class="w-full flex flex-wrap justify-between gap-2">
-      <ul data-files></ul>
-      <button
-        type="submit"
-        class="btn mt-2"
-      >
-        <Upload class="size-4" />
-        Feltöltés
-      </button>
-    </div>
-
-    <input
-      id="file-upload"
-      type="file"
-      multiple
-      class="hidden"
-      accept="image/*"
-      name="files"
-    />
   </div>
+
+  <template id="file-row">
+    <li class="flex gap-2 item-center">
+      <button
+        class="btn btn-xs btn-square btn-ghost"
+        type="button"
+      >
+        <X class="text-error size-4" />
+      </button>
+      <span></span>
+    </li>
+  </template>
+
+  <script>
+    import "@scripts/image-upload";
+  </script>
 </form>
-
-<template id="file-row">
-  <li class="flex gap-2 item-center">
-    <button
-      class="btn btn-xs btn-square btn-ghost"
-      type="button"
-    >
-      <X class="text-error size-4" />
-    </button>
-    <span></span>
-  </li>
-</template>
-
-<script>
-  import "@scripts/image-upload";
-</script>

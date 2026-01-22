@@ -18,3 +18,9 @@ export function isDuplicateFile(file: File, existingFiles: File[]): boolean {
     (existing) => existing.name === file.name && existing.size === file.size,
   );
 }
+
+export function toInt(input: any): number | null {
+  const parsed = Number.parseInt(input);
+  if (Number.isNaN(parsed)) return null;
+  return parsed;
+}
