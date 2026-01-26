@@ -1,0 +1,69 @@
+---
+import { ImagePlus, Upload, X } from "lucide-astro";
+
+interface Props {
+  key: string;
+}
+
+const { key }: Props = Astro.props;
+---
+
+<form
+  data-edit="true"
+  class="hidden max-w-xl mx-auto w-full"
+  data-upload={key}
+>
+  <div
+    data-auth="true"
+    class="hidden w-full flex gap-2 flex-wrap"
+  >
+    <label
+      for="file-upload"
+      class="cursor-pointer w-full block"
+      tabindex="0"
+    >
+      <div
+        class="flex flex-col gap-2 items-center justify-center h-40 border-2 border-dashed border-base-300 rounded-lg hover:border-base-content transition-colors bg-base-100 w-full"
+      >
+        <ImagePlus class="w-10 h-10 text-base-content opacity-60" />
+        <span class="text-base-content font-medium">Kép kiválasztása</span>
+      </div>
+
+      <input
+        id="file-upload"
+        type="file"
+        class="hidden"
+        accept="image/*"
+        name="files"
+        multiple
+      />
+    </label>
+  </div>
+
+  <div class="w-full flex flex-wrap justify-between gap-2">
+    <ul data-files></ul>
+    <button
+      type="submit"
+      class="btn mt-2"
+    >
+      <Upload class="size-4" />
+      Feltöltés
+    </button>
+  </div>
+</form>
+
+<template id="file-row">
+  <li class="flex gap-2 item-center">
+    <button
+      class="btn btn-xs btn-square btn-ghost"
+      type="button"
+    >
+      <X class="text-error size-4" />
+    </button>
+    <span></span>
+  </li>
+</template>
+
+<script>
+  import "@scripts/hero";
+</script>
