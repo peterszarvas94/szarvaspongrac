@@ -67,6 +67,15 @@ export async function deleteImage(id: string) {
   }
 }
 
+export async function deleteImagesByKey(key: string) {
+  try {
+    const images = await getImages(key);
+    images.forEach((image) => pb.collection("image").delete(image.id));
+  } catch (error) {
+    console.error("Delete error:", error);
+  }
+}
+
 export async function getCoverImage(key: string) {
   return await pb
     .collection("image")

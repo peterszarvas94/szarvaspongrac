@@ -1,5 +1,10 @@
 /// <reference types="astro/client" />
-import { getImages, getURLFromRecord, pb } from "@scripts/db";
+import {
+  deleteImagesByKey,
+  getImages,
+  getURLFromRecord,
+  pb,
+} from "@scripts/db";
 import { showAlert } from "@scripts/toaster";
 import { handleError } from "@scripts/utils";
 
@@ -142,6 +147,7 @@ form?.addEventListener("submit", async (e) => {
 
   const key = form.dataset.upload;
   if (!key) return;
+  await deleteImagesByKey(key);
   const uploadedImageUrl = await uploadFile(key, files[0]);
   if (!uploadedImageUrl) return;
 
