@@ -32,18 +32,21 @@ async function getHeroImageUrl() {
   return images[0].url;
 }
 
-async function setSectionBackground(heroImageUrl: string) {
+async function setSectionBackground(heroImageUrl: string, skipError?: boolean) {
   if (!section) {
+    if (skipError) return;
     return handleError(userMessage, "Hero section element not found.");
   }
 
   if (!heroImageUrl) {
+    if (skipError) return;
     return handleError(userMessage, "Hero image url is missing.");
   }
 
   try {
     section.style.backgroundImage = `url("${heroImageUrl}")`;
   } catch (error) {
+    if (skipError) return;
     return handleError(userMessage, "Failed to set hero background.");
   }
 }
@@ -160,9 +163,9 @@ let heroImageUrl: string | undefined;
 try {
   heroImageUrl = await getHeroImageUrl();
 } catch (error) {
-  handleError(userMessage, "Failed to load hero image on page load.");
+  // handleError(userMessage, "Failed to load hero image on page load.");
 }
 
 if (heroImageUrl) {
-  await setSectionBackground(heroImageUrl);
+  await setSectionBackground(heroImageUrl, true);
 }
