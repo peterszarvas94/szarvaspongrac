@@ -1,7 +1,7 @@
 import { confirm } from "@scripts/confirm-dialog";
 import {
   deleteImage,
-  getImageUrls,
+  getImages,
   setCoverImage,
   swapImageOrder,
 } from "@scripts/db";
@@ -71,7 +71,7 @@ async function checkEmptyGallery() {
   const key = gallery.dataset.images;
   if (!key) return;
 
-  const images = await getImageUrls(key);
+  const images = await getImages(key);
   if (images.length === 0) {
     showEmptyGalleryText();
   }
@@ -304,7 +304,7 @@ async function initGallery() {
   const key = gallery.dataset.images;
   if (!key) return;
 
-  const images = await getImageUrls(key);
+  const images = await getImages(key);
   if (images.length === 0) {
     showEmptyGalleryText();
     return;

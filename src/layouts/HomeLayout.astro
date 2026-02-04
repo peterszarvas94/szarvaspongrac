@@ -22,6 +22,7 @@ const { title, description, key } = Astro.props;
   <section
     class="relative min-h-[70vh] bg-cover bg-center bg-no-repeat flex items-center justify-center before:absolute before:inset-0 before:bg-neutral/40 before:pointer-events-none"
     style={`background-image: url("/images/szarvasok.jpg")`}
+    data-image={key}
   >
     <!-- Hero Content -->
     <div
@@ -36,7 +37,7 @@ const { title, description, key } = Astro.props;
 
   <div
     data-auth="true"
-    class="hidden w-full flex justify-center gap-2"
+    class="hidden w-full flex justify-center gap-2 py-4"
   >
     <EditButton />
     <CancelButton cancelText="Kilépés" />
@@ -53,3 +54,8 @@ const { title, description, key } = Astro.props;
 
   <Footer slot="footer" />
 </BaseLayout>
+
+<script>
+  import "@scripts/hero";
+  import "@scripts/edit";
+</script>

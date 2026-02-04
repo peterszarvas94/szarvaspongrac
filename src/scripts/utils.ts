@@ -1,4 +1,14 @@
-// Pure utility functions that can be tested without browser/DB dependencies
+import { showAlert } from "@scripts/toaster";
+
+// Utility helpers shared across scripts
+
+export function handleError(
+  userMessage: string,
+  consoleMessage: string,
+): never {
+  showAlert(userMessage, "error");
+  throw new Error(consoleMessage);
+}
 
 export function parseDataAttr(
   value: string,

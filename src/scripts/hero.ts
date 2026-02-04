@@ -1,6 +1,7 @@
 /// <reference types="astro/client" />
-import { pb } from "@scripts/db";
+import { getImages, getURLFromRecord, pb } from "@scripts/db";
 import { showAlert } from "@scripts/toaster";
+import { handleError } from "@scripts/utils";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 const input = document.querySelector<HTMLInputElement>("#file-upload");
@@ -9,10 +10,52 @@ const label = document.querySelector<HTMLLabelElement>(
 );
 const fileList = document.querySelector<HTMLUListElement>("[data-files]");
 const template = document.querySelector<HTMLTemplateElement>("#file-row");
+const section = document.querySelector<HTMLElement>("[data-image]");
+
+const userMessage = "Nem sikerült betölteni a háttérképet";
+
+async function getHeroImageUrl() {
+  if (!section) {
+    return handleError(userMessage, "Hero section element not found.");
+  }
+
+  const key = section.dataset.image;
+  if (!key) {
+    return handleError(userMessage, "Key is missing.");
+  }
+
+  const images = await getImages(key);
+  if (images.length === 0) {
+    return handleError(userMessage, "No hero images found for key.");
+  }
+
+  return images[0].url;
+}
+
+async function setSectionBackground(heroImageUrl: string) {
+  if (!section) {
+    return handleError(userMessage, "Hero section element not found.");
+  }
+
+  if (!heroImageUrl) {
+    return handleError(userMessage, "Hero image url is missing.");
+  }
+
+  try {
+    section.style.backgroundImage = `url("${heroImageUrl}")`;
+  } catch (error) {
+    return handleError(userMessage, "Failed to set hero background.");
+  }
+}
 
 let dt = new DataTransfer();
 
 function replaceFile(newFile: File) {
+  if (!newFile) {
+    removeFile();
+    return;
+  }
+
   dt.items.clear();
   dt.items.add(newFile);
   updateInputFile();
@@ -31,6 +74,7 @@ function updateFileList() {
   fileList.innerHTML = "";
 
   const file = dt.files[0];
+  if (!file) return;
 
   const row = template.content.cloneNode(true) as DocumentFragment;
   const span = row.querySelector("span");
@@ -57,16 +101,17 @@ function updateLabelClasses(active: boolean) {
 
 async function uploadFile(key: string, file: File) {
   try {
-    await pb
+    const image = await pb
       .collection("image")
       .create({ key, file, sorting: 0 }, { requestKey: null });
+    const imageUrl = getURLFromRecord(image);
     showAlert("Sikeres feltöltés", "success");
+    removeFile();
+    return imageUrl;
   } catch (error) {
-    showAlert("Nem sikerült a feltöltés", "error");
-    console.error("Upload error:", error);
+    removeFile();
+    return handleError("Nem sikerült a feltöltés", "Upload failed.");
   }
-
-  removeFile();
 }
 
 label?.addEventListener("dragenter", (e) => {
@@ -104,5 +149,20 @@ form?.addEventListener("submit", async (e) => {
   }
 
   const key = form.dataset.upload;
-  if (key) await uploadFile(key, files[0]);
+  if (!key) return;
+  const uploadedImageUrl = await uploadFile(key, files[0]);
+  if (!uploadedImageUrl) return;
+
+  await setSectionBackground(uploadedImageUrl);
 });
+
+let heroImageUrl: string | undefined;
+try {
+  heroImageUrl = await getHeroImageUrl();
+} catch (error) {
+  handleError(userMessage, "Failed to load hero image on page load.");
+}
+
+if (heroImageUrl) {
+  await setSectionBackground(heroImageUrl);
+}

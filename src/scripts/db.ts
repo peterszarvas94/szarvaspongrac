@@ -39,7 +39,7 @@ export function getURLFromRecord(record: RecordModel) {
   return pb.files.getURL(record, record.file);
 }
 
-export async function getImageUrls(key: string) {
+export async function getImages(key: string) {
   try {
     const images = await pb.collection("image").getFullList({
       filter: `key="${key}"`,
