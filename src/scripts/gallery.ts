@@ -7,6 +7,7 @@ import {
 } from "@scripts/db";
 import { updateEditUI } from "@scripts/edit";
 import { showAlert } from "@scripts/toaster";
+import { initDownloadButton } from "./download";
 
 function getPopover() {
   return document.querySelector<HTMLDivElement>("#image-popover");
@@ -272,6 +273,10 @@ export function appendImage({
   const downBtn = wrapper.querySelector<HTMLButtonElement>("[data-move-down]");
   if (downBtn) downBtn.dataset.moveDown = id;
 
+  const downloadBtn =
+    wrapper.querySelector<HTMLButtonElement>("[data-download]");
+  if (downloadBtn) downloadBtn.dataset.download = id;
+
   gallery.appendChild(wrapper);
   initImageButtons(id);
   updateEditUI();
@@ -416,6 +421,10 @@ export function initImageButtons(id: string) {
     "[commandfor=image-popover]",
   );
   if (popoverBtn) initPopoverButton(popoverBtn);
+
+  const downloadBtn =
+    wrapper.querySelector<HTMLButtonElement>("[data-download]");
+  if (downloadBtn) initDownloadButton(downloadBtn);
 }
 
 await initGallery();

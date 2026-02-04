@@ -7,6 +7,7 @@ import {
 } from "@scripts/db";
 import { showAlert } from "@scripts/toaster";
 import { handleError } from "@scripts/utils";
+import { confirm } from "./confirm-dialog";
 
 const form = document.querySelector<HTMLFormElement>("[data-upload]");
 const input = document.querySelector<HTMLInputElement>("#file-upload");
@@ -19,7 +20,7 @@ const section = document.querySelector<HTMLElement>("[data-image]");
 
 const userMessage = "Nem sikerült betölteni a háttérképet";
 
-async function getHeroImageUrl() {
+async function getHeroImage() {
   if (!section) {
     return;
   }
@@ -34,15 +35,18 @@ async function getHeroImageUrl() {
     return;
   }
 
-  return images[0].url;
+  return images[0];
 }
 
-async function setSectionBackground(heroImageUrl: string) {
+async function setSectionBackground(url: string, id: string) {
   if (!section) {
     return handleError(userMessage, "Hero section element not found.");
   }
 
-  section.style.backgroundImage = `url("${heroImageUrl}")`;
+  section.style.backgroundImage = `url("${url}")`;
+  const downloadBtn =
+    section.querySelector<HTMLButtonElement>("[data-download]");
+  if (downloadBtn) downloadBtn.dataset.download = id;
 }
 
 let dt = new DataTransfer();
@@ -101,10 +105,17 @@ async function uploadFile(key: string, file: File) {
     const image = await pb
       .collection("image")
       .create({ key, file, sorting: 0 }, { requestKey: null });
-    const imageUrl = getURLFromRecord(image);
+
     showAlert("Sikeres feltöltés", "success");
     removeFile();
-    return imageUrl;
+
+    return {
+      id: image.id,
+      url: getURLFromRecord(image),
+      filename: image.file,
+      cover: image.cover,
+      sorting: image.sorting,
+    };
   } catch (error) {
     removeFile();
     return handleError("Nem sikerült a feltöltés", "Upload failed.");
@@ -147,15 +158,28 @@ form?.addEventListener("submit", async (e) => {
 
   const key = form.dataset.upload;
   if (!key) return;
-  await deleteImagesByKey(key);
-  const uploadedImageUrl = await uploadFile(key, files[0]);
-  if (!uploadedImageUrl) return;
 
-  await setSectionBackground(uploadedImageUrl);
+  const confirmed = await confirm({
+    title: "Borítókép beállítása",
+    message:
+      "Biztosan ezt a képet állítod be borítóképnek? Az előző törölésre kerül.",
+    confirmText: "Beállítás",
+    cancelText: "Mégse",
+  });
+  if (!confirmed) return;
+
+  await deleteImagesByKey(key);
+  const uploadedImage = await uploadFile(key, files[0]);
+  if (!uploadedImage) return;
+
+  await setSectionBackground(uploadedImage.url, uploadedImage.id);
 });
 
-let heroImageUrl = await getHeroImageUrl();
+const image = await getHeroImage();
 
-if (heroImageUrl) {
-  await setSectionBackground(heroImageUrl);
+const url = image?.url;
+const id = image?.id;
+
+if (url && id) {
+  await setSectionBackground(url, id);
 }

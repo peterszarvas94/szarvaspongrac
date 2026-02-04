@@ -1,7 +1,7 @@
 /// <reference types="astro/client" />
 import { setCachedContent } from "@scripts/content-cache";
 import PocketBase, { type RecordModel } from "pocketbase";
-import { showAlert } from "./toaster";
+import { showAlert } from "@scripts/toaster";
 
 export const pb = new PocketBase(import.meta.env.PUBLIC_PB_URL);
 
@@ -80,6 +80,21 @@ export async function getCoverImage(key: string) {
   return await pb
     .collection("image")
     .getFirstListItem(`key="${key}" && cover=true`);
+}
+
+export async function getImageById(id: string) {
+  try {
+    const image = await pb.collection("image").getOne(id);
+    return {
+      id: image.id,
+      url: getURLFromRecord(image),
+      filename: image.file,
+      cover: image.cover,
+      sorting: image.sorting,
+    };
+  } catch (error) {
+    console.error("Fetch error:", error);
+  }
 }
 
 /** @return old cover image */

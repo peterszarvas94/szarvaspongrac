@@ -1,6 +1,6 @@
 ---
 import { Trash, BookImage, ChevronUp, ChevronDown } from "@lucide/astro";
-import { ImageOff } from "lucide-astro";
+import { Download, ImageOff } from "lucide-astro";
 
 export interface Props {
   key: string;
@@ -73,6 +73,13 @@ const { key } = Astro.props;
           title="Törlés"
         >
           <Trash class="size-4" />
+        </button>
+        <button
+          data-download=""
+          class="join-item btn btn-sm btn-square"
+          title="Letöltés"
+        >
+          <Download class="size-4" />
         </button>
       </div>
 

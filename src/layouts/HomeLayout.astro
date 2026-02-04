@@ -4,6 +4,7 @@ import BaseLayout from "./BaseLayout.astro";
 import Footer from "@components/Footer.astro";
 import EditButton from "@components/EditButton.astro";
 import CancelButton from "@components/CancelButton.astro";
+import DownloadButton from "@components/DownloadButton.astro";
 
 export interface Props {
   title: string;
@@ -41,6 +42,7 @@ const { title, description, key } = Astro.props;
   >
     <EditButton />
     <CancelButton cancelText="Kilépés" />
+    <DownloadButton />
   </div>
 
   <HeroImageUpload key={key} />
@@ -58,4 +60,5 @@ const { title, description, key } = Astro.props;
 <script>
   import "@scripts/hero";
   import "@scripts/edit";
+  import "@scripts/download";
 </script>
