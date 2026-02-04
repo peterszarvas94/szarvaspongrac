@@ -14,44 +14,30 @@ const section = document.querySelector<HTMLElement>("[data-image]");
 
 const userMessage = "Nem sikerült betölteni a háttérképet";
 
-async function getHeroImageUrl(skipError?: boolean) {
+async function getHeroImageUrl() {
   if (!section) {
-    if (skipError) return;
-    return handleError(userMessage, "Hero section element not found.");
+    return;
   }
 
   const key = section.dataset.image;
   if (!key) {
-    if (skipError) return;
-    return handleError(userMessage, "Key is missing.");
+    return;
   }
 
   const images = await getImages(key);
   if (images.length === 0) {
-    if (skipError) return;
-    return handleError(userMessage, "No hero images found for key.");
+    return;
   }
 
   return images[0].url;
 }
 
-async function setSectionBackground(heroImageUrl: string, skipError?: boolean) {
+async function setSectionBackground(heroImageUrl: string) {
   if (!section) {
-    if (skipError) return;
     return handleError(userMessage, "Hero section element not found.");
   }
 
-  if (!heroImageUrl) {
-    if (skipError) return;
-    return handleError(userMessage, "Hero image url is missing.");
-  }
-
-  try {
-    section.style.backgroundImage = `url("${heroImageUrl}")`;
-  } catch (error) {
-    if (skipError) return;
-    return handleError(userMessage, "Failed to set hero background.");
-  }
+  section.style.backgroundImage = `url("${heroImageUrl}")`;
 }
 
 let dt = new DataTransfer();
@@ -162,13 +148,8 @@ form?.addEventListener("submit", async (e) => {
   await setSectionBackground(uploadedImageUrl);
 });
 
-let heroImageUrl: string | undefined;
-try {
-  heroImageUrl = await getHeroImageUrl(true);
-} catch (error) {
-  handleError(userMessage, "Failed to load hero image on page load.");
-}
+let heroImageUrl = await getHeroImageUrl();
 
 if (heroImageUrl) {
-  await setSectionBackground(heroImageUrl, true);
+  await setSectionBackground(heroImageUrl);
 }
