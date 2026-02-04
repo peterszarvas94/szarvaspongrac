@@ -14,18 +14,21 @@ const section = document.querySelector<HTMLElement>("[data-image]");
 
 const userMessage = "Nem sikerült betölteni a háttérképet";
 
-async function getHeroImageUrl() {
+async function getHeroImageUrl(skipError?: boolean) {
   if (!section) {
+    if (skipError) return;
     return handleError(userMessage, "Hero section element not found.");
   }
 
   const key = section.dataset.image;
   if (!key) {
+    if (skipError) return;
     return handleError(userMessage, "Key is missing.");
   }
 
   const images = await getImages(key);
   if (images.length === 0) {
+    if (skipError) return;
     return handleError(userMessage, "No hero images found for key.");
   }
 
@@ -161,9 +164,9 @@ form?.addEventListener("submit", async (e) => {
 
 let heroImageUrl: string | undefined;
 try {
-  heroImageUrl = await getHeroImageUrl();
+  heroImageUrl = await getHeroImageUrl(true);
 } catch (error) {
-  // handleError(userMessage, "Failed to load hero image on page load.");
+  handleError(userMessage, "Failed to load hero image on page load.");
 }
 
 if (heroImageUrl) {
