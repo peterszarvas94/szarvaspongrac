@@ -16,6 +16,9 @@ const {
   description = "Szarvas Pongrác grafikus, festő, illusztrátor honlapja - Modern verzió",
   mainClass = "",
 } = Astro.props;
+
+const socialImage = new URL("/images/cover.JPG", Astro.site ?? Astro.url).href;
+const canonicalUrl = Astro.url.href;
 ---
 
 <!doctype html>
@@ -37,6 +40,42 @@ const {
     <meta
       name="author"
       content="Szarvas Pongrác"
+    />
+    <meta
+      property="og:title"
+      content={title}
+    />
+    <meta
+      property="og:description"
+      content={description}
+    />
+    <meta
+      property="og:type"
+      content="website"
+    />
+    <meta
+      property="og:url"
+      content={canonicalUrl}
+    />
+    <meta
+      property="og:image"
+      content={socialImage}
+    />
+    <meta
+      name="twitter:card"
+      content="summary_large_image"
+    />
+    <meta
+      name="twitter:title"
+      content={title}
+    />
+    <meta
+      name="twitter:description"
+      content={description}
+    />
+    <meta
+      name="twitter:image"
+      content={socialImage}
     />
     <meta
       name="viewport"

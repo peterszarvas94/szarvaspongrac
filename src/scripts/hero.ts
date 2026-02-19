@@ -44,8 +44,9 @@ async function setSectionBackground(url: string, id: string) {
   }
 
   section.style.backgroundImage = `url("${url}")`;
-  const downloadBtn =
-    section.querySelector<HTMLButtonElement>("[data-download]");
+  const downloadBtn = document.querySelector<HTMLButtonElement>(
+    "[data-auth] [data-download]",
+  );
   if (downloadBtn) downloadBtn.dataset.download = id;
 }
 
