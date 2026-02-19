@@ -41,5 +41,5 @@ export async function downloadImage(url: string, filename: string) {
   a.click();
   document.body.removeChild(a);
 
-  URL.revokeObjectURL(url);
+  URL.revokeObjectURL(blobUrl);
 }
