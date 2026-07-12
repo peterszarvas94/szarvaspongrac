@@ -1,0 +1,34 @@
+package pages
+
+import (
+	"szarvaspongrac/templates/shared"
+	view "szarvaspongrac/views/pages"
+)
+
+templ GalleryIndex(data view.GalleryIndexData) {
+	@shared.Layout(data.PageData, "py-4") {
+		@shared.PageTitle(data.PageTitle)
+		<div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+			for _, card := range data.Cards {
+				@shared.ArtCard(card.Href, card.Title, card.ImageAlt, card.CoverURL)
+			}
+		</div>
+	}
+}
+
+templ Gallery(data view.GalleryData) {
+	@shared.Layout(data.PageData, "py-4") {
+		@shared.PageTitle(data.PageTitle)
+		<div class="flex flex-col items-center gap-8 max-w-7xl mx-auto px-4">
+			if data.Authed {
+				<div class="flex gap-2">
+					<button type="button" class="btn" data-on:click="$editMode=true">Szerkesztés</button>
+					<button type="button" class="btn" data-show="$editMode" data-on:click="$editMode=false">Kilépés</button>
+				</div>
+			}
+			@shared.ImageUpload(data.Key, data.Authed)
+			@shared.ImagePopover()
+			@shared.GalleryGrid(data.Key, data.Images, data.Authed)
+		</div>
+	}
+}

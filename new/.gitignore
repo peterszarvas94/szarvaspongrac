@@ -1,0 +1,7 @@
+.env
+*.db
+tmp/
+static/css/generated.css
+node_modules/
+*_templ.go
+pb/pb_data/

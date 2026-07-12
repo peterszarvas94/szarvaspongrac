@@ -1,0 +1,29 @@
+package pages
+
+import (
+	"szarvaspongrac/templates/shared"
+	view "szarvaspongrac/views/pages"
+)
+
+templ Contact(data view.ContactData) {
+	@shared.Layout(data.PageData, "py-4") {
+		<div class="flex flex-1 w-full flex-col">
+			@shared.PageTitle(data.PageTitle)
+			<div class="mx-auto w-full max-w-96 px-4">
+				<div class="card bg-base-100 shadow-xl">
+					<div class="card-body flex flex-col gap-6">
+						<div class="flex flex-col gap-2">
+							<p class="text-xl font-bold">Email</p>
+							<a href={ data.Email.URL } class="hover:link">{ data.Email.Text }</a>
+						</div>
+						<div class="flex flex-col gap-2">
+							<p class="text-xl font-bold">Telefon</p>
+							<a href={ data.Phone.URL } class="hover:link">{ data.Phone.Text }</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		@shared.DevCredit()
+	}
+}

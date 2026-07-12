@@ -1,0 +1,42 @@
+package pages
+
+import (
+	"szarvaspongrac/templates/shared"
+	view "szarvaspongrac/views/pages"
+)
+
+templ Home(data view.HomeData) {
+	@shared.Layout(data.PageData, "") {
+		@HeroSection(data.HeroURL)
+		if data.Authed {
+			<div class="w-full py-4 flex justify-center gap-2">
+				<button type="button" class="btn" data-on:click="$editMode=true">Szerkesztés</button>
+				<button type="button" class="btn" data-show="$editMode" data-on:click="$editMode=false">Kilépés</button>
+			</div>
+		}
+		@shared.HeroImageUpload(data.ContentKey, data.Authed)
+		<section class="py-8 bg-base-200">
+			<div class="mx-auto px-4 flex gap-4 flex-row flex-wrap items-center justify-center">
+				@shared.NavigationCard("/oneletrajz", "Önéletrajz", "primary")
+				@shared.NavigationCard("/elismeresek", "Elismerések", "warning")
+				@shared.NavigationCard("/konyvillusztraciok", "Könyvillusztrációk", "success")
+				@shared.NavigationCard("/galeria", "Galéria", "secondary")
+				@shared.NavigationCard("/kapcsolat", "Kapcsolat", "accent")
+			</div>
+		</section>
+	}
+}
+
+templ HeroSection(heroURL string) {
+	<section
+		id="hero-section"
+		class={ "relative min-h-[70vh] bg-neutral-800 bg-cover bg-center flex items-center justify-center " + heroOverlayClass(heroURL) }
+		style={ heroBgStyle(heroURL) }
+	>
+		<div class="relative z-10 text-center px-4 max-w-4xl mx-auto">
+			<h1 class="text-7xl text-base-100 mb-6">Szarvas Pongrác</h1>
+			<p class="text-lg text-base-100/80">Grafikus • Illusztrátor • Festő</p>
+			<p class="text-lg text-base-100/80">Wildlife artist</p>
+		</div>
+	</section>
+}

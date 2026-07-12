@@ -1,0 +1,43 @@
+package shared
+
+import (
+	"fmt"
+	icons "szarvaspongrac/templates/shared/icons"
+)
+
+type DialogProps struct {
+	ID     string
+	Signal string
+}
+
+templ DialogShell(props DialogProps) {
+	{{
+		syncExpr := PopoverOpenEffectExpr(props.ID)
+		dismissExpr := ClosePopoverOnClick()
+		if props.Signal != "" {
+			syncExpr = fmt.Sprintf("$%s.open ? (!el.open && el.showModal()) : (el.open && el.close())", props.Signal)
+			dismissExpr = fmt.Sprintf("$%s.open = false", props.Signal)
+		}
+	}}
+	<dialog
+		id={ props.ID }
+		class="dialog-popover"
+		data-ignore-morph
+		data-effect={ syncExpr }
+		data-on:click={ dismissExpr }
+		data-on:cancel={ dismissExpr }
+	>
+		<section class="dialog" role="dialog" aria-modal="true" data-on:click="evt.stopPropagation()">
+			<button
+				type="button"
+				class="dialog-close btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+				aria-label="Mégse"
+				title="Mégse"
+				data-on:click={ dismissExpr }
+			>
+				@icons.X(templ.Attributes{"class": "icon"})
+			</button>
+			{ children... }
+		</section>
+	</dialog>
+}

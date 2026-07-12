@@ -1,0 +1,12 @@
+{
+  "scripts": {
+    "css": "npx @tailwindcss/cli -i static/css/input.css -o static/css/generated.css",
+    "css:watch": "npx @tailwindcss/cli -i static/css/input.css -o static/css/generated.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.18",
+    "@tailwindcss/typography": "^0.5.19",
+    "daisyui": "^5.5.14",
+    "tailwindcss": "^4.1.18"
+  }
+}

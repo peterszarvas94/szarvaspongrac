@@ -1,0 +1,32 @@
+package pages
+
+import (
+	"szarvaspongrac/templates/shared"
+	view "szarvaspongrac/views/pages"
+)
+
+templ Admin(data view.AdminData) {
+	@shared.Layout(data.PageData, "py-4") {
+		@shared.PageTitle("Admin")
+		<div class="mx-auto w-full max-w-md">
+			<div class="card bg-base-100 shadow-xl">
+				<div class="card-body">
+					if !data.Authed {
+						<h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
+						<form method="POST" action="/auth/login" class="flex flex-col gap-4">
+							<input type="email" name="email" class="input input-bordered" placeholder="email@example.com" required autocomplete="email"/>
+							<input type="password" name="password" class="input input-bordered" placeholder="Jelszó" required autocomplete="current-password"/>
+							<button type="submit" class="btn btn-primary">Bejelentkezés</button>
+						</form>
+					} else {
+						<h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
+						<p class="text-center mb-6">{ data.Email }</p>
+						<form method="POST" action="/auth/logout">
+							<button type="submit" class="btn btn-outline btn-error btn-block">Kijelentkezés</button>
+						</form>
+					}
+				</div>
+			</div>
+		</div>
+	}
+}

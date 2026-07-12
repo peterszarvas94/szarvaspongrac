@@ -1,0 +1,171 @@
+package shared
+
+import (
+	"fmt"
+	"szarvaspongrac/utils"
+	icons "szarvaspongrac/templates/shared/icons"
+	view "szarvaspongrac/views/pages"
+)
+
+templ PageTitle(title string) {
+	<div class="text-center py-8"><h1 class="text-4xl font-bold text-base-content">{ title }</h1></div>
+}
+
+templ ContentBlock(key, html string, editing bool) {
+	<div id={ "content-" + utils.ContentKeyID(key) }>
+		<article class="prose max-w-none">
+			@templ.Raw(html)
+		</article>
+	</div>
+}
+
+templ TiptapToolbar(contentKey string) {
+	<div class="tiptap-actionbar flex flex-wrap gap-1 p-2" data-on:editorupdate__window="$bold=editor.isActive('bold');$italic=editor.isActive('italic');$strike=editor.isActive('strike');$heading1=editor.isActive('heading',{level:1});$heading2=editor.isActive('heading',{level:2});$heading3=editor.isActive('heading',{level:3});$bulletList=editor.isActive('bulletList');$orderedList=editor.isActive('orderedList');$blockquote=editor.isActive('blockquote');$editorHtml=editor.getHTML();">
+		<button type="button" class="tiptap-button" data-on:click="editor.chain().focus().toggleBold().run()" data-class:tiptap-button-selected="$bold">B</button>
+		<button type="button" class="tiptap-button" data-on:click="editor.chain().focus().toggleItalic().run()" data-class:tiptap-button-selected="$italic">I</button>
+		<button type="button" class="tiptap-button" data-on:click="editor.chain().focus().toggleStrike().run()" data-class:tiptap-button-selected="$strike">S</button>
+		<button type="button" class="tiptap-button" data-on:click="window.uploadEditorImage()" aria-label="Kép feltöltése" title="Kép feltöltése">
+			@icons.Image(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="btn btn-primary btn-sm" data-on:click={ fmt.Sprintf("@patch('/content/%s')", contentKey) }>Mentés</button>
+	</div>
+}
+
+templ EditControls(authed bool, contentKey string) {
+	if authed {
+		<div class="w-full p-4 flex justify-center gap-2">
+			<button type="button" class="btn" data-on:click={ fmt.Sprintf("window.mountEditor('%s')", contentKey) }>Szerkesztés</button>
+			<button type="button" class="btn" data-on:click="window.destroyEditor()">Mégsem</button>
+		</div>
+	}
+}
+
+templ GalleryGrid(key string, images []view.GalleryImage, authed bool) {
+	<div id="gallery-grid">
+		if len(images) == 0 {
+			<p class="text-center py-12 text-lg">Nincs kép feltöltve</p>
+		} else {
+			<div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4">
+				for _, img := range images {
+					@GalleryItem(key, img, authed)
+				}
+			</div>
+		}
+	</div>
+}
+
+templ GalleryItem(key string, img view.GalleryImage, authed bool) {
+	<div class="relative mb-4 block">
+		<button type="button" class="w-full block border-0 bg-transparent p-0 cursor-pointer" data-on:click={ fmt.Sprintf("window.openGalleryImage('%s')", img.URL) }>
+			<img src={ img.URL } alt="Galéria kép" class="w-full rounded-lg shadow-lg" loading="lazy"/>
+		</button>
+		if authed {
+			<div class="absolute top-2 left-2 right-2 flex justify-between" data-show="$editMode">
+				<div class="join">
+					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Borítókép" title="Borítókép" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/cover?key=%s')", img.ID, key) }>
+						@icons.Star(templ.Attributes{"class": "icon"})
+					</button>
+					<button
+						type="button"
+						class="btn btn-sm btn-square join-item"
+						aria-label="Törlés"
+						title="Törlés"
+						data-on:click={ fmt.Sprintf(`$confirm = {open: true, kind: 'post', title: 'Kép törlése', message: 'Biztosan törölni szeretnéd ezt a képet?', submitLabel: 'Törlés', url: '/gallery/images/%s/delete?key=%s'}`, img.ID, key) }
+					>
+						@icons.Trash2(templ.Attributes{"class": "icon"})
+					</button>
+					<a href={ templ.SafeURL(img.URL) } download class="btn btn-sm btn-square join-item" aria-label="Letöltés" title="Letöltés">
+						@icons.Download(templ.Attributes{"class": "icon"})
+					</a>
+				</div>
+				<div class="join">
+					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Fel" title="Fel" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/up?key=%s')", img.ID, key) }>
+						@icons.ArrowUp(templ.Attributes{"class": "icon"})
+					</button>
+					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Le" title="Le" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/down?key=%s')", img.ID, key) }>
+						@icons.ArrowDown(templ.Attributes{"class": "icon"})
+					</button>
+				</div>
+			</div>
+		}
+	</div>
+}
+
+templ ImagePopover() {
+	<div id="image-popover" popover class="w-screen h-screen bg-base-300/90 border-0 m-0 p-4 fixed inset-0">
+		<div class="w-full h-full flex items-center justify-center relative">
+			<button type="button" class="absolute top-4 right-4 btn btn-circle" aria-label="Bezárás" data-on:click="document.getElementById('image-popover').hidePopover()">
+				@icons.X(templ.Attributes{"class": "icon"})
+			</button>
+			<button type="button" id="popover-prev" class="absolute left-4 btn btn-circle" aria-label="Előző" data-on:click="window.galleryPrev()">
+				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+			</button>
+			<button type="button" id="popover-next" class="absolute right-4 btn btn-circle" aria-label="Következő" data-on:click="window.galleryNext()">
+				@icons.ArrowRight(templ.Attributes{"class": "icon"})
+			</button>
+			<img id="popover-img" src="" alt="" class="max-w-full max-h-full object-contain"/>
+		</div>
+	</div>
+}
+
+templ HeroImageUpload(key string, authed bool) {
+	if authed {
+		<form
+			id="hero-upload-form"
+			enctype="multipart/form-data"
+			class="max-w-xl mx-auto w-full px-4"
+			data-show="$editMode"
+		>
+			<input type="hidden" name="tab_id" data-bind:tab_id/>
+			<input type="file" accept="image/*" name="file" class="file-input file-input-bordered w-full"/>
+			<button
+				type="button"
+				class="btn mt-2 gap-2"
+				data-on:click={ fmt.Sprintf(`if (!document.querySelector('#hero-upload-form input[type=file]')?.files?.[0]) return; $confirm = {open: true, kind: 'form', url: '/hero/%s/upload', formSelector: '#hero-upload-form', title: 'Borítókép cseréje', message: 'Biztosan ezt a képet állítod be borítóképnek? Az előző törölésre kerül.', submitLabel: 'Feltöltés'}`, key) }
+			>
+				@icons.Upload(templ.Attributes{"class": "icon"})
+				<span>Borítókép feltöltése</span>
+			</button>
+		</form>
+	}
+}
+
+templ ImageUpload(key string, authed bool) {
+	if authed {
+		<form
+			class="max-w-xl mx-auto w-full"
+			enctype="multipart/form-data"
+			data-show="$editMode"
+			data-on:submit__prevent={ fmt.Sprintf("@post('/gallery/%s/upload', {contentType: 'form'})", key) }
+			data-on:datastar-fetch={ fmt.Sprintf(`(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && el.reset()`) }
+		>
+			<input type="hidden" name="tab_id" data-bind:tab_id/>
+			<input type="file" accept="image/*" name="files" multiple class="file-input file-input-bordered w-full"/>
+			<button type="submit" class="btn mt-2 gap-2">
+				@icons.Upload(templ.Attributes{"class": "icon"})
+				<span>Feltöltés</span>
+			</button>
+		</form>
+	}
+}
+
+templ NavigationCard(href, title, hoverColor string) {
+	<a href={ templ.SafeURL(href) } class="group w-50">
+		<div class="bg-base-100 rounded-xl p-4 shadow-md hover:shadow-xl transition-all group-hover:scale-105">
+			<h3 class="text-lg font-semibold text-center">{ title }</h3>
+		</div>
+	</a>
+}
+
+templ ArtCard(href, title, imageAlt, coverURL string) {
+	<a href={ templ.SafeURL(href) } class="w-full">
+		<figure class="max-w-100 rounded-2xl overflow-hidden shadow-lg">
+			if coverURL != "" {
+				<img src={ coverURL } alt={ imageAlt } class="w-full h-64 object-cover"/>
+			} else {
+				<div class="h-64 w-full flex items-center justify-center bg-base-200">Nincs borítókép</div>
+			}
+			<div class="p-6 text-center bg-neutral text-neutral-content"><h3 class="text-xl font-semibold">{ title }</h3></div>
+		</figure>
+	</a>
+}

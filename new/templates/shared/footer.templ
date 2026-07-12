@@ -1,0 +1,28 @@
+package shared
+
+import view "szarvaspongrac/views/pages"
+
+templ DevCredit() {
+	<section class="mt-auto flex justify-center py-4 text-sm text-base-content/60 gap-2">
+		<span>A weboldal fejlesztője:</span>
+		<a href="https://peterszarvas.hu" target="_blank" rel="noopener noreferrer" class="hover:link">peterszarvas.hu</a>
+	</section>
+}
+
+templ PageFooter(data view.PageData) {
+	if data.FooterBackHref != "" {
+		<section class="flex justify-center py-4">
+			<a href={ templ.SafeURL(data.FooterBackHref) } class="btn btn-soft">{ data.FooterBackText }</a>
+		</section>
+	}
+	@Footer(data)
+}
+
+templ Footer(data view.PageData) {
+	<footer class="bg-base-300 border-t text-base-content/70 text-sm py-4">
+		<div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-2">
+			<span>© Szarvas Pongrác</span>
+			<a href="/admin" class="hover:link">Admin</a>
+		</div>
+	</footer>
+}

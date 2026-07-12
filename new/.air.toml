@@ -1,0 +1,17 @@
+root = "."
+tmp_dir = "tmp"
+
+[build]
+cmd = "mise run build"
+entrypoint = "./tmp/server"
+include_ext = ["go", "templ", "css"]
+exclude_regex = ["_test.go", ".*_templ\\.go$"]
+delay = 1000
+send_interrupt = true
+kill_delay = "1s"
+
+[log]
+main_only = true
+
+[screen]
+clear_on_rebuild = false

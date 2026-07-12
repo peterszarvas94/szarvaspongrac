@@ -1,0 +1,50 @@
+package shared
+
+import (
+	"fmt"
+	"szarvaspongrac/utils"
+	icons "szarvaspongrac/templates/shared/icons"
+)
+
+templ ConfirmDialog() {
+	{{
+		postSubmitExpr := "@post($confirm.url, {tab_id: $tab_id})"
+		formSubmitExpr := "@post($confirm.url, {contentType: 'form', selector: $confirm.formSelector})"
+		fetchDoneExpr := `(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && ($confirm.open = false)`
+		formFetchDoneExpr := fetchDoneExpr + ` && document.querySelector($confirm.formSelector)?.reset()`
+	}}
+	@DialogShell(DialogProps{
+		ID:     "confirm-popover",
+		Signal: "confirm",
+	}) {
+		<h3 id="confirm-title" class="dialog-title text-lg font-semibold pr-8" data-text="$confirm.title"></h3>
+		<p id="confirm-message" class="dialog-message py-4 text-base-content/80" data-show="$confirm.message !== ''" style="display: none" data-text="$confirm.message"></p>
+		<div class="flex flex-wrap justify-end gap-2">
+			<button type="button" class="btn btn-ghost" data-on:click="$confirm.open = false">Mégse</button>
+			<button
+				type="button"
+				id="confirm-submit-post"
+				class="btn btn-error gap-2"
+				data-show={ fmt.Sprintf("$confirm.kind === %s", utils.JSONString("post")) }
+				style="display: none"
+				data-on:click={ postSubmitExpr }
+				data-on:datastar-fetch={ fetchDoneExpr }
+			>
+				@icons.Trash2(templ.Attributes{"class": "icon"})
+				<span data-text="$confirm.submitLabel"></span>
+			</button>
+			<button
+				type="button"
+				id="confirm-submit-form"
+				class="btn btn-primary gap-2"
+				data-show={ fmt.Sprintf("$confirm.kind === %s", utils.JSONString("form")) }
+				style="display: none"
+				data-on:click={ formSubmitExpr }
+				data-on:datastar-fetch={ formFetchDoneExpr }
+			>
+				@icons.Upload(templ.Attributes{"class": "icon"})
+				<span data-text="$confirm.submitLabel"></span>
+			</button>
+		</div>
+	}
+}

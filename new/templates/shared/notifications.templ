@@ -1,0 +1,69 @@
+package shared
+
+import (
+	"szarvaspongrac/utils"
+	icons "szarvaspongrac/templates/shared/icons"
+)
+
+type NotificationItemProps struct {
+	Message     string
+	Variant     utils.NotificationVariant
+	ID          string
+	CreatedAtMs int64
+}
+
+func notificationItemClass(variant utils.NotificationVariant) string {
+	if variant == utils.NotificationError {
+		return "notification-item notification-item-error"
+	}
+	return "notification-item notification-item-primary"
+}
+
+func notificationIcon(variant utils.NotificationVariant) icons.IconName {
+	if variant == utils.NotificationError {
+		return icons.IconCircleX
+	}
+	return icons.IconInfo
+}
+
+templ Notifications() {
+	<div id="notifications-popover">
+		<ul>
+			for _, item := range utils.NotificationsFromContext(ctx) {
+				@NotificationItem(NotificationItemProps{
+					Message:     item.Message,
+					Variant:     item.Variant,
+					ID:          item.ID,
+					CreatedAtMs: item.Created.UnixMilli(),
+				})
+			}
+		</ul>
+	</div>
+}
+
+templ NotificationItem(props NotificationItemProps) {
+	if props.ID != "" {
+		<li
+			class={ notificationItemClass(props.Variant) }
+			id={ "notification-item-" + props.ID }
+			data-notification-id={ props.ID }
+			data-created-at-ms={ props.CreatedAtMs }
+		>
+			@notificationItemBody(props.Message, props.Variant)
+		</li>
+	} else {
+		<li class={ notificationItemClass(props.Variant) }>
+			@notificationItemBody(props.Message, props.Variant)
+		</li>
+	}
+}
+
+templ notificationItemBody(message string, variant utils.NotificationVariant) {
+	<div class="icon-wrapper" aria-hidden="true">
+		@icons.Icon(notificationIcon(variant), templ.Attributes{"class": "icon"})
+	</div>
+	<p>{ message }</p>
+	<button type="button" aria-label="Bezárás" title="Bezárás">
+		@icons.X(templ.Attributes{"class": "icon"})
+	</button>
+}
