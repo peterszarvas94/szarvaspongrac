@@ -27,7 +27,8 @@ templ Layout(data view.PageData, mainClass string) {
 			<script type="module" src={ assets.AssetPath("js/main.js") }></script>
 			<script type="module" src={ assets.AssetPath("js/notifications.js") }></script>
 		</head>
-		<body class="bg-base-200 relative font-inter" data-tab-id={ tabID } data-signals={ templ.JSONString(signals) } data-init="@get('/sse')">
+		<body class="bg-base-200 relative font-inter" data-tab-id={ tabID }>
+			<div data-signals={ templ.JSONString(signals) } data-init="@get('/sse')"></div>
 			@Header()
 			<div class="page flex flex-col min-h-[calc(100vh-4rem)] justify-between">
 				<main class={ "flex flex-col flex-1 " + mainClass }>

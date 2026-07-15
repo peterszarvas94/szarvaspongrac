@@ -18,25 +18,27 @@ templ DialogShell(props DialogProps) {
 			syncExpr = fmt.Sprintf("$%s.open ? (!el.open && el.showModal()) : (el.open && el.close())", props.Signal)
 			dismissExpr = fmt.Sprintf("$%s.open = false", props.Signal)
 		}
+		focusExpr := "evt.newState === 'open' && el.querySelector('input, textarea, select, button:not(.dialog-close)')?.focus()"
 	}}
 	<dialog
 		id={ props.ID }
 		class="dialog-popover"
 		data-ignore-morph
 		data-effect={ syncExpr }
+		data-on:toggle={ focusExpr }
 		data-on:click={ dismissExpr }
 		data-on:cancel={ dismissExpr }
 	>
+		<button
+			type="button"
+			class="dialog-close btn btn-sm btn-ghost btn-square"
+			aria-label="Mégse"
+			title="Mégse"
+			data-on:click={ dismissExpr + "; evt.stopPropagation()" }
+		>
+			@icons.X(templ.Attributes{"class": "icon"})
+		</button>
 		<section class="dialog" role="dialog" aria-modal="true" data-on:click="evt.stopPropagation()">
-			<button
-				type="button"
-				class="dialog-close btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
-				aria-label="Mégse"
-				title="Mégse"
-				data-on:click={ dismissExpr }
-			>
-				@icons.X(templ.Attributes{"class": "icon"})
-			</button>
 			{ children... }
 		</section>
 	</dialog>

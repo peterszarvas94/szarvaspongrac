@@ -145,7 +145,7 @@ templ GalleryItem(key string, img view.GalleryImage, authed bool, editMode bool)
 		if authed && editMode {
 			<div class="absolute top-2 left-2 right-2 flex justify-between">
 				<div class="join">
-					<button type="button" class="join-item btn btn-sm btn-square" aria-label="Borítókép" title="Borítóképnek jelölés" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/cover?key=%s')", img.ID, key) }>
+					<button type="button" class={ "join-item btn btn-sm btn-square " + GalleryCoverBtnClass(img.Cover) } aria-label="Borítókép" title={ GalleryCoverTitle(img.Cover) } data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/cover?key=%s')", img.ID, key) }>
 						@icons.BookImage(templ.Attributes{"class": "icon"})
 					</button>
 					<button
@@ -153,7 +153,13 @@ templ GalleryItem(key string, img view.GalleryImage, authed bool, editMode bool)
 						class="join-item btn btn-sm btn-square"
 						aria-label="Törlés"
 						title="Törlés"
-						data-on:click={ fmt.Sprintf(`$confirm = {open: true, kind: 'post', title: 'Kép törlése', message: 'Biztosan törölni szeretnéd ezt a képet?', submitLabel: 'Törlés', url: '/gallery/images/%s/delete?key=%s'}`, img.ID, key) }
+						data-on:click={ OpenConfirmClickExpr(ConfirmDialogProps{
+							Kind:        "post",
+							Title:       "Kép törlése",
+							Message:     "Biztosan törölni szeretnéd ezt a képet?",
+							SubmitLabel: "Törlés",
+							URL:         fmt.Sprintf("/gallery/images/%s/delete?key=%s", img.ID, key),
+						}) }
 					>
 						@icons.Trash(templ.Attributes{"class": "icon"})
 					</button>
@@ -203,7 +209,14 @@ templ HeroImageUpload(key string, editMode bool) {
 			<button
 				type="button"
 				class="btn mt-2 gap-2"
-				data-on:click={ fmt.Sprintf(`if (!document.querySelector('#hero-upload-form input[type=file]')?.files?.[0]) return; $confirm = {open: true, kind: 'form', url: '/hero/%s/upload', formSelector: '#hero-upload-form', title: 'Borítókép cseréje', message: 'Biztosan ezt a képet állítod be borítóképnek? Az előző törölésre kerül.', submitLabel: 'Feltöltés'}`, key) }
+				data-on:click={ fmt.Sprintf(`if (!document.querySelector('#hero-upload-form input[type=file]')?.files?.[0]) return; %s`, OpenConfirmClickExpr(ConfirmDialogProps{
+					Kind:         "form",
+					Title:        "Borítókép cseréje",
+					Message:      "Biztosan ezt a képet állítod be borítóképnek? Az előző törölésre kerül.",
+					SubmitLabel:  "Feltöltés",
+					URL:          fmt.Sprintf("/hero/%s/upload", key),
+					FormSelector: "#hero-upload-form",
+				})) }
 			>
 				@icons.Upload(templ.Attributes{"class": "icon"})
 				<span>Borítókép feltöltése</span>

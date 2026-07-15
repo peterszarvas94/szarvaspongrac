@@ -37,14 +37,5 @@ func PageSignals(state PageState, tabID string) map[string]any {
 		"codeBlock":     false,
 		"tab_id":        tabID,
 		"popoverOpenId": "",
-		"confirm": map[string]any{
-			"open":         false,
-			"title":        "",
-			"message":      "",
-			"submitLabel":  "Rendben",
-			"url":          "",
-			"kind":         "",
-			"formSelector": "",
-		},
 	}
 }
