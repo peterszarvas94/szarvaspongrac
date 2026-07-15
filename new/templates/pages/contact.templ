@@ -10,7 +10,7 @@ templ ContactLink(title, href, text string, icon icons.IconName) {
 	<div class="flex flex-col gap-2">
 		<p class="text-xl font-bold text-base-content">{ title }</p>
 		<div class="flex gap-2 items-center">
-			@icons.Icon(icon, templ.Attributes{"class": "icon text-base-content/70"})
+			@icons.Icon(icon, templ.Attributes{"class": "size-4 text-base-content/70"})
 			<a href={ templ.SafeURL(href) } class="text-base-content/70 hover:link hover:text-base-content">{ text }</a>
 		</div>
 	</div>

@@ -24,25 +24,29 @@ templ ProseEditRegion(data ProseEditData) {
 		if data.Authed {
 			<div class="w-full p-4 flex justify-center gap-2">
 				if !data.IsEditing() {
-					<button type="button" class="btn gap-2" data-on:click={ fmt.Sprintf("$action='edit', $contentKey='%s', @patch('/state/content')", data.ContentKey) }>
+					<button type="button" class="btn" data-on:click={ fmt.Sprintf("$action='edit', $contentKey='%s', @patch('/state/content')", data.ContentKey) }>
 						@icons.Pencil(templ.Attributes{"class": "icon"})
 						<span>Szerkesztés</span>
 					</button>
 				} else {
-					<button type="button" class="btn gap-2" data-on:click={ fmt.Sprintf("$action='cancel', $contentKey='%s', @patch('/state/content')", data.ContentKey) }>
-						@icons.X(templ.Attributes{"class": "icon"})
-						<span>Mégsem</span>
-					</button>
+					<div class="join">
+						<button type="button" class="join-item btn" data-on:click={ fmt.Sprintf("$action='cancel', $contentKey='%s', @patch('/state/content')", data.ContentKey) }>
+							@icons.X(templ.Attributes{"class": "icon"})
+							<span>Mégsem</span>
+						</button>
+						<button type="button" class="join-item btn btn-primary" data-on:click={ fmt.Sprintf("@patch('/content/%s')", data.ContentKey) }>
+							@icons.Save(templ.Attributes{"class": "icon"})
+							<span>Mentés</span>
+						</button>
+					</div>
 				}
 			</div>
 		}
 		if data.IsEditing() {
-			<div class="hidden">
-				@ContentBlock(data.ContentKey, data.ContentHTML)
-			</div>
-			<div id="active-editor-wrap">
-				@TiptapToolbar(data.ContentKey)
-				<div class="prose tiptap-content rounded-xl bg-base-100 p-4" id="active-editor"></div>
+			<textarea id="editor-initial" class="hidden" readonly>{ data.InitialEditorContent() }</textarea>
+			<div id="active-editor-wrap" class="tiptap-editor" data-on:load="window.bootEditor()">
+				@TiptapToolbar()
+				<div class="prose tiptap-content" id="active-editor"></div>
 			</div>
 		} else {
 			@ContentBlock(data.ContentKey, data.ContentHTML)
@@ -50,17 +54,68 @@ templ ProseEditRegion(data ProseEditData) {
 	</div>
 }
 
-templ TiptapToolbar(contentKey string) {
-	<div class="tiptap-actionbar flex flex-wrap gap-1 p-2" data-on:editorupdate__window="$bold=editor.isActive('bold');$italic=editor.isActive('italic');$strike=editor.isActive('strike');$heading1=editor.isActive('heading',{level:1});$heading2=editor.isActive('heading',{level:2});$heading3=editor.isActive('heading',{level:3});$bulletList=editor.isActive('bulletList');$orderedList=editor.isActive('orderedList');$blockquote=editor.isActive('blockquote');$editorHtml=editor.getHTML();">
-		<button type="button" class="tiptap-button" data-on:click="editor.chain().focus().toggleBold().run()" data-class:tiptap-button-selected="$bold">B</button>
-		<button type="button" class="tiptap-button" data-on:click="editor.chain().focus().toggleItalic().run()" data-class:tiptap-button-selected="$italic">I</button>
-		<button type="button" class="tiptap-button" data-on:click="editor.chain().focus().toggleStrike().run()" data-class:tiptap-button-selected="$strike">S</button>
-		<button type="button" class="tiptap-button" data-on:click="window.uploadEditorImage()" aria-label="Kép feltöltése" title="Kép feltöltése">
+templ TiptapToolbar() {
+	<div
+		id="tiptap-toolbar"
+		class="tiptap-actionbar"
+		data-signals="{ bold: false, italic: false, strike: false, paragraph: true, heading1: false, heading2: false, heading3: false, bulletList: false, orderedList: false, blockquote: false, alignLeft: false, alignCenter: false, alignRight: false, alignJustify: false }"
+		data-on:editorupdate__window="if (!window.editor) return; $bold = editor.isActive('bold'); $italic = editor.isActive('italic'); $strike = editor.isActive('strike'); $paragraph = editor.isActive('paragraph') && !editor.isActive('bulletList') && !editor.isActive('orderedList') && !editor.isActive('blockquote'); $heading1 = editor.isActive('heading', { level: 1 }); $heading2 = editor.isActive('heading', { level: 2 }); $heading3 = editor.isActive('heading', { level: 3 }); $bulletList = editor.isActive('bulletList'); $orderedList = editor.isActive('orderedList'); $blockquote = editor.isActive('blockquote'); $alignLeft = editor.isActive({ textAlign: 'left' }); $alignCenter = editor.isActive({ textAlign: 'center' }); $alignRight = editor.isActive({ textAlign: 'right' }); $alignJustify = editor.isActive({ textAlign: 'justify' }); $editorHtml = editor.getHTML();"
+	>
+		<button type="button" class="tiptap-button" title="Félkövér" data-on:click="editor.chain().focus().toggleBold().run()" data-class:tiptap-button-selected="$bold">
+			@icons.Bold(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Dőlt" data-on:click="editor.chain().focus().toggleItalic().run()" data-class:tiptap-button-selected="$italic">
+			@icons.Italic(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Áthúzott" data-on:click="editor.chain().focus().toggleStrike().run()" data-class:tiptap-button-selected="$strike">
+			@icons.Strikethrough(templ.Attributes{"class": "icon"})
+		</button>
+		<div class="tiptap-divider"></div>
+		<button type="button" class="tiptap-button" title="Címsor 1" data-on:click="editor.chain().focus().toggleHeading({ level: 1 }).run()" data-class:tiptap-button-selected="$heading1">
+			@icons.Heading1(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Címsor 2" data-on:click="editor.chain().focus().toggleHeading({ level: 2 }).run()" data-class:tiptap-button-selected="$heading2">
+			@icons.Heading2(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Címsor 3" data-on:click="editor.chain().focus().toggleHeading({ level: 3 }).run()" data-class:tiptap-button-selected="$heading3">
+			@icons.Heading3(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Bekezdés" data-on:click="editor.chain().focus().setParagraph().run()" data-class:tiptap-button-selected="$paragraph">
+			@icons.Pilcrow(templ.Attributes{"class": "icon"})
+		</button>
+		<div class="tiptap-divider"></div>
+		<button type="button" class="tiptap-button" title="Felsorolás" data-on:click="editor.chain().focus().toggleBulletList().run()" data-class:tiptap-button-selected="$bulletList">
+			@icons.List(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Számozott lista" data-on:click="editor.chain().focus().toggleOrderedList().run()" data-class:tiptap-button-selected="$orderedList">
+			@icons.ListOrdered(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Idézet" data-on:click="editor.chain().focus().toggleBlockquote().run()" data-class:tiptap-button-selected="$blockquote">
+			@icons.Quote(templ.Attributes{"class": "icon"})
+		</button>
+		<div class="tiptap-divider"></div>
+		<button type="button" class="tiptap-button" title="Balra igazítás" data-on:click="editor.chain().focus().setTextAlign('left').run()" data-class:tiptap-button-selected="$alignLeft">
+			@icons.TextAlignStart(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Középre igazítás" data-on:click="editor.chain().focus().setTextAlign('center').run()" data-class:tiptap-button-selected="$alignCenter">
+			@icons.TextAlignCenter(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Jobbra igazítás" data-on:click="editor.chain().focus().setTextAlign('right').run()" data-class:tiptap-button-selected="$alignRight">
+			@icons.TextAlignEnd(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Sorkizárt" data-on:click="editor.chain().focus().setTextAlign('justify').run()" data-class:tiptap-button-selected="$alignJustify">
+			@icons.TextAlignJustify(templ.Attributes{"class": "icon"})
+		</button>
+		<div class="tiptap-divider"></div>
+		<button type="button" class="tiptap-button" title="Kép" data-on:click="window.uploadEditorImage()" aria-label="Kép">
 			@icons.Image(templ.Attributes{"class": "icon"})
 		</button>
-		<button type="button" class="btn btn-primary btn-sm gap-2" data-on:click={ fmt.Sprintf("@patch('/content/%s')", contentKey) }>
-			@icons.Save(templ.Attributes{"class": "icon"})
-			<span>Mentés</span>
+		<div class="tiptap-divider"></div>
+		<button type="button" class="tiptap-button" title="Visszavonás" data-on:click="editor.chain().focus().undo().run()">
+			@icons.Undo(templ.Attributes{"class": "icon"})
+		</button>
+		<button type="button" class="tiptap-button" title="Újra" data-on:click="editor.chain().focus().redo().run()">
+			@icons.Redo(templ.Attributes{"class": "icon"})
 		</button>
 	</div>
 }
@@ -68,7 +123,10 @@ templ TiptapToolbar(contentKey string) {
 templ GalleryGrid(key string, images []view.GalleryImage, authed bool, editMode bool) {
 	<div id="gallery-grid">
 		if len(images) == 0 {
-			<p class="text-center py-12 text-lg">Nincs kép feltöltve</p>
+			<div class="w-full flex flex-col gap-4 items-center justify-center py-12">
+				@icons.ImageOff(templ.Attributes{"class": "size-10 text-base-content opacity-60"})
+				<p class="text-lg">Nincs kép feltöltve</p>
+			</div>
 		} else {
 			<div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4">
 				for _, img := range images {
@@ -87,28 +145,28 @@ templ GalleryItem(key string, img view.GalleryImage, authed bool, editMode bool)
 		if authed && editMode {
 			<div class="absolute top-2 left-2 right-2 flex justify-between">
 				<div class="join">
-					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Borítókép" title="Borítókép" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/cover?key=%s')", img.ID, key) }>
-						@icons.Star(templ.Attributes{"class": "icon"})
+					<button type="button" class="join-item btn btn-sm btn-square" aria-label="Borítókép" title="Borítóképnek jelölés" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/cover?key=%s')", img.ID, key) }>
+						@icons.BookImage(templ.Attributes{"class": "icon"})
 					</button>
 					<button
 						type="button"
-						class="btn btn-sm btn-square join-item"
+						class="join-item btn btn-sm btn-square"
 						aria-label="Törlés"
 						title="Törlés"
 						data-on:click={ fmt.Sprintf(`$confirm = {open: true, kind: 'post', title: 'Kép törlése', message: 'Biztosan törölni szeretnéd ezt a képet?', submitLabel: 'Törlés', url: '/gallery/images/%s/delete?key=%s'}`, img.ID, key) }
 					>
-						@icons.Trash2(templ.Attributes{"class": "icon"})
+						@icons.Trash(templ.Attributes{"class": "icon"})
 					</button>
-					<a href={ templ.SafeURL(img.URL) } download class="btn btn-sm btn-square join-item" aria-label="Letöltés" title="Letöltés">
+					<a href={ templ.SafeURL(img.URL) } download class="join-item btn btn-sm btn-square" aria-label="Letöltés" title="Letöltés">
 						@icons.Download(templ.Attributes{"class": "icon"})
 					</a>
 				</div>
 				<div class="join">
-					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Fel" title="Fel" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/up?key=%s')", img.ID, key) }>
-						@icons.ArrowUp(templ.Attributes{"class": "icon"})
+					<button type="button" class="join-item btn btn-sm btn-square" aria-label="Mozgatás előre" title="Mozgatás előre" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/up?key=%s')", img.ID, key) }>
+						@icons.ChevronUp(templ.Attributes{"class": "icon"})
 					</button>
-					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Le" title="Le" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/down?key=%s')", img.ID, key) }>
-						@icons.ArrowDown(templ.Attributes{"class": "icon"})
+					<button type="button" class="join-item btn btn-sm btn-square" aria-label="Mozgatás hátra" title="Mozgatás hátra" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/down?key=%s')", img.ID, key) }>
+						@icons.ChevronDown(templ.Attributes{"class": "icon"})
 					</button>
 				</div>
 			</div>
@@ -117,18 +175,18 @@ templ GalleryItem(key string, img view.GalleryImage, authed bool, editMode bool)
 }
 
 templ ImagePopover() {
-	<div id="image-popover" popover class="w-screen h-screen bg-base-300/90 border-0 m-0 p-4 fixed inset-0">
+	<div id="image-popover" popover class="w-screen h-screen bg-base-300/90 backdrop-blur-sm border-0 m-0 p-4 fixed inset-0">
 		<div class="w-full h-full flex items-center justify-center relative">
-			<button type="button" class="absolute top-4 right-4 btn btn-circle" aria-label="Bezárás" data-on:click="document.getElementById('image-popover').hidePopover()">
-				@icons.X(templ.Attributes{"class": "icon"})
+			<button type="button" class="absolute top-4 right-4 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer" aria-label="Kép bezárása [Esc]" title="Kép bezárása [Esc]" data-on:click="document.getElementById('image-popover').hidePopover()">
+				@icons.X(templ.Attributes{"class": "w-6 h-6 text-base-100"})
 			</button>
-			<button type="button" id="popover-prev" class="absolute left-4 btn btn-circle" aria-label="Előző" data-on:click="window.galleryPrev()">
-				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+			<button type="button" id="popover-prev" class="absolute left-4 top-1/2 -translate-y-1/2 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer" aria-label="Előző kép [←]" title="Előző kép [←]" data-on:click="window.galleryPrev()">
+				@icons.ChevronLeft(templ.Attributes{"class": "w-6 h-6 text-base-100"})
 			</button>
-			<button type="button" id="popover-next" class="absolute right-4 btn btn-circle" aria-label="Következő" data-on:click="window.galleryNext()">
-				@icons.ArrowRight(templ.Attributes{"class": "icon"})
+			<button type="button" id="popover-next" class="absolute right-4 top-1/2 -translate-y-1/2 bg-base-content/20 hover:bg-base-content/30 rounded-full p-2 z-10 cursor-pointer" aria-label="Következő kép [→]" title="Következő kép [→]" data-on:click="window.galleryNext()">
+				@icons.ChevronRight(templ.Attributes{"class": "w-6 h-6 text-base-100"})
 			</button>
-			<img id="popover-img" src="" alt="" class="max-w-full max-h-full object-contain"/>
+			<img id="popover-img" src="" alt="" class="w-auto max-w-full max-h-full object-contain"/>
 		</div>
 	</div>
 }

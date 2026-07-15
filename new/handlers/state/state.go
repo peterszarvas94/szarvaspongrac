@@ -156,11 +156,11 @@ func (h *Handler) PatchContent(c echo.Context) error {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 
-	if st.EditingKey != "" {
-		if err := utils.SSEHub.ExecuteScript(c, "window.mountEditor('"+key+"')"); err != nil {
+	if st.EditingKey == "" {
+		if err := utils.SSEHub.ExecuteScript(c, "window.destroyEditor()"); err != nil {
 			return c.NoContent(http.StatusInternalServerError)
 		}
-	} else if err := utils.SSEHub.ExecuteScript(c, "window.destroyEditor()"); err != nil {
+	} else if err := utils.SSEHub.ExecuteScript(c, "window.bootEditor()"); err != nil {
 		return c.NoContent(http.StatusInternalServerError)
 	}
 

@@ -2,6 +2,7 @@
 *.db
 tmp/
 static/css/generated.css
+static/gen/
 node_modules/
 *_templ.go
 pb/pb_data/

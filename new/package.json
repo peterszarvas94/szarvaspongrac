@@ -1,12 +1,21 @@
 {
+  "private": true,
   "scripts": {
-    "css": "npx @tailwindcss/cli -i static/css/input.css -o static/css/generated.css",
-    "css:watch": "npx @tailwindcss/cli -i static/css/input.css -o static/css/generated.css --watch"
+    "css": "tailwindcss -i static/css/input.css -o static/css/generated.css",
+    "css:watch": "tailwindcss -i static/css/input.css -o static/css/generated.css --watch",
+    "bundle:tiptap": "esbuild scripts/tiptap-bundle.js --bundle --format=esm --platform=browser --tsconfig=tsconfig.json --outfile=static/js/vendor/tiptap.js"
   },
   "devDependencies": {
     "@tailwindcss/cli": "^4.1.18",
     "@tailwindcss/typography": "^0.5.19",
+    "@tiptap/core": "^3.18.0",
+    "@tiptap/extension-strike": "^3.18.0",
+    "@tiptap/extension-text-align": "^3.18.0",
+    "@tiptap/extension-underline": "^3.18.0",
+    "@tiptap/pm": "^3.18.0",
+    "@tiptap/starter-kit": "^3.18.0",
     "daisyui": "^5.5.14",
+    "esbuild": "^0.27.2",
     "tailwindcss": "^4.1.18"
   }
 }

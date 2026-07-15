@@ -11,3 +11,10 @@ type ProseEditData struct {
 func (d ProseEditData) IsEditing() bool {
 	return d.EditingKey == d.ContentKey
 }
+
+func (d ProseEditData) InitialEditorContent() string {
+	if d.EditorHTML != "" {
+		return d.EditorHTML
+	}
+	return d.ContentHTML
+}

@@ -11,12 +11,12 @@ templ HomeAdmin(data view.HomeAdminData) {
 		if data.Authed {
 			<div class="w-full py-4 flex justify-center gap-2">
 				if !data.EditMode {
-					<button type="button" class="btn gap-2" data-on:click="$action='enter', $contentKey='home.home', @patch('/state/edit')">
+					<button type="button" class="btn" data-on:click="$action='enter', $contentKey='home.home', @patch('/state/edit')">
 						@icons.Pencil(templ.Attributes{"class": "icon"})
 						<span>Szerkesztés</span>
 					</button>
 				} else {
-					<button type="button" class="btn gap-2" data-on:click="$action='exit', $contentKey='home.home', @patch('/state/edit')">
+					<button type="button" class="btn" data-on:click="$action='exit', $contentKey='home.home', @patch('/state/edit')">
 						@icons.X(templ.Attributes{"class": "icon"})
 						<span>Kilépés</span>
 					</button>

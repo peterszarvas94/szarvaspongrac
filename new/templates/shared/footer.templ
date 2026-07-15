@@ -6,23 +6,27 @@ import (
 )
 
 templ DevCredit() {
-	<section class="mt-auto flex justify-center py-4 text-sm text-base-content/60 gap-2">
-		<span>A weboldal fejlesztője:</span>
+	<section class="flex flex-wrap justify-center items-center py-4 px-4 sm:px-6 md:px-8 gap-2 text-base-content/60 text-sm">
+		@icons.Code(templ.Attributes{"class": "icon"})
+		<p>A weboldal fejlesztője:</p>
 		<a
 			href="https://peterszarvas.hu"
 			target="_blank"
 			rel="noopener noreferrer"
-			class="hover:link"
+			class="hover:link hover:text-base-content"
 		>
-			peterszarvas.hu
+			https://peterszarvas.hu
 		</a>
 	</section>
 }
 
 templ PageFooter(data view.PageData) {
 	if data.FooterBackHref != "" {
-		<section class="flex justify-center py-4">
-			<a href={ templ.SafeURL(data.FooterBackHref) } class="btn btn-soft">{ data.FooterBackText }</a>
+		<section class="flex flex-wrap justify-center items-center py-4 px-4 sm:px-6 md:px-8">
+			<a href={ templ.SafeURL(data.FooterBackHref) } class="btn btn-soft gap-2">
+				@icons.ArrowLeft(templ.Attributes{"class": "icon"})
+				<span>{ data.FooterBackText }</span>
+			</a>
 		</section>
 	}
 	@Footer(data)

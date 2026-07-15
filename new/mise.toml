@@ -10,13 +10,17 @@ golangci-lint = "2.12.2"
 description = "Start PocketBase (dev)"
 run = "./scripts/pb-serve.sh"
 
+[tasks.deps]
+description = "Install npm devDependencies (TipTap, Tailwind, DaisyUI)"
+run = "npm install"
+
 [tasks.css]
 description = "Build Tailwind CSS once"
-run = "npx @tailwindcss/cli -i static/css/input.css -o static/css/generated.css"
+run = "npm run css"
 
 [tasks."css:watch"]
 description = "Watch and rebuild Tailwind CSS"
-run = "npx @tailwindcss/cli -i static/css/input.css -o static/css/generated.css --watch"
+run = "npm run css:watch"
 
 [tasks.templ]
 description = "Generate templ Go files"
@@ -36,9 +40,19 @@ run = 'templucide remove "${icons}" --output templates/shared/icons --package ic
 description = "Regenerate icons from registry"
 run = "templucide sync --output templates/shared/icons --package icons"
 
+[tasks."bundle:tiptap"]
+description = "Bundle TipTap to static/js/vendor/tiptap.js"
+run = "npm run bundle:tiptap"
+
+[tasks.assets]
+description = "Fingerprint static CSS/JS and generate import map"
+run = "go run ./cmd/assets"
+sources = ["cmd/assets/**/*.go", "static/importmap.json", "static/css/**", "static/js/**"]
+outputs = ["static/gen/**"]
+
 [tasks.generate]
-description = "Run all code generation"
-depends = ["templ", "css"]
+description = "Run all code generation (templ + static CSS + TipTap bundle + assets)"
+depends = ["templ", "css", "bundle:tiptap", "assets"]
 
 [tasks.format]
 run = "go fmt ./..."
@@ -74,9 +88,13 @@ run = [
   { task = "build" },
 ]
 
+[tasks.preflight]
+description = "Free dev server port before starting air"
+run = "./scripts/dev-preflight.sh"
+
 [tasks.dev]
 description = "Hot reload Go server (start PocketBase separately: mise run pb)"
-depends = ["generate"]
+depends = ["preflight"]
 run = [{ task = "app" }]
 
 [tasks.db]

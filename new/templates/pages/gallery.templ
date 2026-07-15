@@ -12,12 +12,12 @@ templ GalleryAdmin(data view.GalleryAdminData) {
 		if data.Authed {
 			<div class="flex gap-2">
 				if !data.EditMode {
-					<button type="button" class="btn gap-2" data-on:click={ fmt.Sprintf("$action='enter', $galleryKey='%s', @patch('/state/edit')", data.Key) }>
+					<button type="button" class="btn" data-on:click={ fmt.Sprintf("$action='enter', $galleryKey='%s', @patch('/state/edit')", data.Key) }>
 						@icons.Pencil(templ.Attributes{"class": "icon"})
 						<span>Szerkesztés</span>
 					</button>
 				} else {
-					<button type="button" class="btn gap-2" data-on:click={ fmt.Sprintf("$action='exit', $galleryKey='%s', @patch('/state/edit')", data.Key) }>
+					<button type="button" class="btn" data-on:click={ fmt.Sprintf("$action='exit', $galleryKey='%s', @patch('/state/edit')", data.Key) }>
 						@icons.X(templ.Attributes{"class": "icon"})
 						<span>Kilépés</span>
 					</button>

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	fraghdl "szarvaspongrac/handlers/fragments"
 	galleryhdl "szarvaspongrac/handlers/gallery"
 	herohdl "szarvaspongrac/handlers/hero"
+	"szarvaspongrac/assets"
 	"szarvaspongrac/handlers/pages"
 	"szarvaspongrac/handlers/sse"
 	statehdl "szarvaspongrac/handlers/state"
@@ -28,6 +30,7 @@ func main() {
 
 	e := echo.New()
 	e.HideBanner = true
+	e.HidePort = true
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Logger())
@@ -36,9 +39,9 @@ func main() {
 	deps := authmw.Deps{Config: cfg, PBClient: pb}
 	e.Use(authmw.Scope(deps))
 
+	assets.Init(os.DirFS("static"))
 	e.Static("/static", "static")
 	e.Static("/fonts", "public/fonts")
-	e.Static("/images", "public/images")
 	e.File("/favicon.ico", "public/favicon.ico")
 
 	fileH := &files.Handler{Client: pb}
@@ -78,7 +81,7 @@ func main() {
 	mutate.POST("/gallery/images/:id/down", galleryH.MoveDown)
 	mutate.POST("/gallery/images/:id/delete", galleryH.Delete)
 
-	slog.Info("server starting", "port", cfg.Port, "pb", cfg.PBURL)
+	fmt.Println("server is running on " + cfg.PublicURL)
 	if err := e.Start(":" + cfg.Port); err != nil && err != http.ErrServerClosed {
 		slog.Error("server failed", "err", err)
 		os.Exit(1)

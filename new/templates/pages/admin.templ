@@ -17,7 +17,7 @@ templ Admin(data view.AdminData) {
 						<form method="POST" action="/auth/login" class="flex flex-col gap-4">
 							<div>
 								<div class="flex items-center gap-2 mb-2">
-									@icons.Mail(templ.Attributes{"class": "icon text-primary"})
+									@icons.Mail(templ.Attributes{"class": "w-4 h-4 text-primary"})
 									<label class="label-text font-medium">Email</label>
 								</div>
 								<input
@@ -31,7 +31,7 @@ templ Admin(data view.AdminData) {
 							</div>
 							<div>
 								<div class="flex items-center gap-2 mb-2">
-									@icons.Lock(templ.Attributes{"class": "icon text-primary"})
+									@icons.Lock(templ.Attributes{"class": "w-4 h-4 text-primary"})
 									<label class="label-text font-medium">Jelszó</label>
 								</div>
 								<input
@@ -50,8 +50,8 @@ templ Admin(data view.AdminData) {
 						<h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
 						<p class="text-center mb-6">{ data.Email }</p>
 						<form method="POST" action="/auth/logout">
-							<button type="submit" class="btn btn-outline btn-error btn-block gap-2">
-								@icons.LogOut(templ.Attributes{"class": "icon"})
+							<button type="submit" class="btn btn-outline btn-error btn-block">
+								@icons.LogOut(templ.Attributes{"class": "icon mr-2"})
 								<span>Kijelentkezés</span>
 							</button>
 						</form>
