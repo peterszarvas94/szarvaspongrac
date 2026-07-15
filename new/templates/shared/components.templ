@@ -11,11 +11,42 @@ templ PageTitle(title string) {
 	<div class="text-center py-8"><h1 class="text-4xl font-bold text-base-content">{ title }</h1></div>
 }
 
-templ ContentBlock(key, html string, editing bool) {
+templ ContentBlock(key, html string) {
 	<div id={ "content-" + utils.ContentKeyID(key) }>
 		<article class="prose max-w-none">
 			@templ.Raw(html)
 		</article>
+	</div>
+}
+
+templ ProseEditRegion(data ProseEditData) {
+	<div id="prose-edit-region" data-content-key={ data.ContentKey }>
+		if data.Authed {
+			<div class="w-full p-4 flex justify-center gap-2">
+				if !data.IsEditing() {
+					<button type="button" class="btn gap-2" data-on:click={ fmt.Sprintf("$action='edit', $contentKey='%s', @patch('/state/content')", data.ContentKey) }>
+						@icons.Pencil(templ.Attributes{"class": "icon"})
+						<span>Szerkesztés</span>
+					</button>
+				} else {
+					<button type="button" class="btn gap-2" data-on:click={ fmt.Sprintf("$action='cancel', $contentKey='%s', @patch('/state/content')", data.ContentKey) }>
+						@icons.X(templ.Attributes{"class": "icon"})
+						<span>Mégsem</span>
+					</button>
+				}
+			</div>
+		}
+		if data.IsEditing() {
+			<div class="hidden">
+				@ContentBlock(data.ContentKey, data.ContentHTML)
+			</div>
+			<div id="active-editor-wrap">
+				@TiptapToolbar(data.ContentKey)
+				<div class="prose tiptap-content rounded-xl bg-base-100 p-4" id="active-editor"></div>
+			</div>
+		} else {
+			@ContentBlock(data.ContentKey, data.ContentHTML)
+		}
 	</div>
 }
 
@@ -27,40 +58,34 @@ templ TiptapToolbar(contentKey string) {
 		<button type="button" class="tiptap-button" data-on:click="window.uploadEditorImage()" aria-label="Kép feltöltése" title="Kép feltöltése">
 			@icons.Image(templ.Attributes{"class": "icon"})
 		</button>
-		<button type="button" class="btn btn-primary btn-sm" data-on:click={ fmt.Sprintf("@patch('/content/%s')", contentKey) }>Mentés</button>
+		<button type="button" class="btn btn-primary btn-sm gap-2" data-on:click={ fmt.Sprintf("@patch('/content/%s')", contentKey) }>
+			@icons.Save(templ.Attributes{"class": "icon"})
+			<span>Mentés</span>
+		</button>
 	</div>
 }
 
-templ EditControls(authed bool, contentKey string) {
-	if authed {
-		<div class="w-full p-4 flex justify-center gap-2">
-			<button type="button" class="btn" data-on:click={ fmt.Sprintf("window.mountEditor('%s')", contentKey) }>Szerkesztés</button>
-			<button type="button" class="btn" data-on:click="window.destroyEditor()">Mégsem</button>
-		</div>
-	}
-}
-
-templ GalleryGrid(key string, images []view.GalleryImage, authed bool) {
+templ GalleryGrid(key string, images []view.GalleryImage, authed bool, editMode bool) {
 	<div id="gallery-grid">
 		if len(images) == 0 {
 			<p class="text-center py-12 text-lg">Nincs kép feltöltve</p>
 		} else {
 			<div class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4">
 				for _, img := range images {
-					@GalleryItem(key, img, authed)
+					@GalleryItem(key, img, authed, editMode)
 				}
 			</div>
 		}
 	</div>
 }
 
-templ GalleryItem(key string, img view.GalleryImage, authed bool) {
+templ GalleryItem(key string, img view.GalleryImage, authed bool, editMode bool) {
 	<div class="relative mb-4 block">
 		<button type="button" class="w-full block border-0 bg-transparent p-0 cursor-pointer" data-on:click={ fmt.Sprintf("window.openGalleryImage('%s')", img.URL) }>
 			<img src={ img.URL } alt="Galéria kép" class="w-full rounded-lg shadow-lg" loading="lazy"/>
 		</button>
-		if authed {
-			<div class="absolute top-2 left-2 right-2 flex justify-between" data-show="$editMode">
+		if authed && editMode {
+			<div class="absolute top-2 left-2 right-2 flex justify-between">
 				<div class="join">
 					<button type="button" class="btn btn-sm btn-square join-item" aria-label="Borítókép" title="Borítókép" data-on:click={ fmt.Sprintf("@post('/gallery/images/%s/cover?key=%s')", img.ID, key) }>
 						@icons.Star(templ.Attributes{"class": "icon"})
@@ -108,13 +133,12 @@ templ ImagePopover() {
 	</div>
 }
 
-templ HeroImageUpload(key string, authed bool) {
-	if authed {
+templ HeroImageUpload(key string, editMode bool) {
+	if editMode {
 		<form
 			id="hero-upload-form"
 			enctype="multipart/form-data"
 			class="max-w-xl mx-auto w-full px-4"
-			data-show="$editMode"
 		>
 			<input type="hidden" name="tab_id" data-bind:tab_id/>
 			<input type="file" accept="image/*" name="file" class="file-input file-input-bordered w-full"/>
@@ -130,12 +154,11 @@ templ HeroImageUpload(key string, authed bool) {
 	}
 }
 
-templ ImageUpload(key string, authed bool) {
-	if authed {
+templ ImageUpload(key string, editMode bool) {
+	if editMode {
 		<form
 			class="max-w-xl mx-auto w-full"
 			enctype="multipart/form-data"
-			data-show="$editMode"
 			data-on:submit__prevent={ fmt.Sprintf("@post('/gallery/%s/upload', {contentType: 'form'})", key) }
 			data-on:datastar-fetch={ fmt.Sprintf(`(evt.detail.type === 'finished' || evt.detail.type === 'error' || evt.detail.type === 'retries-failed') && el.reset()`) }
 		>
@@ -149,10 +172,15 @@ templ ImageUpload(key string, authed bool) {
 	}
 }
 
-templ NavigationCard(href, title, hoverColor string) {
+templ NavigationCard(href, title, hoverColor string, icon icons.IconName) {
 	<a href={ templ.SafeURL(href) } class="group w-50">
-		<div class="bg-base-100 rounded-xl p-4 shadow-md hover:shadow-xl transition-all group-hover:scale-105">
-			<h3 class="text-lg font-semibold text-center">{ title }</h3>
+		<div class="bg-base-100 w-full rounded-xl p-4 shadow-md hover:shadow-xl transition-all duration-300 group-hover:scale-105">
+			<div class="flex flex-col items-center text-center space-y-3">
+				<div class={ "w-12 h-12 bg-base-200 rounded-lg flex items-center justify-center transition-colors " + NavCardHoverClass(hoverColor) }>
+					@icons.Icon(icon, templ.Attributes{"class": "w-6 h-6 text-base-content"})
+				</div>
+				<h3 class="text-lg font-semibold text-base-content">{ title }</h3>
+			</div>
 		</div>
 	</a>
 }

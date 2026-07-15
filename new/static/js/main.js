@@ -19,7 +19,6 @@ window.mountEditor = (contentKey) => {
   if (!wrap || !mount || !article) return;
   const html = article.querySelector(".prose")?.innerHTML || "";
   wrap.classList.remove("hidden");
-  article.classList.add("hidden");
   editor = new Editor({
     element: mount,
     extensions: [StarterKit.configure({ strike: false }), Strike],
@@ -35,12 +34,6 @@ window.destroyEditor = () => {
     editor.destroy();
     editor = null;
     window.editor = null;
-  }
-  const wrap = document.getElementById("active-editor-wrap");
-  if (wrap) wrap.classList.add("hidden");
-  if (currentKey) {
-    const article = document.getElementById("content-" + keyId(currentKey));
-    if (article) article.classList.remove("hidden");
   }
   currentKey = null;
 };
@@ -92,6 +85,8 @@ window.galleryNext = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
-  const year = document.getElementById("copyright-year");
-  if (year) year.textContent = String(new Date().getFullYear());
+  const region = document.getElementById("prose-edit-region");
+  const wrap = document.getElementById("active-editor-wrap");
+  const key = region?.dataset.contentKey;
+  if (wrap && key) window.mountEditor(key);
 });

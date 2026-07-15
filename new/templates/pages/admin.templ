@@ -2,6 +2,7 @@ package pages
 
 import (
 	"szarvaspongrac/templates/shared"
+	icons "szarvaspongrac/templates/shared/icons"
 	view "szarvaspongrac/views/pages"
 )
 
@@ -14,15 +15,45 @@ templ Admin(data view.AdminData) {
 					if !data.Authed {
 						<h2 class="card-title justify-center text-2xl mb-6">Bejelentkezés</h2>
 						<form method="POST" action="/auth/login" class="flex flex-col gap-4">
-							<input type="email" name="email" class="input input-bordered" placeholder="email@example.com" required autocomplete="email"/>
-							<input type="password" name="password" class="input input-bordered" placeholder="Jelszó" required autocomplete="current-password"/>
-							<button type="submit" class="btn btn-primary">Bejelentkezés</button>
+							<div>
+								<div class="flex items-center gap-2 mb-2">
+									@icons.Mail(templ.Attributes{"class": "icon text-primary"})
+									<label class="label-text font-medium">Email</label>
+								</div>
+								<input
+									type="email"
+									name="email"
+									class="input input-bordered input-primary w-full"
+									placeholder="email@example.com"
+									required
+									autocomplete="email"
+								/>
+							</div>
+							<div>
+								<div class="flex items-center gap-2 mb-2">
+									@icons.Lock(templ.Attributes{"class": "icon text-primary"})
+									<label class="label-text font-medium">Jelszó</label>
+								</div>
+								<input
+									type="password"
+									name="password"
+									class="input input-bordered input-primary w-full"
+									placeholder="••••••••"
+									required
+									autocomplete="current-password"
+								/>
+							</div>
+							<button type="submit" class="btn btn-primary btn-block">Bejelentkezés</button>
 						</form>
 					} else {
+						@icons.User(templ.Attributes{"class": "w-16 h-16 mx-auto text-primary mb-4"})
 						<h2 class="card-title justify-center text-2xl mb-2">Üdvözöljük!</h2>
 						<p class="text-center mb-6">{ data.Email }</p>
 						<form method="POST" action="/auth/logout">
-							<button type="submit" class="btn btn-outline btn-error btn-block">Kijelentkezés</button>
+							<button type="submit" class="btn btn-outline btn-error btn-block gap-2">
+								@icons.LogOut(templ.Attributes{"class": "icon"})
+								<span>Kijelentkezés</span>
+							</button>
 						</form>
 					}
 				</div>

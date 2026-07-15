@@ -16,6 +16,7 @@ import (
 	herohdl "szarvaspongrac/handlers/hero"
 	"szarvaspongrac/handlers/pages"
 	"szarvaspongrac/handlers/sse"
+	statehdl "szarvaspongrac/handlers/state"
 	authmw "szarvaspongrac/middleware"
 	"szarvaspongrac/pbclient"
 	"szarvaspongrac/utils"
@@ -48,6 +49,7 @@ func main() {
 	contentH := &contenthdl.Handler{}
 	galleryH := &galleryhdl.Handler{}
 	heroH := &herohdl.Handler{}
+	stateH := &statehdl.Handler{}
 
 	e.GET("/health", func(c echo.Context) error { return c.String(http.StatusOK, "ok") })
 	e.GET("/sse", sse.Stream)
@@ -65,6 +67,8 @@ func main() {
 	e.POST("/auth/logout", authH.Logout)
 
 	mutate := e.Group("", authmw.RequireAuth(deps))
+	mutate.PATCH("/state/edit", stateH.PatchEdit)
+	mutate.PATCH("/state/content", stateH.PatchContent)
 	mutate.PATCH("/content/:key", contentH.Save)
 	mutate.POST("/content-images", contentH.UploadImage)
 	mutate.POST("/gallery/:key/upload", galleryH.Upload)

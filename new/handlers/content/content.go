@@ -14,6 +14,7 @@ import (
 type Handler struct{}
 
 type saveSignals struct {
+	TabID      string `json:"tab_id"`
 	EditorHTML string `json:"editorHtml"`
 }
 
@@ -27,20 +28,45 @@ func (h *Handler) Save(c echo.Context) error {
 	if err := datastar.ReadSignals(c.Request(), &signals); err != nil {
 		return c.NoContent(http.StatusBadRequest)
 	}
+	if !utils.SetTabID(c, signals.TabID) {
+		return c.NoContent(http.StatusBadRequest)
+	}
+
 	sanitized := utils.SanitizeHTML(signals.EditorHTML)
 	if err := content.Save(c.Request().Context(), scope.PBClient, key, sanitized); err != nil {
 		utils.NotifyError(c, "A mentés sikertelen")
 		return err
 	}
 	utils.Notify(c, "Tartalom mentve")
-	html, err := utils.RenderString(c.Request().Context(), shared.ContentBlock(key, sanitized, false))
+
+	tabID := utils.TabIDFromContext(c.Request().Context())
+	st := utils.GetPageState(tabID)
+	st.EditingKey = ""
+	st.EditorHTML = ""
+	utils.SetPageState(tabID, st)
+
+	regionHTML, err := utils.RenderHTMLForRequest(c, shared.ProseEditRegion(shared.ProseEditData{
+		ContentKey:  key,
+		ContentHTML: sanitized,
+		EditingKey:  "",
+		EditorHTML:  "",
+		Authed:      true,
+	}))
 	if err != nil {
 		return err
 	}
-	sse := datastar.NewSSE(c.Response().Writer, c.Request())
-	_ = sse.PatchElements(html, datastar.WithSelector("#content-"+utils.ContentKeyID(key)), datastar.WithMode(datastar.ElementPatchModeOuter))
-	_ = sse.MarshalAndPatchSignals(map[string]any{"editMode": false, "editingKey": ""})
-	_ = shared.PatchNotifications(c, sse)
+	if err := utils.SSEHub.PatchHTML(c, regionHTML, datastar.WithSelector("#prose-edit-region"), datastar.WithMode(datastar.ElementPatchModeOuter)); err != nil {
+		return err
+	}
+	if err := utils.SSEHub.ExecuteScript(c, "window.destroyEditor()"); err != nil {
+		return err
+	}
+	if err := utils.SSEHub.PatchSignals(c, utils.PageSignals(st, tabID)); err != nil {
+		return err
+	}
+	if err := shared.PatchNotifications(c); err != nil {
+		return err
+	}
 	return c.NoContent(http.StatusNoContent)
 }
 

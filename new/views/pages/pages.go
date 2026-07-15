@@ -8,6 +8,8 @@ type PageData struct {
 	Canonical        string
 	FooterBackHref   string
 	FooterBackText   string
+	FooterEmail      LinkView
+	FooterPhone      LinkView
 }
 
 type HomeData struct {
@@ -15,6 +17,13 @@ type HomeData struct {
 	HeroURL     string
 	ContentHTML string
 	ContentKey  string
+	EditMode    bool
+}
+
+type HomeAdminData struct {
+	ContentKey string
+	Authed     bool
+	EditMode   bool
 }
 
 type ProseData struct {
@@ -22,6 +31,14 @@ type ProseData struct {
 	PageTitle   string
 	ContentKey  string
 	ContentHTML string
+	EditingKey  string
+	EditorHTML  string
+}
+
+type GalleryAdminData struct {
+	Key      string
+	Authed   bool
+	EditMode bool
 }
 
 type GalleryIndexData struct {
@@ -43,6 +60,7 @@ type GalleryData struct {
 	PageTitle string
 	Key       string
 	Images    []GalleryImage
+	EditMode  bool
 }
 
 type GalleryImage struct {

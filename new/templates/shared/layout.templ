@@ -8,31 +8,8 @@ import (
 templ Layout(data view.PageData, mainClass string) {
 	{{
 		tabID := utils.EnsureTabIDFromContext(ctx)
-		signals := map[string]any{
-			"editMode":     false,
-			"editingKey":   "",
-			"editorHtml":   "",
-			"bold":         false,
-			"italic":       false,
-			"strike":       false,
-			"heading1":     false,
-			"heading2":     false,
-			"heading3":     false,
-			"bulletList":   false,
-			"orderedList":  false,
-			"blockquote":   false,
-			"tab_id":       tabID,
-			"popoverOpenId": "",
-			"confirm": map[string]any{
-				"open":         false,
-				"title":        "",
-				"message":      "",
-				"submitLabel":  "Rendben",
-				"url":          "",
-				"kind":         "",
-				"formSelector": "",
-			},
-		}
+		pageState := utils.GetPageState(tabID)
+		signals := utils.PageSignals(pageState, tabID)
 	}}
 	<!DOCTYPE html>
 	<html lang="hu" data-theme="light" class="bg-base-200">

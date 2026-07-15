@@ -18,10 +18,14 @@ type Handler struct {
 
 func (h *Handler) base(c echo.Context) view.PageData {
 	scope := utils.GetScope(c.Request().Context())
+	email, _ := link.GetByKey(c.Request().Context(), scope.PBClient, "contact.email")
+	phone, _ := link.GetByKey(c.Request().Context(), scope.PBClient, "contact.phone")
 	return view.PageData{
 		Authed:    scope.Authed,
 		Email:     scope.Email,
 		Canonical: h.Config.PublicURL + c.Request().URL.Path,
+		FooterEmail: view.LinkView{Key: email.Key, URL: email.URL, Text: email.Text},
+		FooterPhone: view.LinkView{Key: phone.Key, URL: phone.URL, Text: phone.Text},
 	}
 }
 
@@ -34,6 +38,8 @@ func (h *Handler) page(c echo.Context, title, description string) view.PageData 
 
 func (h *Handler) Home(c echo.Context) error {
 	scope := utils.GetScope(c.Request().Context())
+	tabID := utils.EnsureTabID(c)
+	pageState := utils.GetPageState(tabID)
 	heroURL, _ := image.GetFirstURL(c.Request().Context(), scope.PBClient, "home.home")
 	html, _ := content.GetByKey(c.Request().Context(), scope.PBClient, "home.home")
 	data := view.HomeData{
@@ -41,18 +47,23 @@ func (h *Handler) Home(c echo.Context) error {
 		HeroURL:     heroURL,
 		ContentHTML: html,
 		ContentKey:  "home.home",
+		EditMode:    pageState.EditMode,
 	}
 	return utils.RenderPage(c, pages.Home(data))
 }
 
 func (h *Handler) Prose(c echo.Context, key, title, description, pageTitle string) error {
 	scope := utils.GetScope(c.Request().Context())
+	tabID := utils.EnsureTabID(c)
+	pageState := utils.GetPageState(tabID)
 	html, _ := content.GetByKey(c.Request().Context(), scope.PBClient, key)
 	data := view.ProseData{
 		PageData:    h.page(c, title, description),
 		PageTitle:   pageTitle,
 		ContentKey:  key,
 		ContentHTML: html,
+		EditingKey:  pageState.EditingKey,
+		EditorHTML:  pageState.EditorHTML,
 	}
 	return utils.RenderPage(c, pages.Prose(data))
 }
@@ -121,6 +132,8 @@ func (h *Handler) Gallery(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusNotFound)
 	}
 	scope := utils.GetScope(c.Request().Context())
+	tabID := utils.EnsureTabID(c)
+	pageState := utils.GetPageState(tabID)
 	images, _ := image.ListByKey(c.Request().Context(), scope.PBClient, meta.key)
 	views := make([]view.GalleryImage, 0, len(images))
 	for _, img := range images {
@@ -134,6 +147,7 @@ func (h *Handler) Gallery(c echo.Context) error {
 		PageTitle: meta.pageTitle,
 		Key:         meta.key,
 		Images:      views,
+		EditMode:    pageState.EditMode,
 	}
 	return utils.RenderPage(c, pages.Gallery(data))
 }

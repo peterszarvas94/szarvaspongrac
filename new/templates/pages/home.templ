@@ -2,26 +2,46 @@ package pages
 
 import (
 	"szarvaspongrac/templates/shared"
+	icons "szarvaspongrac/templates/shared/icons"
 	view "szarvaspongrac/views/pages"
 )
+
+templ HomeAdmin(data view.HomeAdminData) {
+	<div id="home-admin">
+		if data.Authed {
+			<div class="w-full py-4 flex justify-center gap-2">
+				if !data.EditMode {
+					<button type="button" class="btn gap-2" data-on:click="$action='enter', $contentKey='home.home', @patch('/state/edit')">
+						@icons.Pencil(templ.Attributes{"class": "icon"})
+						<span>Szerkesztés</span>
+					</button>
+				} else {
+					<button type="button" class="btn gap-2" data-on:click="$action='exit', $contentKey='home.home', @patch('/state/edit')">
+						@icons.X(templ.Attributes{"class": "icon"})
+						<span>Kilépés</span>
+					</button>
+				}
+			</div>
+			@shared.HeroImageUpload(data.ContentKey, data.EditMode)
+		}
+	</div>
+}
 
 templ Home(data view.HomeData) {
 	@shared.Layout(data.PageData, "") {
 		@HeroSection(data.HeroURL)
-		if data.Authed {
-			<div class="w-full py-4 flex justify-center gap-2">
-				<button type="button" class="btn" data-on:click="$editMode=true">Szerkesztés</button>
-				<button type="button" class="btn" data-show="$editMode" data-on:click="$editMode=false">Kilépés</button>
-			</div>
-		}
-		@shared.HeroImageUpload(data.ContentKey, data.Authed)
+		@HomeAdmin(view.HomeAdminData{
+			ContentKey: data.ContentKey,
+			Authed:     data.Authed,
+			EditMode:   data.EditMode,
+		})
 		<section class="py-8 bg-base-200">
 			<div class="mx-auto px-4 flex gap-4 flex-row flex-wrap items-center justify-center">
-				@shared.NavigationCard("/oneletrajz", "Önéletrajz", "primary")
-				@shared.NavigationCard("/elismeresek", "Elismerések", "warning")
-				@shared.NavigationCard("/konyvillusztraciok", "Könyvillusztrációk", "success")
-				@shared.NavigationCard("/galeria", "Galéria", "secondary")
-				@shared.NavigationCard("/kapcsolat", "Kapcsolat", "accent")
+				@shared.NavigationCard("/oneletrajz", "Önéletrajz", "primary", icons.IconFileUser)
+				@shared.NavigationCard("/elismeresek", "Elismerések", "warning", icons.IconTrophy)
+				@shared.NavigationCard("/konyvillusztraciok", "Könyvillusztrációk", "success", icons.IconBookImage)
+				@shared.NavigationCard("/galeria", "Galéria", "secondary", icons.IconPalette)
+				@shared.NavigationCard("/kapcsolat", "Kapcsolat", "accent", icons.IconMail)
 			</div>
 		</section>
 	}

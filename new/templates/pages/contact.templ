@@ -2,8 +2,19 @@ package pages
 
 import (
 	"szarvaspongrac/templates/shared"
+	icons "szarvaspongrac/templates/shared/icons"
 	view "szarvaspongrac/views/pages"
 )
+
+templ ContactLink(title, href, text string, icon icons.IconName) {
+	<div class="flex flex-col gap-2">
+		<p class="text-xl font-bold text-base-content">{ title }</p>
+		<div class="flex gap-2 items-center">
+			@icons.Icon(icon, templ.Attributes{"class": "icon text-base-content/70"})
+			<a href={ templ.SafeURL(href) } class="text-base-content/70 hover:link hover:text-base-content">{ text }</a>
+		</div>
+	</div>
+}
 
 templ Contact(data view.ContactData) {
 	@shared.Layout(data.PageData, "py-4") {
@@ -12,14 +23,8 @@ templ Contact(data view.ContactData) {
 			<div class="mx-auto w-full max-w-96 px-4">
 				<div class="card bg-base-100 shadow-xl">
 					<div class="card-body flex flex-col gap-6">
-						<div class="flex flex-col gap-2">
-							<p class="text-xl font-bold">Email</p>
-							<a href={ data.Email.URL } class="hover:link">{ data.Email.Text }</a>
-						</div>
-						<div class="flex flex-col gap-2">
-							<p class="text-xl font-bold">Telefon</p>
-							<a href={ data.Phone.URL } class="hover:link">{ data.Phone.Text }</a>
-						</div>
+						@ContactLink("Email", data.Email.URL, data.Email.Text, icons.IconMail)
+						@ContactLink("Telefon", data.Phone.URL, data.Phone.Text, icons.IconPhone)
 					</div>
 				</div>
 			</div>

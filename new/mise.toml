@@ -78,3 +78,11 @@ run = [
 description = "Hot reload Go server (start PocketBase separately: mise run pb)"
 depends = ["generate"]
 run = [{ task = "app" }]
+
+[tasks.db]
+description = "Start PocketBase (dev)"
+run = "./scripts/pb-serve.sh"
+
+[tasks."sync-db"]
+description = "Download prod PocketBase data to local pb/pb_data (read-only on prod)"
+run = "./scripts/sync-db.sh"

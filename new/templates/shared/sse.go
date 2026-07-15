@@ -6,10 +6,10 @@ import (
 	"szarvaspongrac/utils"
 )
 
-func PatchNotifications(c echo.Context, sse *datastar.ServerSentEventGenerator) error {
+func PatchNotifications(c echo.Context) error {
 	html, err := utils.RenderHTMLForRequest(c, Notifications())
 	if err != nil {
 		return err
 	}
-	return sse.PatchElements(html, datastar.WithSelector("#notifications-popover"), datastar.WithMode(datastar.ElementPatchModeOuter))
+	return utils.SSEHub.PatchHTML(c, html, datastar.WithSelector("#notifications-popover"), datastar.WithMode(datastar.ElementPatchModeOuter))
 }

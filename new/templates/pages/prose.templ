@@ -9,12 +9,13 @@ templ Prose(data view.ProseData) {
 	@shared.Layout(data.PageData, "py-4") {
 		@shared.PageTitle(data.PageTitle)
 		<div class="max-w-4xl mx-auto px-4">
-			@shared.EditControls(data.Authed, data.ContentKey)
-			@shared.ContentBlock(data.ContentKey, data.ContentHTML, false)
-			<div id="active-editor-wrap" class="hidden">
-				@shared.TiptapToolbar(data.ContentKey)
-				<div class="prose tiptap-content rounded-xl bg-base-100 p-4" id="active-editor"></div>
-			</div>
+			@shared.ProseEditRegion(shared.ProseEditData{
+				ContentKey:  data.ContentKey,
+				ContentHTML: data.ContentHTML,
+				EditingKey:  data.EditingKey,
+				EditorHTML:  data.EditorHTML,
+				Authed:      data.Authed,
+			})
 		</div>
 	}
 }

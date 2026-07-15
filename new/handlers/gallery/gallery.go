@@ -117,6 +117,9 @@ func (h *Handler) move(c echo.Context, dir int) error {
 
 func (h *Handler) refresh(c echo.Context, key string) error {
 	scope := utils.GetScope(c.Request().Context())
+	tabID := utils.EnsureTabID(c)
+	editMode := utils.GetPageState(tabID).EditMode
+
 	images, err := image.ListByKey(c.Request().Context(), scope.PBClient, key)
 	if err != nil {
 		return err
@@ -125,12 +128,15 @@ func (h *Handler) refresh(c echo.Context, key string) error {
 	for _, img := range images {
 		views = append(views, view.GalleryImage{ID: img.ID, URL: img.URL, Cover: img.Cover, Sorting: img.Sorting})
 	}
-	html, err := utils.RenderString(c.Request().Context(), shared.GalleryGrid(key, views, scope.Authed))
+	html, err := utils.RenderHTMLForRequest(c, shared.GalleryGrid(key, views, scope.Authed, editMode))
 	if err != nil {
 		return err
 	}
-	sse := datastar.NewSSE(c.Response().Writer, c.Request())
-	_ = sse.PatchElements(html, datastar.WithSelector("#gallery-grid"), datastar.WithMode(datastar.ElementPatchModeOuter))
-	_ = shared.PatchNotifications(c, sse)
+	if err := utils.SSEHub.PatchHTML(c, html, datastar.WithSelector("#gallery-grid"), datastar.WithMode(datastar.ElementPatchModeOuter)); err != nil {
+		return err
+	}
+	if err := shared.PatchNotifications(c); err != nil {
+		return err
+	}
 	return c.NoContent(http.StatusNoContent)
 }

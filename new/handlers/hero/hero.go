@@ -47,8 +47,11 @@ func (h *Handler) Upload(c echo.Context) error {
 	if err != nil {
 		return err
 	}
-	sse := datastar.NewSSE(c.Response().Writer, c.Request())
-	_ = sse.PatchElements(html, datastar.WithSelector("#hero-section"), datastar.WithMode(datastar.ElementPatchModeOuter))
-	_ = shared.PatchNotifications(c, sse)
+	if err := utils.SSEHub.PatchHTML(c, html, datastar.WithSelector("#hero-section"), datastar.WithMode(datastar.ElementPatchModeOuter)); err != nil {
+		return err
+	}
+	if err := shared.PatchNotifications(c); err != nil {
+		return err
+	}
 	return c.NoContent(http.StatusNoContent)
 }
