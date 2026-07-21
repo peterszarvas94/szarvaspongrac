@@ -1,27 +1,8 @@
-# generated types
-.astro/
-.
-# dependencies
-node_modules/
-
-# logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# environment variables
 .env
-
-# macOS-specific files
-.DS_Store
-
-# jetbrains setting folder
-.idea/
-
-# data
-/pb/pb_data
-
-/dist
-
-/backups
+*.db
+tmp/
+static/css/generated.css
+static/gen/
+node_modules/
+*_templ.go
+pb/pb_data/

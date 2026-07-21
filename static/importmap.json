@@ -1,0 +1,9 @@
+{
+	"imports": {
+		"datastar": "/static/js/vendor/datastar.js",
+		"tiptap-bundle": "/static/js/vendor/tiptap.js",
+		"szarvaspongrac/main": "/static/js/main.js",
+		"szarvaspongrac/image-upload": "/static/js/image-upload.js",
+		"szarvaspongrac/notifications": "/static/js/notifications.js"
+	}
+}

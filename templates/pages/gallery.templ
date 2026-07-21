@@ -1,0 +1,55 @@
+package pages
+
+import (
+	"fmt"
+	"szarvaspongrac/templates/shared"
+	icons "szarvaspongrac/templates/shared/icons"
+	view "szarvaspongrac/views/pages"
+)
+
+templ GalleryAdmin(data view.GalleryAdminData) {
+	<div id="gallery-admin" class="flex flex-col items-center gap-4 w-full">
+		if data.Authed {
+			<div class="flex gap-2">
+				if !data.EditMode {
+					<button type="button" class="btn" data-on:click={ fmt.Sprintf("$action='enter', $galleryKey='%s', @patch('/state/edit')", data.Key) }>
+						@icons.Pencil(templ.Attributes{"class": "icon"})
+						<span>Szerkesztés</span>
+					</button>
+				} else {
+					<button type="button" class="btn" data-on:click={ fmt.Sprintf("$action='exit', $galleryKey='%s', @patch('/state/edit')", data.Key) }>
+						@icons.X(templ.Attributes{"class": "icon"})
+						<span>Kilépés</span>
+					</button>
+				}
+			</div>
+			@shared.ImageUpload(data.Key, data.EditMode)
+		}
+	</div>
+}
+
+templ GalleryIndex(data view.GalleryIndexData) {
+	@shared.Layout(data.PageData, "py-4") {
+		@shared.PageTitle(data.PageTitle)
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center">
+			for _, card := range data.Cards {
+				@shared.ArtCard(card.Href, card.Title, card.ImageAlt, card.CoverURL)
+			}
+		</div>
+	}
+}
+
+templ Gallery(data view.GalleryData) {
+	@shared.Layout(data.PageData, "py-4") {
+		@shared.PageTitle(data.PageTitle)
+		<div class="flex flex-col items-center gap-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			@GalleryAdmin(view.GalleryAdminData{
+				Key:      data.Key,
+				Authed:   data.Authed,
+				EditMode: data.EditMode,
+			})
+			@shared.ImagePopover()
+			@shared.GalleryGrid(data.Key, data.Images, data.Authed, data.EditMode)
+		</div>
+	}
+}
