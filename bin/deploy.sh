@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-SERVER="peti@shared"
+SERVER="peti@szarvaspongrac.hu"
 DOMAIN="szarvaspongrac.hu"
 REMOTE_DIR="/home/peti/projects/szarvaspongrac"
 WEB_DIR="/var/www/$DOMAIN"
