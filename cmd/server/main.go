@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"szarvaspongrac/handlers/auth"
@@ -25,7 +24,6 @@ import (
 )
 
 func main() {
-	_ = godotenv.Load()
 	cfg := utils.LoadConfig()
 
 	e := echo.New()

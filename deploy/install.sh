@@ -9,11 +9,6 @@ NGINX_SITE="${DOMAIN}.conf"
 
 mkdir -p /home/peti/pb /home/peti/szarvaspongrac "$WEB_DIR"
 
-if [[ ! -f "$WEB_DIR/.env" ]]; then
-  cp "$ROOT/env.production.example" "$WEB_DIR/.env"
-  echo "Created $WEB_DIR/.env from example — set SESSION_SECRET before going live."
-fi
-
 sudo cp "$ROOT/systemd/pocketbase.service" /etc/systemd/system/pocketbase.service
 sudo cp "$ROOT/systemd/szarvaspongrac.service" /etc/systemd/system/szarvaspongrac.service
 
@@ -27,10 +22,10 @@ sudo systemctl enable pocketbase szarvaspongrac
 sudo systemctl restart pocketbase
 sudo systemctl reload nginx
 
-if [[ -x "$WEB_DIR/server" ]]; then
+if [[ -x "$WEB_DIR/server" && -f "$WEB_DIR/.env" ]]; then
   sudo systemctl restart szarvaspongrac
   sudo systemctl status --no-pager pocketbase szarvaspongrac
 else
-  echo "No $WEB_DIR/server yet — run bin/deploy.sh, then: sudo systemctl start szarvaspongrac"
+  echo "App not ready yet — run bin/deploy.sh (writes $WEB_DIR/.env + binary), then start szarvaspongrac."
   sudo systemctl status --no-pager pocketbase
 fi

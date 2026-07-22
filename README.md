@@ -5,16 +5,18 @@ Web app. PocketBase is included locally under `pb/` for data and file storage.
 ## Prerequisites
 
 - [mise](https://mise.jdx.dev/) — pins Go, templ, air, Node
+- varlock + 1Password CLI — env contract / production secrets
 
 ## Setup
 
 ```bash
 mise trust
 mise install
-cp .env.example .env
-mise run deps
+npm install
 mise run generate
 ```
+
+Env comes from `.env.schema` via varlock (`mise run dev`). Deploy resolves production secrets from 1Password into `/var/www/szarvaspongrac.hu/.env`.
 
 ## Run
 

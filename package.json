@@ -16,6 +16,8 @@
     "@tiptap/starter-kit": "^3.18.0",
     "daisyui": "^5.5.14",
     "esbuild": "^0.27.2",
-    "tailwindcss": "^4.1.18"
+    "tailwindcss": "^4.1.18",
+    "@varlock/1password-plugin": "1.1.0",
+    "varlock": "1.4.0"
   }
 }
