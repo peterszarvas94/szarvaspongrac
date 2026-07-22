@@ -1,1 +1,0 @@
-peti ALL=(ALL) NOPASSWD: /usr/bin/systemctl restart pocketbase, /usr/bin/systemctl restart szarvaspongrac

@@ -16,9 +16,6 @@ fi
 
 sudo cp "$ROOT/systemd/pocketbase.service" /etc/systemd/system/pocketbase.service
 sudo cp "$ROOT/systemd/szarvaspongrac.service" /etc/systemd/system/szarvaspongrac.service
-sudo cp "$ROOT/sudoers/szarvaspongrac" /etc/sudoers.d/szarvaspongrac
-sudo chmod 440 /etc/sudoers.d/szarvaspongrac
-sudo visudo -cf /etc/sudoers.d/szarvaspongrac
 
 # Only touches this site's vhost file (same basename as on the server).
 sudo cp "$ROOT/nginx/$NGINX_SITE" "/etc/nginx/sites-available/$NGINX_SITE"
