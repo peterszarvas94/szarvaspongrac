@@ -1,0 +1,19 @@
+[Unit]
+Description=Szarvas Pongrac (Go)
+After=network.target pocketbase.service
+Wants=pocketbase.service
+
+[Service]
+Type=simple
+User=peti
+Group=peti
+WorkingDirectory=/var/www/szarvaspongrac.hu
+EnvironmentFile=/var/www/szarvaspongrac.hu/.env
+ExecStart=/var/www/szarvaspongrac.hu/server
+Restart=always
+RestartSec=5s
+StandardOutput=append:/home/peti/szarvaspongrac/std.log
+StandardError=append:/home/peti/szarvaspongrac/std.log
+
+[Install]
+WantedBy=multi-user.target
