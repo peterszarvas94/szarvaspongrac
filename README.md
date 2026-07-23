@@ -76,6 +76,8 @@ mise run css
 | `mise run bundle:tiptap` | Rebuild TipTap vendor bundle |
 | `mise run build` | Build `tmp/server` binary |
 | `mise run check` | fmt + vet + build |
+| `mise run setup-service` | Install systemd + nginx on the VPS |
+| `mise run deploy` | Build, upload, and restart app on the VPS |
 
 ## Admin
 

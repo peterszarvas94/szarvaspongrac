@@ -107,3 +107,11 @@ run = "./scripts/sync-db.sh"
 [tasks."build-env"]
 description = "Resolve production .env via varlock + 1Password"
 run = "./scripts/build-env-file.sh production tmp/production.env"
+
+[tasks."setup-service"]
+description = "Install systemd + nginx configs on the VPS (first-time / config changes)"
+run = "./bin/setup_service.sh"
+
+[tasks.deploy]
+description = "Build linux binary, upload app + env, restart PocketBase and Go on the VPS"
+run = "./bin/deploy.sh"
