@@ -5,4 +5,10 @@ static/css/generated.css
 static/gen/
 node_modules/
 *_templ.go
+.DS_Store
+dist/
+.astro/
+backups/
 pb/pb_data/
+**/pb_data/
+new/static/css/generated.css
