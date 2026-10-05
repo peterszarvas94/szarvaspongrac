@@ -25,7 +25,16 @@ import (
 )
 
 func main() {
-	cfg := utils.LoadConfig()
+	cfg, err := utils.LoadConfig()
+	if err != nil {
+		slog.Error("invalid configuration", "err", err)
+		os.Exit(1)
+	}
+
+	if len(os.Args) == 2 && os.Args[1] == "--check-config" {
+		fmt.Println("Configuration valid")
+		return
+	}
 
 	e := echo.New()
 	e.HideBanner = true

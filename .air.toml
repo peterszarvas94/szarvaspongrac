@@ -2,7 +2,7 @@ root = "."
 tmp_dir = "tmp"
 
 [build]
-include_file = [".env.schema"]
+include_file = [".env.development"]
 cmd = "mise run build"
 entrypoint = "./tmp/server"
 include_ext = ["go", "templ", "css"]

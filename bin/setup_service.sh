@@ -2,7 +2,7 @@
 # Push deploy/ configs to the server and run install.sh there.
 set -euo pipefail
 
-SERVER="peti@szarvaspongrac.hu"
+SERVER="shared"
 REMOTE_DIR="/home/peti/projects/szarvaspongrac"
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 

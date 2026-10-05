@@ -4,6 +4,8 @@ go 1.25.0
 
 require (
 	github.com/a-h/templ v0.3.1020
+	github.com/caarlos0/env/v11 v11.4.1
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.13.3
 	github.com/microcosm-cc/bluemonday v1.0.27
 	github.com/starfederation/datastar-go v1.1.0

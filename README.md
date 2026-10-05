@@ -5,7 +5,6 @@ Web app. PocketBase is included locally under `pb/` for data and file storage.
 ## Prerequisites
 
 - [mise](https://mise.jdx.dev/) — pins Go, templ, air, Node
-- varlock + 1Password CLI — env contract / production secrets
 
 ## Setup
 
@@ -13,10 +12,17 @@ Web app. PocketBase is included locally under `pb/` for data and file storage.
 mise trust
 mise install
 npm install
+cp .env.development.example .env.development
 mise run generate
 ```
 
-Env comes from `.env.schema` via varlock (`mise run dev`). Deploy resolves production secrets from 1Password into `/var/www/szarvaspongrac.hu/.env`.
+Go loads `.env.development` by default, or `.env.production` when the shell sets `APP_ENV=production`, using godotenv. Configuration is parsed with caarlos0/env and validated at startup. Existing shell/systemd variables take precedence; `APP_ENV` inside the file must match the selected environment.
+
+Both real files are ignored by Git. Development uses a fixed, development-only session secret if none is supplied.
+
+For production, copy `.env.production.example` to `.env.production` and set a strong `SESSION_SECRET` of at least 32 characters. Changing the secret logs out existing admin sessions. `mise run deploy` validates and uploads only `.env.production` to `/var/www/szarvaspongrac.hu/.env.production` over SSH, atomically with mode 600, then updates the systemd unit and restarts. Never deploy the development file.
+
+To validate without starting the server: `APP_ENV=production go run ./cmd/server --check-config`.
 
 ## Run
 

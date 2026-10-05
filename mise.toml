@@ -73,11 +73,11 @@ run = "go build -o tmp/server ./cmd/server"
 [tasks.server]
 description = "Run server without hot reload"
 depends = ["generate"]
-run = "APP_ENV=development npx varlock run -- go run ./cmd/server"
+run = "go run ./cmd/server"
 
 [tasks.app]
-description = "Hot reload via air (via varlock)"
-run = "APP_ENV=development npx varlock run -- air"
+description = "Hot reload via air"
+run = "air"
 
 [tasks.check]
 description = "Format, vet, and build"
@@ -104,14 +104,10 @@ run = "./scripts/pb-serve.sh"
 description = "Download prod PocketBase data to local pb/pb_data (read-only on prod)"
 run = "./scripts/sync-db.sh"
 
-[tasks."build-env"]
-description = "Resolve production .env via varlock + 1Password"
-run = "./scripts/build-env-file.sh production tmp/production.env"
-
 [tasks."setup-service"]
 description = "Install systemd + nginx configs on the VPS (first-time / config changes)"
 run = "./bin/setup_service.sh"
 
 [tasks.deploy]
-description = "Build linux binary, upload app + env, restart PocketBase and Go on the VPS"
+description = "Build linux binary, upload app, restart PocketBase and Go on the VPS"
 run = "./bin/deploy.sh"
