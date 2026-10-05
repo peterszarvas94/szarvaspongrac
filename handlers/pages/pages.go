@@ -21,9 +21,9 @@ func (h *Handler) base(c echo.Context) view.PageData {
 	email, _ := link.GetByKey(c.Request().Context(), scope.PBClient, "contact.email")
 	phone, _ := link.GetByKey(c.Request().Context(), scope.PBClient, "contact.phone")
 	return view.PageData{
-		Authed:    scope.Authed,
-		Email:     scope.Email,
-		Canonical: h.Config.PublicURL + c.Request().URL.Path,
+		Authed:      scope.Authed,
+		Email:       scope.Email,
+		Canonical:   h.Config.PublicURL + c.Request().URL.Path,
 		FooterEmail: view.LinkView{Key: email.Key, URL: email.URL, Text: email.Text},
 		FooterPhone: view.LinkView{Key: phone.Key, URL: phone.URL, Text: phone.Text},
 	}
@@ -69,6 +69,18 @@ func (h *Handler) Prose(c echo.Context, key, title, description, pageTitle strin
 	return utils.RenderPage(c, pages.Prose(data))
 }
 
+func (h *Handler) NotFound(c echo.Context) error {
+	c.Response().Header().Set(echo.HeaderContentType, echo.MIMETextHTMLCharsetUTF8)
+	c.Response().WriteHeader(http.StatusNotFound)
+	if c.Request().Method == http.MethodHead {
+		return nil
+	}
+	return utils.RenderPage(c, pages.NotFound(h.page(c,
+		"Az oldal nem található - Szarvas Pongrác",
+		"A keresett oldal nem található. Térjen vissza a főoldalra vagy fedezze fel a galériát.",
+	)))
+}
+
 func (h *Handler) Oneletrajz(c echo.Context) error {
 	return h.Prose(c, "cv.cv", "Önéletrajz - Szarvas Pongrác", "Szarvas Pongrác önéletrajz és művészeti pályafutása", "Önéletrajz")
 }
@@ -89,8 +101,8 @@ func (h *Handler) Contact(c echo.Context) error {
 	data := view.ContactData{
 		PageData:  pd,
 		PageTitle: "Kapcsolat",
-		Email:       view.LinkView{Key: email.Key, URL: email.URL, Text: email.Text},
-		Phone:       view.LinkView{Key: phone.Key, URL: phone.URL, Text: phone.Text},
+		Email:     view.LinkView{Key: email.Key, URL: email.URL, Text: email.Text},
+		Phone:     view.LinkView{Key: phone.Key, URL: phone.URL, Text: phone.Text},
 	}
 	return utils.RenderPage(c, pages.Contact(data))
 }
@@ -112,18 +124,18 @@ func (h *Handler) GalleryIndex(c echo.Context) error {
 	data := view.GalleryIndexData{
 		PageData:  h.page(c, "Galéria - Szarvas Pongrác", "Szarvas Pongrác képgalériája"),
 		PageTitle: "Galéria",
-		Cards:       cards,
+		Cards:     cards,
 	}
 	return utils.RenderPage(c, pages.GalleryIndex(data))
 }
 
 var galleryRoutes = map[string]struct{ title, desc, pageTitle, key string }{
-	"olaj":          {"Olajfestmények - Szarvas Pongrác", "Szarvas Pongrác olajfestményei", "Olajfestmények", "gallery.oil"},
-	"akvarell":      {"Akvarellek - Szarvas Pongrác", "Szarvas Pongrác akvarelljeinek gyűjteménye", "Akvarellek", "gallery.watercolor"},
-	"pasztell":      {"Pasztellek - Szarvas Pongrác", "Szarvas Pongrác pasztelljei", "Pasztellek", "gallery.pastel"},
-	"grafika":       {"Grafikák - Szarvas Pongrác", "Szarvas Pongrác grafikái", "Grafikák", "gallery.graphics"},
-	"illusztracio":  {"Illusztrációk - Szarvas Pongrác", "Szarvas Pongrác illusztrációi", "Illusztrációk", "gallery.illustration"},
-	"egyeb":         {"Egyéb alkotások - Szarvas Pongrác", "Szarvas Pongrác egyéb alkotásai", "Egyéb alkotások", "gallery.others"},
+	"olaj":         {"Olajfestmények - Szarvas Pongrác", "Szarvas Pongrác olajfestményei", "Olajfestmények", "gallery.oil"},
+	"akvarell":     {"Akvarellek - Szarvas Pongrác", "Szarvas Pongrác akvarelljeinek gyűjteménye", "Akvarellek", "gallery.watercolor"},
+	"pasztell":     {"Pasztellek - Szarvas Pongrác", "Szarvas Pongrác pasztelljei", "Pasztellek", "gallery.pastel"},
+	"grafika":      {"Grafikák - Szarvas Pongrác", "Szarvas Pongrác grafikái", "Grafikák", "gallery.graphics"},
+	"illusztracio": {"Illusztrációk - Szarvas Pongrác", "Szarvas Pongrác illusztrációi", "Illusztrációk", "gallery.illustration"},
+	"egyeb":        {"Egyéb alkotások - Szarvas Pongrác", "Szarvas Pongrác egyéb alkotásai", "Egyéb alkotások", "gallery.others"},
 }
 
 func (h *Handler) Gallery(c echo.Context) error {
@@ -146,9 +158,9 @@ func (h *Handler) Gallery(c echo.Context) error {
 	data := view.GalleryData{
 		PageData:  pd,
 		PageTitle: meta.pageTitle,
-		Key:         meta.key,
-		Images:      views,
-		EditMode:    pageState.EditMode,
+		Key:       meta.key,
+		Images:    views,
+		EditMode:  pageState.EditMode,
 	}
 	return utils.RenderPage(c, pages.Gallery(data))
 }

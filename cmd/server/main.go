@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -8,13 +9,13 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"szarvaspongrac/assets"
 	"szarvaspongrac/handlers/auth"
 	contenthdl "szarvaspongrac/handlers/content"
 	"szarvaspongrac/handlers/files"
 	fraghdl "szarvaspongrac/handlers/fragments"
 	galleryhdl "szarvaspongrac/handlers/gallery"
 	herohdl "szarvaspongrac/handlers/hero"
-	"szarvaspongrac/assets"
 	"szarvaspongrac/handlers/pages"
 	"szarvaspongrac/handlers/sse"
 	statehdl "szarvaspongrac/handlers/state"
@@ -29,6 +30,7 @@ func main() {
 	e := echo.New()
 	e.HideBanner = true
 	e.HidePort = true
+	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.Recover())
 	e.Use(middleware.RequestID())
 	e.Use(middleware.Logger())
@@ -46,6 +48,17 @@ func main() {
 	e.GET("/api/files/*", fileH.Proxy)
 
 	pageH := &pages.Handler{Config: cfg}
+	defaultErrorHandler := e.HTTPErrorHandler
+	e.HTTPErrorHandler = func(err error, c echo.Context) {
+		var httpErr *echo.HTTPError
+		if !c.Response().Committed && errors.As(err, &httpErr) && httpErr.Code == http.StatusNotFound {
+			if renderErr := pageH.NotFound(c); renderErr != nil {
+				defaultErrorHandler(renderErr, c)
+			}
+			return
+		}
+		defaultErrorHandler(err, c)
+	}
 	authH := &auth.Handler{Config: cfg, PBClient: pb}
 	contentH := &contenthdl.Handler{}
 	galleryH := &galleryhdl.Handler{}
@@ -67,17 +80,20 @@ func main() {
 	e.POST("/auth/login", authH.Login)
 	e.POST("/auth/logout", authH.Logout)
 
-	mutate := e.Group("", authmw.RequireAuth(deps))
-	mutate.PATCH("/state/edit", stateH.PatchEdit)
-	mutate.PATCH("/state/content", stateH.PatchContent)
-	mutate.PATCH("/content/:key", contentH.Save)
-	mutate.POST("/content-images", contentH.UploadImage)
-	mutate.POST("/gallery/:key/upload", galleryH.Upload)
-	mutate.POST("/hero/:key/upload", heroH.Upload)
-	mutate.POST("/gallery/images/:id/cover", galleryH.SetCover)
-	mutate.POST("/gallery/images/:id/up", galleryH.MoveUp)
-	mutate.POST("/gallery/images/:id/down", galleryH.MoveDown)
-	mutate.POST("/gallery/images/:id/delete", galleryH.Delete)
+	// Apply authentication only to registered mutation routes, not a group-wide
+	// fallback: unknown paths should retain Echo's normal 404 response.
+	mutate := e.Group("")
+	requireAuth := authmw.RequireAuth(deps)
+	mutate.PATCH("/state/edit", stateH.PatchEdit, requireAuth)
+	mutate.PATCH("/state/content", stateH.PatchContent, requireAuth)
+	mutate.PATCH("/content/:key", contentH.Save, requireAuth)
+	mutate.POST("/content-images", contentH.UploadImage, requireAuth)
+	mutate.POST("/gallery/:key/upload", galleryH.Upload, requireAuth)
+	mutate.POST("/hero/:key/upload", heroH.Upload, requireAuth)
+	mutate.POST("/gallery/images/:id/cover", galleryH.SetCover, requireAuth)
+	mutate.POST("/gallery/images/:id/up", galleryH.MoveUp, requireAuth)
+	mutate.POST("/gallery/images/:id/down", galleryH.MoveDown, requireAuth)
+	mutate.POST("/gallery/images/:id/delete", galleryH.Delete, requireAuth)
 
 	fmt.Println("server is running on " + cfg.PublicURL)
 	if err := e.Start(":" + cfg.Port); err != nil && err != http.ErrServerClosed {

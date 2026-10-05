@@ -1,0 +1,24 @@
+package pages
+
+import (
+	"szarvaspongrac/templates/shared"
+	view "szarvaspongrac/views/pages"
+)
+
+templ NotFound(data view.PageData) {
+	@shared.Layout(data, "px-4 py-12") {
+		<section class="flex flex-1 items-center justify-center" aria-labelledby="not-found-title">
+			<div class="card w-full max-w-xl bg-base-100 shadow-xl">
+				<div class="card-body items-center gap-6 text-center">
+					<p class="text-7xl font-bold text-primary" aria-hidden="true">404</p>
+					<h1 id="not-found-title" class="text-3xl font-bold">Ez az oldal nem található</h1>
+					<p class="text-base-content/70">Lehet, hogy az oldal elköltözött, vagy hibás a hivatkozás. Nézzen körül a főoldalon vagy a galériában!</p>
+					<div class="card-actions justify-center gap-3">
+						<a href="/" class="btn btn-primary">Vissza a főoldalra</a>
+						<a href="/galeria" class="btn btn-soft">Galéria</a>
+					</div>
+				</div>
+			</div>
+		</section>
+	}
+}

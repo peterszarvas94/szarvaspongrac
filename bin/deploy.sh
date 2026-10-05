@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-SERVER="peti@szarvaspongrac.hu"
+SERVER="shared"
 DOMAIN="szarvaspongrac.hu"
 REMOTE_DIR="/home/peti/projects/szarvaspongrac"
 WEB_DIR="/var/www/$DOMAIN"
@@ -14,7 +14,12 @@ mkdir -p tmp
 ./scripts/build-env-file.sh production tmp/production.env
 
 echo "Building..."
-mise run generate
+# Generate sequentially so fingerprinted assets include the freshly built CSS/JS.
+# Run templ directly to avoid cached task results missing new templates.
+mise exec -- templ generate
+mise run css
+mise run bundle:tiptap
+mise exec -- go run ./cmd/assets
 CGO_ENABLED=0 GOOS=linux GOARCH=amd64 mise exec -- go build -o tmp/server_linux_amd64 ./cmd/server
 
 echo "Uploading app to $WEB_DIR..."
