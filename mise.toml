@@ -103,11 +103,3 @@ run = "./scripts/pb-serve.sh"
 [tasks."sync-db"]
 description = "Download prod PocketBase data to local pb/pb_data (read-only on prod)"
 run = "./scripts/sync-db.sh"
-
-[tasks."setup-service"]
-description = "Install systemd + nginx configs on the VPS (first-time / config changes)"
-run = "./bin/setup_service.sh"
-
-[tasks.deploy]
-description = "Build linux binary, upload app, restart PocketBase and Go on the VPS"
-run = "./bin/deploy.sh"

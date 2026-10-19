@@ -20,7 +20,7 @@ Go loads `.env.development` by default, or `.env.production` when the shell sets
 
 Both real files are ignored by Git. Development uses a fixed, development-only session secret if none is supplied.
 
-For production, copy `.env.production.example` to `.env.production` and set a strong `SESSION_SECRET` of at least 32 characters. Changing the secret logs out existing admin sessions. `mise run deploy` validates and uploads only `.env.production` to `/var/www/szarvaspongrac.hu/.env.production` over SSH, atomically with mode 600, then updates the systemd unit and restarts. Never deploy the development file.
+For production, copy `.env.production.example` to `.env.production` and set a strong `SESSION_SECRET` of at least 32 characters. Changing the secret logs out existing admin sessions. Production does not read this file: `PUBLIC_URL` and `SESSION_SECRET` are Coolify runtime variables, and pushes to `master` deploy automatically through Coolify (see `DOCKER.md`). Use `.env.production` only for local production checks.
 
 To validate without starting the server: `APP_ENV=production go run ./cmd/server --check-config`.
 
@@ -82,8 +82,6 @@ mise run css
 | `mise run bundle:tiptap` | Rebuild TipTap vendor bundle |
 | `mise run build` | Build `tmp/server` binary |
 | `mise run check` | fmt + vet + build |
-| `mise run setup-service` | Install systemd + nginx on the VPS |
-| `mise run deploy` | Build, upload, and restart app on the VPS |
 
 ## Admin
 

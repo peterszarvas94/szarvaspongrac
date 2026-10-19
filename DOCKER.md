@@ -44,16 +44,17 @@ container; `docker compose down -v` would remove it.
 
 ## Shared server in Coolify
 
-The shared server uses `/compose.coolify.yaml`. It binds the app to loopback
-24321 and PocketBase to loopback 28090 behind the existing host Caddy. The
+The shared server uses `/compose.coolify.yaml`. Coolify routes
+`szarvaspongrac.hu` to the app and `pb.szarvaspongrac.hu` to PocketBase; the
+loopback ports 24321 and 28090 are only for direct health checks. The
 Coolify runtime variables `PUBLIC_URL` and `SESSION_SECRET` preserve the existing
 production settings. Persistent
 PocketBase data is bind-mounted from `/data/shared/szarvaspongrac/pb_data`.
 This path must contain the verified migrated data before the first production
 cutover; an empty path would create an empty PocketBase instance. Keep it and
-all backups when replacing containers. The old systemd deployment remains
-available for controlled recovery; do not run both production stacks.
+all backups when replacing containers. The retired systemd deployment is
+only a recovery option; do not run both production stacks.
 
 Deployments are managed by central Coolify on Shared. Pushes to the configured
-production branch deploy automatically through the Forgejo bridge. Host Caddy
-provides HTTPS; application listeners are bound to loopback.
+production branch deploy automatically through the Forgejo bridge. Coolify's Caddy
+proxy serves the public domains over HTTPS; there is no manual deploy step.

@@ -4,8 +4,8 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
 
-SERVER="peti@szarvaspongrac.hu"
-REMOTE_PATH="/home/peti/projects/szarvaspongrac/pb/pb_data"
+SERVER="shared"
+REMOTE_PATH="/data/shared/szarvaspongrac/pb_data"
 LOCAL_PATH="./pb/pb_data"
 BACKUP_DIR="$ROOT/backups"
 
@@ -17,7 +17,7 @@ if [[ -f "$LOCAL_PATH/data.db" ]]; then
   echo "Backed up local data.db to backups/data_before_prod_sync_${timestamp}.db"
 fi
 
-rsync -avz --progress \
+rsync -avz --progress --rsync-path="sudo rsync" \
   --exclude='_superusers/' \
   "$SERVER:$REMOTE_PATH/" "$LOCAL_PATH/"
 
