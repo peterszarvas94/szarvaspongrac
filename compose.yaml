@@ -1,0 +1,31 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:4321:4321"
+    environment:
+      APP_ENV: production
+      PORT: "4321"
+      PB_URL: http://pocketbase:8090
+      PUBLIC_URL: ${PUBLIC_URL:?Set PUBLIC_URL to the site's public HTTPS URL}
+      SESSION_SECRET: ${SESSION_SECRET:?Set SESSION_SECRET to a secret of at least 32 characters}
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+  pocketbase:
+    build:
+      context: .
+      dockerfile: pb/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8090:8090"
+    volumes:
+      - pocketbase-data:/pb/pb_data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8090/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+volumes:
+  pocketbase-data:

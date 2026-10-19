@@ -1,0 +1,34 @@
+services:
+  app:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:24321:4321"
+    env_file:
+      - /var/www/szarvaspongrac.hu/.env.production
+    environment:
+      APP_ENV: production
+      PORT: "4321"
+      PB_URL: http://pocketbase:8090
+    depends_on:
+      pocketbase:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4321/"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  pocketbase:
+    build:
+      context: .
+      dockerfile: pb/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:28090:8090"
+    volumes:
+      - /data/shared/szarvaspongrac/pb_data:/pb/pb_data
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8090/api/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
