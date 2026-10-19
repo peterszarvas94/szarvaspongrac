@@ -4,9 +4,9 @@ services:
     restart: unless-stopped
     ports:
       - "127.0.0.1:24321:4321"
-    env_file:
-      - /var/www/szarvaspongrac.hu/.env.production
     environment:
+      PUBLIC_URL: ${PUBLIC_URL:?}
+      SESSION_SECRET: ${SESSION_SECRET:?}
       APP_ENV: production
       PORT: "4321"
       PB_URL: http://pocketbase:8090

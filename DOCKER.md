@@ -46,7 +46,8 @@ container; `docker compose down -v` would remove it.
 
 The shared server uses `/compose.coolify.yaml`. It binds the app to loopback
 24321 and PocketBase to loopback 28090 behind the existing host Caddy. The
-original `.env.production` supplies the existing session secret. Persistent
+Coolify runtime variables `PUBLIC_URL` and `SESSION_SECRET` preserve the existing
+production settings. Persistent
 PocketBase data is bind-mounted from `/data/shared/szarvaspongrac/pb_data`.
 This path must contain the verified migrated data before the first production
 cutover; an empty path would create an empty PocketBase instance. Keep it and
