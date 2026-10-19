@@ -53,3 +53,7 @@ This path must contain the verified migrated data before the first production
 cutover; an empty path would create an empty PocketBase instance. Keep it and
 all backups when replacing containers. The old systemd deployment remains
 available for controlled recovery; do not run both production stacks.
+
+Deployments are managed by central Coolify on Shared. Pushes to the configured
+production branch deploy automatically through the Forgejo bridge. Host Caddy
+provides HTTPS; application listeners are bound to loopback.
