@@ -1,0 +1,19 @@
+dbs:
+  - path: /pb_data/data.db
+    replica:
+      type: s3
+      bucket: litestream-pocketbase
+      path: data
+      endpoint: ${LITESTREAM_ENDPOINT}
+      region: auto
+      access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+      secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
+  - path: /pb_data/auxiliary.db
+    replica:
+      type: s3
+      bucket: litestream-pocketbase
+      path: auxiliary
+      endpoint: ${LITESTREAM_ENDPOINT}
+      region: auto
+      access-key-id: ${LITESTREAM_ACCESS_KEY_ID}
+      secret-access-key: ${LITESTREAM_SECRET_ACCESS_KEY}
