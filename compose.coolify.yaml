@@ -5,8 +5,8 @@ services:
     ports:
       - "127.0.0.1:24321:4321"
     environment:
-      PUBLIC_URL: ${PUBLIC_URL:?}
-      SESSION_SECRET: ${SESSION_SECRET:?}
+      PUBLIC_URL: ${PUBLIC_URL:-}
+      SESSION_SECRET: ${SESSION_SECRET:-}
       APP_ENV: production
       PORT: "4321"
       PB_URL: http://pocketbase:8090
@@ -44,9 +44,9 @@ services:
     volumes:
       - /data/shared/szarvaspongrac/pb_data:/pb_data
     environment: &litestream-environment
-      LITESTREAM_ENDPOINT: ${LITESTREAM_ENDPOINT:?}
-      LITESTREAM_ACCESS_KEY_ID: ${LITESTREAM_ACCESS_KEY_ID:?}
-      LITESTREAM_SECRET_ACCESS_KEY: ${LITESTREAM_SECRET_ACCESS_KEY:?}
+      LITESTREAM_ENDPOINT: ${LITESTREAM_ENDPOINT:-}
+      LITESTREAM_ACCESS_KEY_ID: ${LITESTREAM_ACCESS_KEY_ID:-}
+      LITESTREAM_SECRET_ACCESS_KEY: ${LITESTREAM_SECRET_ACCESS_KEY:-}
   litestream:
     build:
       context: .
