@@ -29,7 +29,7 @@ For two separate Coolify applications, use repository-root build contexts:
 `/Dockerfile` with port 4321 for the app, and `/pb/Dockerfile` with port 8090
 for PocketBase. Set `PB_URL` to the PocketBase container's internal hostname.
 Mount persistent storage at `/pb/pb_data`. The image contains the committed
-migrations. PocketBase 0.34.0 downloads are checksum-verified for amd64/arm64.
+migrations. PocketBase 0.37.4 downloads are checksum-verified for amd64/arm64.
 
 ## Moving existing data
 

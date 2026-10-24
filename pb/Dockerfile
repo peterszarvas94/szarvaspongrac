@@ -3,11 +3,11 @@ RUN apk add --no-cache curl unzip
 ARG TARGETARCH
 WORKDIR /download
 RUN case "$TARGETARCH" in \
-      amd64) checksum=dea29ca40669fb7f31bb47761a8c3494c3f06b42f99d60831bbbcf4bdef5f69d ;; \
-      arm64) checksum=631f698900d83ff4b0735a146d33b4e59c99de923f1ae488a90ce58bd6a69f53 ;; \
+      amd64) checksum=e6cb338e54329e328e4f42b999ac820901d2d23b7e7562417259b0ef882edf9c ;; \
+      arm64) checksum=e6a6ca0ee3c2acc369dc6965d555760a66b3540c13ba863d28dbc2ec77d325f1 ;; \
       *) echo "Unsupported architecture: $TARGETARCH" >&2; exit 1 ;; \
     esac \
-    && curl -fsSL "https://github.com/pocketbase/pocketbase/releases/download/v0.34.0/pocketbase_0.34.0_linux_${TARGETARCH}.zip" -o pocketbase.zip \
+    && curl -fsSL "https://github.com/pocketbase/pocketbase/releases/download/v0.37.4/pocketbase_0.37.4_linux_${TARGETARCH}.zip" -o pocketbase.zip \
     && echo "$checksum  pocketbase.zip" | sha256sum -c - \
     && unzip pocketbase.zip pocketbase
 

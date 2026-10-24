@@ -5,7 +5,7 @@ RUN npm ci
 COPY . .
 RUN npm run css && npm run bundle:tiptap
 
-FROM golang:1.26.9-bookworm AS build
+FROM golang:1.26.10-bookworm AS build
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download

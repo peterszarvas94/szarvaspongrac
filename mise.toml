@@ -1,6 +1,6 @@
 [tools]
 air = "1.65.3"
-go = "1.24"
+go = "1.26.10"
 "go:github.com/a-h/templ/cmd/templ" = "v0.3.1020"
 "go:github.com/peterszarvas94/templucide/cmd/templucide" = "latest"
 golangci-lint = "2.12.2"
